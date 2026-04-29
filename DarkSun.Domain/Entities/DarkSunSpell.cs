@@ -13,7 +13,7 @@ public class DarkSunSpell
     public int Level { get; set; }
     public string School { get; set; } = string.Empty;
 
-    public List<string> SpheresJson { get; set; } = new();   // Simple string list for now
+    public List<string> SpheresJson { get; set; } = new();
 
     public string CastingTime { get; set; } = string.Empty;
     public string Range { get; set; } = string.Empty;
@@ -25,7 +25,6 @@ public class DarkSunSpell
     public string Description { get; set; } = string.Empty;
     public string? HigherLevel { get; set; }
 
-    // Flattened for DynamoDB compatibility
     public string? ModifiedEffect { get; set; }
     public string? MaterialComponentAthas { get; set; }
     public int DefilerCost { get; set; }
@@ -37,5 +36,5 @@ public class DarkSunSpell
     public List<string> RelatedEntries { get; set; } = new();
     public List<string> SourceBooks { get; set; } = new();
 
-    public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdated { get; set; } = DateTime.UtcNow;   // ← Add this line if missing
 }
