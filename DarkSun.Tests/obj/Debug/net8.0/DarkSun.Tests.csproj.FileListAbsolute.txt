@@ -1,0 +1,7 @@
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\bin\Debug\net8.0\CoverletSourceRootsMapping_DarkSun.Tests
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.csproj.AssemblyReference.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.AssemblyInfoInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.AssemblyInfo.cs
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.csproj.CoreCompileInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Tests\obj\Debug\net8.0\DarkSun.Tests.sourcelink.json

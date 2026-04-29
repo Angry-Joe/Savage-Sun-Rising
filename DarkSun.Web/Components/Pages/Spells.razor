@@ -1,0 +1,39 @@
+﻿@page "/spells"
+@using DarkSun.Domain.Entities
+@inject DarkSun.Application.Interfaces.ISpellRepository SpellRepo
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true">Athasian 1st-Level Priest Spells</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-6">15 spells loaded from DynamoDB</MudText>
+
+    <MudSimpleTable Dense="true" Hover="true" Striped="true" Bordered="true">
+        <thead>
+            <tr>
+                <th>Spell Name</th>
+                <th>School</th>
+                <th>Major Spheres</th>
+                <th style="width: 40%">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var spell in _spells)
+            {
+                <tr>
+                    <td><strong>@spell.Name</strong></td>
+                    <td>@spell.School</td>
+                    <td>@string.Join(", ", spell.SpheresJson)</td>
+                    <td>@spell.Description.Substring(0, Math.Min(120, spell.Description.Length))...</td>
+                </tr>
+            }
+        </tbody>
+    </MudSimpleTable>
+</MudContainer>
+
+@code {
+    private List<DarkSunSpell> _spells = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _spells = await SpellRepo.GetAllAsync(maxLevel: 1);
+    }
+}

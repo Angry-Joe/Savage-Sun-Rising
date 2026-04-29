@@ -1,0 +1,8 @@
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.csproj.AssemblyReference.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.GeneratedMSBuildEditorConfig.editorconfig
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.AssemblyInfoInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.AssemblyInfo.cs
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.csproj.CoreCompileInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.MvcApplicationPartsAssemblyInfo.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.sourcelink.json

@@ -1,0 +1,554 @@
+[
+    {
+        "id": "spell_create_water_ds",
+        "name": "Create Water",
+        "srdIndex": "create-water",
+        "level": 1,
+        "school": "conjuration",
+        "spheres": [
+            {
+                "name": "Water",
+                "access": "Major"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Rain",
+                "access": "Major"
+            },
+            {
+                "name": "Silt",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "30 feet",
+        "components": [ "V", "S" ],
+        "duration": "Instantaneous",
+        "concentration": false,
+        "ritual": false,
+        "description": "You create up to 10 gallons of clean water in an open container within range.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Water carries a faint mineral taste. Can be drawn from the Plane of Water.",
+            "materialComponentAthas": "None (drop of water improves purity)",
+            "defilerCost": 0,
+            "planeSource": "Plane of Water"
+        },
+        "flavorLore": "In the bone-dry wastes of Athas, this spell is worth more than gold.",
+        "artworkPrompt": "In the style of Gerald Brom, a gaunt Athasian Water Cleric kneeling in cracked red sand under the double suns, hands cupped as pure water coalesces, silt storms in distance, grotesque heroic anatomy, dramatic chiaroscuro, heavy ink linework, desaturated burnt oranges and sickly greens, harsh shadows, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#water", "#survival", "#healing" ],
+        "relatedEntries": [ "Water Cleric", "Rain Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 172", "Earth, Air, Fire and Water p. 42" ]
+    },
+    {
+        "id": "spell_magical_stone_ds",
+        "name": "Magical Stone",
+        "srdIndex": "",
+        "level": 1,
+        "school": "transmutation",
+        "spheres": [
+            {
+                "name": "Earth",
+                "access": "Major"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Magma",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "S" ],
+        "duration": "10 minutes",
+        "concentration": false,
+        "ritual": false,
+        "description": "Imbue up to three pebbles. They become +1 sling stones dealing 1d4+1 bludgeoning.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Stones feel unnaturally heavy and warm.",
+            "materialComponentAthas": "Three ordinary pebbles",
+            "defilerCost": 0,
+            "planeSource": "Plane of Earth"
+        },
+        "flavorLore": "The bones of Athas rise to strike her enemies.",
+        "artworkPrompt": "In the style of Gerald Brom, an Earth Cleric hurling glowing magical stones at a charging foe, dramatic rim lighting, grotesque detail, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#earth", "#combat" ],
+        "relatedEntries": [ "Earth Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 173" ]
+    },
+    {
+        "id": "spell_produce_flame_ds",
+        "name": "Produce Flame",
+        "srdIndex": "produce-flame",
+        "level": 1,
+        "school": "evocation",
+        "spheres": [
+            {
+                "name": "Fire",
+                "access": "Major"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Sun",
+                "access": "Major"
+            },
+            {
+                "name": "Magma",
+                "access": "Major"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Self",
+        "components": [ "V", "S" ],
+        "duration": "10 minutes",
+        "concentration": false,
+        "ritual": false,
+        "description": "A flame appears in your hand. Hurl for 1d8 fire damage (ranged spell attack).",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Flame burns with unnatural intensity under the crimson sun.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Plane of Fire"
+        },
+        "flavorLore": "Even in a scorched world, fire answers its priests.",
+        "artworkPrompt": "In the style of Gerald Brom, a Fire Cleric holding a searing flame atop a volcanic outcrop, grotesque heroic anatomy, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#fire", "#combat", "#light" ],
+        "relatedEntries": [ "Fire Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 174" ]
+    },
+    {
+        "id": "spell_endure_heat_cold_ds",
+        "name": "Endure Heat / Endure Cold",
+        "srdIndex": "",
+        "level": 1,
+        "school": "abjuration",
+        "spheres": [
+            {
+                "name": "Fire",
+                "access": "Minor"
+            },
+            {
+                "name": "Water",
+                "access": "Minor"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Sun",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "S" ],
+        "duration": "24 hours",
+        "concentration": false,
+        "ritual": false,
+        "description": "Target ignores extreme heat or cold on Athas (no exhaustion).",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Essential survival magic across the Tablelands.",
+            "materialComponentAthas": "Drop of water or pinch of ash",
+            "defilerCost": 0,
+            "planeSource": "Elemental planes"
+        },
+        "flavorLore": "Athas kills the unprepared. This spell grants one more day.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest enduring blistering heat and freezing night, skin cracked but unburned, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#survival", "#utility" ],
+        "relatedEntries": [ "All Elemental Clerics" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 175" ]
+    },
+    {
+        "id": "spell_cure_light_wounds_ds",
+        "name": "Cure Light Wounds",
+        "srdIndex": "cure-wounds",
+        "level": 1,
+        "school": "necromancy",
+        "spheres": [
+            {
+                "name": "Water",
+                "access": "Major"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Rain",
+                "access": "Major"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "S" ],
+        "duration": "Instantaneous",
+        "concentration": false,
+        "ritual": false,
+        "description": "Restore 1d8 + Wisdom modifier hit points.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Healing feels like cool water flowing through the veins.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Plane of Water"
+        },
+        "flavorLore": "Water is life. Water priests are the last true healers on Athas.",
+        "artworkPrompt": "In the style of Gerald Brom, Water Cleric laying hands on a dying warrior, soft blue glow against harsh desert, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#healing", "#water" ],
+        "relatedEntries": [ "Water Cleric", "Rain Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 176" ]
+    },
+    {
+        "id": "spell_bless_ds",
+        "name": "Bless",
+        "srdIndex": "bless",
+        "level": 1,
+        "school": "enchantment",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "30 feet",
+        "components": [ "V", "S", "M" ],
+        "duration": "Concentration, up to 1 minute",
+        "concentration": true,
+        "ritual": false,
+        "description": "Up to three creatures gain +1d4 to attack rolls and saving throws.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Often flavored with elemental motifs.",
+            "materialComponentAthas": "Holy water or elemental token",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "Even without gods, the planes grant strength to the faithful.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest blessing warriors before battle under the crimson sun, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#buff", "#cosmos" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 177" ]
+    },
+    {
+        "id": "spell_command_ds",
+        "name": "Command",
+        "srdIndex": "command",
+        "level": 1,
+        "school": "enchantment",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "60 feet",
+        "components": [ "V" ],
+        "duration": "1 round",
+        "concentration": false,
+        "ritual": false,
+        "description": "Target obeys a one-word command (Approach, Drop, Flee, Grovel, Halt).",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Standard.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "The voice of the planes compels obedience.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest pointing at a defiant slave who suddenly obeys, dramatic lighting, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#control", "#cosmos" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 178" ]
+    },
+    {
+        "id": "spell_detect_magic_ds",
+        "name": "Detect Magic",
+        "srdIndex": "detect-magic",
+        "level": 1,
+        "school": "divination",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "30 feet",
+        "components": [ "V", "S" ],
+        "duration": "Concentration, up to 10 minutes",
+        "concentration": true,
+        "ritual": true,
+        "description": "Sense magic within 30 feet.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Standard.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "The planes reveal hidden power.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest with glowing eyes sensing magic in an ancient ruin, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#divination", "#utility" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 179" ]
+    },
+    {
+        "id": "spell_light_ds",
+        "name": "Light",
+        "srdIndex": "light",
+        "level": 1,
+        "school": "evocation",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Fire",
+                "access": "Minor"
+            },
+            {
+                "name": "Sun",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "M" ],
+        "duration": "1 hour",
+        "concentration": false,
+        "ritual": false,
+        "description": "Object emits bright light in a 20-foot radius.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Often appears as flickering elemental flame or glowing crystal.",
+            "materialComponentAthas": "A firefly or phosphorescent lichen",
+            "defilerCost": 0,
+            "planeSource": "Plane of Fire / Sun"
+        },
+        "flavorLore": "A rare comfort in the endless night of Athas.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest holding a glowing bone lantern in total darkness, grotesque detail, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#light", "#utility" ],
+        "relatedEntries": [ "Fire Cleric", "Sun Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 180" ]
+    },
+    {
+        "id": "spell_sanctuary_ds",
+        "name": "Sanctuary",
+        "srdIndex": "sanctuary",
+        "level": 1,
+        "school": "abjuration",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 bonus action",
+        "range": "30 feet",
+        "components": [ "V", "S", "M" ],
+        "duration": "1 minute",
+        "concentration": false,
+        "ritual": false,
+        "description": "Creatures must succeed on Wisdom save to target the warded creature.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Standard.",
+            "materialComponentAthas": "A small silver mirror or elemental token",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "The planes shield the faithful from harm.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest surrounded by a shimmering barrier as enemies hesitate, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#defense", "#cosmos" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 181" ]
+    },
+    {
+        "id": "spell_purify_food_drink_ds",
+        "name": "Purify Food and Drink",
+        "srdIndex": "purify-food-and-drink",
+        "level": 1,
+        "school": "transmutation",
+        "spheres": [
+            {
+                "name": "Water",
+                "access": "Major"
+            },
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "10 feet",
+        "components": [ "V", "S" ],
+        "duration": "Instantaneous",
+        "concentration": false,
+        "ritual": true,
+        "description": "Purifies 1 cubic foot of food or water, removing poison and disease.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Removes silt and desert contaminants.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Plane of Water"
+        },
+        "flavorLore": "One of the most vital spells for survival on Athas.",
+        "artworkPrompt": "In the style of Gerald Brom, a Water Cleric purifying foul silt water for thirsty tribesmen, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#water", "#survival" ],
+        "relatedEntries": [ "Water Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 182" ]
+    },
+    {
+        "id": "spell_remove_fear_ds",
+        "name": "Remove Fear",
+        "srdIndex": "",
+        "level": 1,
+        "school": "abjuration",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "S" ],
+        "duration": "10 minutes",
+        "concentration": false,
+        "ritual": false,
+        "description": "Suppresses fear effects on one creature.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Standard.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "Courage is rare beneath the crimson sun.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest touching a terrified slave, fear leaving their eyes, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#utility", "#cosmos" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 183" ]
+    },
+    {
+        "id": "spell_detect_poison_ds",
+        "name": "Detect Poison and Disease",
+        "srdIndex": "detect-poison-and-disease",
+        "level": 1,
+        "school": "divination",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            },
+            {
+                "name": "Water",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "30 feet",
+        "components": [ "V", "S" ],
+        "duration": "Concentration, up to 10 minutes",
+        "concentration": true,
+        "ritual": true,
+        "description": "Sense poison and disease.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Critical in the poisoned lands of Athas.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "The desert hides many silent killers.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest examining tainted food with glowing eyes, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#divination", "#survival" ],
+        "relatedEntries": [ "Water Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 184" ]
+    },
+    {
+        "id": "spell_protection_from_evil_ds",
+        "name": "Protection from Evil",
+        "srdIndex": "protection-from-evil-and-good",
+        "level": 1,
+        "school": "abjuration",
+        "spheres": [
+            {
+                "name": "Cosmos",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "Touch",
+        "components": [ "V", "S", "M" ],
+        "duration": "10 minutes",
+        "concentration": false,
+        "ritual": false,
+        "description": "Protects against aberrations, celestials, elementals, fey, fiends, and undead.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Adapted to Athasian threats (undead, psionic horrors).",
+            "materialComponentAthas": "Elemental powder",
+            "defilerCost": 0,
+            "planeSource": "Cosmos"
+        },
+        "flavorLore": "The planes ward against the unnatural.",
+        "artworkPrompt": "In the style of Gerald Brom, a priest surrounded by protective runes as undead approach, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#defense", "#cosmos" ],
+        "relatedEntries": [ "All Priests" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 185" ]
+    },
+    {
+        "id": "spell_faerie_fire_ds",
+        "name": "Faerie Fire",
+        "srdIndex": "faerie-fire",
+        "level": 1,
+        "school": "evocation",
+        "spheres": [
+            {
+                "name": "Fire",
+                "access": "Minor"
+            },
+            {
+                "name": "Sun",
+                "access": "Minor"
+            }
+        ],
+        "castingTime": "1 action",
+        "range": "60 feet",
+        "components": [ "V" ],
+        "duration": "Concentration, up to 1 minute",
+        "concentration": true,
+        "ritual": false,
+        "description": "Outlines creatures in magical light, granting advantage on attacks against them.",
+        "higherLevel": "",
+        "athasianVariant": {
+            "modifiedEffect": "Often appears as flickering crimson or solar fire.",
+            "materialComponentAthas": "None",
+            "defilerCost": 0,
+            "planeSource": "Plane of Fire / Sun"
+        },
+        "flavorLore": "The sun itself marks the unworthy.",
+        "artworkPrompt": "In the style of Gerald Brom, a Fire Cleric outlining enemies in glowing flames at night, , Gerald Brom style, Dark Sun campaign setting, grimdark, surreal, detailed anatomy, cinematic lighting, desaturated colors",
+        "tags": [ "#fire", "#combat" ],
+        "relatedEntries": [ "Fire Cleric", "Sun Cleric" ],
+        "sourceBooks": [ "Dark Sun Revised Boxed Set p. 186" ]
+    }
+]
