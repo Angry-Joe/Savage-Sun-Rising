@@ -1,54 +1,58 @@
-﻿@* @page "/character/create/race-old" *@
-@using DarkSun.Application.Interfaces
+﻿@* Add this using statement at the top *@
 @using DarkSun.Domain.Entities
 @using MudBlazor
-@inject ISpellRepository SpellRepo // placeholder for future
 
 <MudContainer MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Choose Your Race</MudText>
-    <MudText Typo="Typo.subtitle1" Class="mb-8">The harsh wastes of Athas forge only the strongest.</MudText>
+    @* ... rest of your HTML is correct ... *@
+    <MudText Typo="Typo.h4" GutterBottom="true">Choose Your Race</MudText>
+
+    @if (SelectedRace != null)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">
+            You have selected: <strong>@SelectedRace.Name</strong>
+        </MudAlert>
+    }
+    else
+    {
+        <MudText Typo="Typo.subtitle1" Class="mb-8">The harsh wastes of Athas forge only the strongest.</MudText>
+    }
 
     <MudGrid Spacing="4">
-        @foreach (var race in _availableRaces) {
+        @foreach (var race in _availableRaces)
+        {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="4" Class="h-100" Style="cursor:pointer;" @onclick="async () => await SelectRace(race)">
+                <MudCard Elevation="@(SelectedRace == race ? 8 : 4)"
+                         Class="@(SelectedRace == race ? "mud-theme-primary" : "")"
+                         Style="cursor:pointer;"
+                         @onclick="() => SelectRace(race)">
                     <MudCardMedia Image="@race.ImageUrl" Height="180" />
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@race.Name</MudText>
-                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@race.Subtype</MudText>
                         </CardHeaderContent>
                     </MudCardHeader>
                     <MudCardContent>
                         <p>@race.ShortDescription</p>
-                        <MudChipSet T="string" Class="mt-3">
-                            @foreach (var trait in race.KeyTraits) { <MudChip>@trait</MudChip> }
-                        </MudChipSet>
                     </MudCardContent>
                 </MudCard>
             </MudItem>
         }
     </MudGrid>
 </MudContainer>
-
 @code {
     [Parameter]
-    public EventCallback OnNext { get; set; }
+    public AthasianRace? SelectedRace { get; set; }
 
-    private async Task SelectRace(AthasianRace race) {
+    [Parameter]
+    public EventCallback<AthasianRace> SelectedRaceChanged { get; set; }
+
+    private async Task SelectRace(AthasianRace race)
+    {
+        SelectedRace = race;
+        await SelectedRaceChanged.InvokeAsync(SelectedRace);
         Console.WriteLine($"✅ Selected race: {race.Name}");
-        // TODO: Save to shared character sheet later
-        await OnNext.InvokeAsync();   // Advance to next step
-        StateHasChanged(); // Force UI update
     }
-    // public class AthasianRace
-    // {
-    //     public string Name { get; set; } = string.Empty;
-    //     public string Subtype { get; set; } = string.Empty;
-    //     public string ShortDescription { get; set; } = string.Empty;
-    //     public string[] KeyTraits { get; set; } = Array.Empty<string>();
-    //     public string ImageUrl { get; set; } = string.Empty;
-    // }
+
     private List<AthasianRace> _availableRaces = new() {
         new AthasianRace {
             Name = "Human",

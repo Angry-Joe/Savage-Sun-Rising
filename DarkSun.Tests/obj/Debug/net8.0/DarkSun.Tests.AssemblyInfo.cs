@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DarkSun.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4342d9d9cc08ed4a4e42176bd4a9c37026cec371")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b59e150a88fc9dadecb1be436535b46d6cb5c8cf")]
 [assembly: System.Reflection.AssemblyProductAttribute("DarkSun.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DarkSun.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

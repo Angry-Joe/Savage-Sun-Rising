@@ -65,6 +65,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/CharacterCreation.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcQ2hhcmFjdGVyQ3JlYXRpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/CharacterWizard.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcQ2hhcmFjdGVyV2l6YXJkLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -79,6 +83,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/Steps/RaceSelection.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcU3RlcHNcUmFjZVNlbGVjdGlvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/Steps/RaceSelectionStep.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcU3RlcHNcUmFjZVNlbGVjdGlvblN0ZXAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/_Imports.razor]

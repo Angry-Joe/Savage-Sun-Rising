@@ -1,0 +1,64 @@
+﻿@page "/character/create"
+@using DarkSun.Domain.Entities
+@using DarkSun.Web.Components.Wizard.Steps
+@using MudBlazor
+@inherits OwningComponentBase
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
+    <MudStepper @bind-ActiveStepIndex="_currentStep">
+        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person">
+            @* The component is added here. We bind its SelectedRace parameter
+               to a variable in our parent component to retain the state. *@
+            <RaceSelectionStep @bind-SelectedRace="_character.Race" />
+        </MudStep>
+        <MudStep Title="Class" Icon="@Icons.Material.Filled.School">
+            <ClassSelection @bind-SelectedClass="_character.Class" />
+        </MudStep>
+        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter">
+            @* Placeholder for your next step *@
+            <MudText>Ability Score Generator will go here.</MudText>
+        </MudStep>
+    </MudStepper>
+
+@*     <div class="d-flex justify-content-end mt-4">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="NextStep"
+                   Disabled="@(_character.Race == null)">
+            Next
+        </MudButton>
+    </div> *@
+    <div class="d-flex justify-space-between mt-4">
+        <MudButton Variant="Variant.Text" OnClick="PreviousStep" Disabled="@(_currentStep == 0)">Back</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextStep" Disabled="@IsNextDisabled()">Next</MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    private int _currentStep = 0;
+
+    // A single object to hold all the character's data
+    private CharacterCreationModel _character = new();
+
+    private void NextStep() { _currentStep++; }
+    private void PreviousStep() { _currentStep--; }
+    // This function disables the "Next" button until a selection is made for the current step.
+    private bool IsNextDisabled() {
+        return _currentStep switch {
+            0 => _character.Race == null,
+            1 => _character.Class == null,
+            // Add cases for other steps here
+            _ => false
+        };
+    }
+
+    // A model to store the data as the user progresses
+    private class CharacterCreationModel
+    {
+        public AthasianRace? Race { get; set; }
+        public AthasianClass? Class { get; set; }
+        // Add other properties like Abilities, Background, etc. here
+    }
+}

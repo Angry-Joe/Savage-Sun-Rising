@@ -1,55 +1,59 @@
-﻿@page "/character/create"
+﻿@page "/character/create-old"
 @using DarkSun.Domain.Entities
 @using DarkSun.Web.Components.Wizard.Steps
 @using MudBlazor
 @inherits OwningComponentBase
+@inject NavigationManager Navigation
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
 
-    <MudStepper ActiveIndex="@_currentStep" CompletedColor="Color.Success" Color="Color.Primary">
+    @* The key is to two-way bind the ActiveStepIndex to our _currentStep variable *@
+    <MudStepper @bind-ActiveStepIndex="_currentStep">
         <MudStep Title="Race" Icon="@Icons.Material.Filled.Person" />
         <MudStep Title="Class" Icon="@Icons.Material.Filled.School" />
         <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter" />
-        <MudStep Title="Background" Icon="@Icons.Material.Filled.Work" />
-        <MudStep Title="Equipment" Icon="@Icons.Material.Filled.Inventory" />
-        <MudStep Title="Review & Save" Icon="@Icons.Material.Filled.Save" />
+        @* Add other steps here *@
     </MudStepper>
 
     <MudPaper Class="pa-6 mt-6" Elevation="3">
+        @* Your switch statement is perfect for this pattern *@
         @switch (_currentStep)
         {
-            case 0: <RaceSelection OnNext="NextStep" /> break;
-            case 1: <ClassSelection OnNext="NextStep" /> break;
-            case 2: <AbilityScoreGenerator OnNext="NextStep" /> break;
-            @* case 3: <BackgroundSelection OnNext="NextStep" /> break;
-            case 4: <EquipmentSelector OnNext="NextStep" /> break;
-            case 5: <ReviewStep OnSave="SaveCharacter" /> break; *@
-            default: <MudText Typo="Typo.h5">Step @_currentStep coming soon...</MudText>break;
+            case 0:
+                <RaceSelection OnNext="NextStep" />
+                break;
+            case 1:
+                <ClassSelection OnNext="NextStep" />
+                break;
+            case 2:
+                @* <AbilityScoreGenerator OnNext="NextStep" /> *@
+                <MudText>Ability Score Generator will go here.</MudText>
+                break;
+            default:
+                <MudText Typo="Typo.h5">Finished!</MudText>
+                break;
         }
     </MudPaper>
 
-    <MudGrid Class="mt-4">
-        <MudItem xs="6">
-            <MudButton Variant="Variant.Outlined" OnClick="PreviousStep" Disabled="@(_currentStep == 0)">Previous</MudButton>
-        </MudItem>
-        <MudItem xs="6" Class="text-right">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextStep" Disabled="@(_currentStep == 5)">Next</MudButton>
-        </MudItem>
-    </MudGrid>
+    <div class="d-flex justify-space-between mt-4">
+        <MudButton Variant="Variant.Text" OnClick="PreviousStep" Disabled="@(_currentStep == 0)">Back</MudButton>
+
+        @* The "Next" button is optional here, as selecting an item in the child component
+           already calls NextStep(). You might want it for steps that don't have an OnNext action. *@
+        @if (_currentStep < 2) @* Example condition to hide the button on the last step *@
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="NextStep">Next</MudButton>
+        }
+    </div>
 </MudContainer>
 
 @code {
+    // This is the correct way to manage the state
     private int _currentStep = 0;
-    private CharacterSheet _character = new();
 
-    private void NextStep() => _currentStep = Math.Min(_currentStep + 1, 5);
-    private void PreviousStep() => _currentStep = Math.Max(_currentStep - 1, 0);
-
-    private async Task SaveCharacter()
-    {
-        // TODO: Save to DynamoDB via service
-        Console.WriteLine($"Character saved: {_character.Name}");
-        // Navigation to character sheet
-    }
+    // These methods are now correct and will work as intended
+    // because they change the value of _currentStep, which is bound to the stepper
+    private void NextStep() { _currentStep++; }
+    private void PreviousStep() { _currentStep--; }
 }
