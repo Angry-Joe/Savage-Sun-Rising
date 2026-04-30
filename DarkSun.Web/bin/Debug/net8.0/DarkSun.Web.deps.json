@@ -9,6 +9,7 @@
       "DarkSun.Web/1.0.0": {
         "dependencies": {
           "DarkSun.Application": "1.0.0",
+          "DarkSun.Domain": "1.0.0",
           "DarkSun.Infrastructure": "1.0.0",
           "MudBlazor": "9.4.0",
           "MudBlazor.Extensions": "9.3.0",

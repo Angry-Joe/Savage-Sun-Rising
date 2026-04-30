@@ -1,0 +1,92 @@
+﻿@* BackgroundSelectionStep.razor *@
+@using DarkSun.Domain.Entities
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Choose Your Background</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-8">Every survivor on Athas has a past that forged them.</MudText>
+
+    @if (SelectedBackground != null)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Outlined" Class="mb-6">
+            Selected: <strong>@SelectedBackground.Name</strong>
+        </MudAlert>
+    }
+
+    <MudGrid Spacing="4">
+        @foreach (var bg in AvailableBackgrounds)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard @onclick="() => SelectBackground(bg)"
+                         Elevation="@(SelectedBackground?.Id == bg.Id ? 12 : 3)"
+                         Class="@(SelectedBackground?.Id == bg.Id ? "mud-border-primary border-2" : "")"
+                         Style="cursor: pointer; height: 100%; transition: all 0.2s;">
+
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@bg.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@bg.Source</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    @* This block wsa from Grok, and he's been real flaky*@
+                    @* <MudCardContent>
+                        <p>@bg.ShortDescription</p>
+
+                        <MudChipSet T="string" Class="mt-4">
+                            @foreach (var skill in bg.Skills)
+                            {
+                                <MudChip>@skill</MudChip>
+                            }
+                        </MudChipSet>
+                    </MudCardContent> *@
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2" Class="mb-3">@bg.ShortDescription</MudText>
+
+                        @if (bg.Skills.Length > 0)
+                        {
+                            <MudText Typo="Typo.caption"><strong>Skills:</strong> @string.Join(", ", bg.Skills)</MudText>
+                        }
+                        @if (bg.Tools.Length > 0)
+                        {
+                            <MudText Typo="Typo.caption"><strong>Tools:</strong> @string.Join(", ", bg.Tools)</MudText>
+                        }
+                        @if (!string.IsNullOrEmpty(bg.Feature))
+                        {
+                            <MudText Typo="Typo.caption" Class="mt-1"><strong>Feature:</strong> @bg.Feature</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter] public AthasianBackground? SelectedBackground { get; set; }
+    [Parameter] public EventCallback<AthasianBackground> SelectedBackgroundChanged { get; set; }
+
+    private List<AthasianBackground> AvailableBackgrounds { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        AvailableBackgrounds = AthasianBackgrounds.All.ToList();
+    }
+
+    private async Task SelectBackground(AthasianBackground bg)
+    {
+        SelectedBackground = bg;
+        await SelectedBackgroundChanged.InvokeAsync(bg);
+        StateHasChanged();
+    }
+    @* This was from Copilot. May have to switch to this if it gets weird *@
+    // private readonly List<AthasianBackground> _backgrounds = new()
+    // {
+    //     new() { Name = "Gladiator",      Source = "Dark Sun",  ShortDescription = "You survived the brutal arenas of the city-states.",               Skills = new[] { "Athletics", "Performance" },      Tools  = new[] { "Disguise Kit" },             Feature = "By Popular Demand" },
+    //     new() { Name = "Slave",          Source = "Dark Sun",  ShortDescription = "Born into bondage, you clawed your way to freedom — or haven't yet.", Skills = new[] { "Athletics", "Stealth" },          Tools  = new[] { "One type of artisan's tools" }, Feature = "Merciful Escape" },
+    //     new() { Name = "Desert Nomad",   Source = "Dark Sun",  ShortDescription = "You roam the wastes between city-states, surviving where others perish.", Skills = new[] { "Survival", "Athletics" },      Tools  = new[] { "Vehicles (land)" },          Feature = "Wasteland Wanderer" },
+    //     new() { Name = "Noble",          Source = "Dark Sun",  ShortDescription = "You are of the merchant houses or templars — wealth breeds enemies.", Skills = new[] { "History", "Persuasion" },         Tools  = new[] { "One type of gaming set" },    Feature = "Position of Privilege" },
+    //     new() { Name = "Mul Slave Guard",Source = "Dark Sun",  ShortDescription = "Bred for strength, you served as enforcer for a powerful master.",    Skills = new[] { "Intimidation", "Athletics" },     Tools  = new[] { "One type of artisan's tools" }, Feature = "Fearsome Presence" },
+    //     new() { Name = "Hermit",         Source = "Dark Sun",  ShortDescription = "You retreated to the wastes to seek truth, or hide from it.",         Skills = new[] { "Medicine", "Religion" },          Tools  = new[] { "Herbalism Kit" },            Feature = "Discovery" }
+    // };
+
+}

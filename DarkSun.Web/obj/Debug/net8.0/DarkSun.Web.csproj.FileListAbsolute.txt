@@ -96,8 +96,8 @@ C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Applicat
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Domain.dll
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Infrastructure.dll
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Application.pdb
-C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Infrastructure.pdb
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Domain.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\bin\Debug\net8.0\DarkSun.Infrastructure.pdb
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.csproj.AssemblyReference.cache
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\rpswa.dswa.cache.json
 C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Web\obj\Debug\net8.0\DarkSun.Web.GeneratedMSBuildEditorConfig.editorconfig
