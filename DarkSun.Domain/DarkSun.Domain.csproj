@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--DarkSun.Domain.csproj-->
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,6 +10,7 @@
   <ItemGroup>
     <Folder Include="Enums\" />
     <Folder Include="ValueObjects\" />
+    <Folder Include="Entities\" />
   </ItemGroup>
 
   <ItemGroup>
