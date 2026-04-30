@@ -1,0 +1,59 @@
+﻿@page "/character/create"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using DarkSun.Domain.Entities
+@using DarkSun.Web.Components.Wizard.Steps
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
+
+    <MudStepper @bind-ActiveStepIndex="_currentStep"
+                Linear="true"
+                Color="Color.Primary"
+                Variant="Variant.Filled">
+
+        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
+                 HasError="false"
+                 Completed="@(_character.Race != null)">
+            <RaceSelectionStep SelectedRace="_character.Race"
+                               SelectedRaceChanged="OnRaceSelected" />
+        </MudStep>
+
+        <MudStep Title="Class" Icon="@Icons.Material.Filled.School"
+                 Disabled="@(_character.Race == null)"
+                 Completed="@(_character.Class != null)">
+            <ClassSelectionStep SelectedClass="_character.Class"
+                                SelectedClassChanged="OnClassSelected" />
+        </MudStep>
+
+        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter"
+                 Disabled="@(_character.Class == null)">
+            <AbilityScoreStep @bind-Scores="_character.Scores" />
+        </MudStep>
+
+    </MudStepper>
+</MudContainer>
+
+@code {
+    private int _currentStep = 0;
+    private CharacterCreationModel _character = new();
+
+    private void OnRaceSelected(AthasianRace race)
+    {
+        _character.Race = race;
+        StateHasChanged();
+    }
+
+    private void OnClassSelected(AthasianClass cls)
+    {
+        _character.Class = cls;
+        StateHasChanged();
+    }
+
+    private class CharacterCreationModel
+    {
+        public AthasianRace?  Race   { get; set; }
+        public AthasianClass? Class  { get; set; }
+        public List<AbilityScoreStep.AbilityScore> Scores { get; set; } = new();
+    }
+}

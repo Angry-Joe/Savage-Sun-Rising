@@ -1,62 +1,130 @@
-﻿@page "/character/create/ability-scores"
-@using MudBlazor
+﻿@using MudBlazor
 
 <MudContainer MaxWidth="MaxWidth.Large">
-    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Ability Scores</MudText>
-    <MudText Typo="Typo.subtitle1" Class="mb-8">Athas rewards the strong and the clever. Assign your attributes.</MudText>
+    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-4">Ability Scores</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-2">
+        Athas rewards the strong and the clever. Distribute your points wisely.
+    </MudText>
 
-    <MudGrid Spacing="6">
+    <MudAlert Severity="@(PointsRemaining == 0 ? Severity.Success : Severity.Info)"
+              Variant="Variant.Outlined" Class="mb-6">
+        @if (PointsRemaining > 0)
+        {
+            <span>Points remaining: <strong>@PointsRemaining</strong></span>
+        }
+        else
+        {
+            <span>All points spent — you are ready for Athas.</span>
+        }
+    </MudAlert>
+
+    <MudGrid Spacing="4">
         @foreach (var ability in _abilities)
         {
             <MudItem xs="12" sm="6" md="4">
                 <MudPaper Class="pa-4 text-center" Elevation="2">
-                    <MudText Typo="Typo.h5">@ability.Name</MudText>
+                    <MudText Typo="Typo.h6" Class="mb-2">@ability.Name</MudText>
                     <MudText Typo="Typo.h2" Color="Color.Primary">@ability.Value</MudText>
+                    <MudText Typo="Typo.caption">
+                        Modifier: <strong>@GetModifier(ability.Value)</strong>
+                    </MudText>
 
-                    <MudSlider @bind-Value="ability.Value"
-                               Min="8"
-                               Max="18"
-                               Step="1"
-                               Class="mt-4" />
+                    <div class="d-flex justify-center align-center gap-2 mt-3">
+                        <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                                       Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       Size="Size.Small"
+                                       Disabled="@(ability.Value <= MinScore)"
+                                       OnClick="() => Decrement(ability)" />
+                        <MudText Typo="Typo.h5" Style="min-width:2rem;">@ability.Value</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                                       Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       Size="Size.Small"
+                                       Disabled="@(ability.Value >= MaxScore || PointsRemaining <= 0)"
+                                       OnClick="() => Increment(ability)" />
+                    </div>
 
-                    <MudText Typo="Typo.caption" Class="mt-2">
-                        Modifier: @((ability.Value - 10) / 2)
+                    <MudText Typo="Typo.caption" Class="mt-1" Color="Color.Secondary">
+                        Cost: @GetCost(ability.Value) pts
                     </MudText>
                 </MudPaper>
             </MudItem>
         }
     </MudGrid>
-
-    <div class="mt-8 d-flex justify-end">
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="OnNext">
-            Continue to Background
-        </MudButton>
-    </div>
 </MudContainer>
 
 @code {
+    [Parameter] public List<AbilityScore>? Scores { get; set; }
+    [Parameter] public EventCallback<List<AbilityScore>> ScoresChanged { get; set; }
+
+    // private const int TotalPoints = 27;
+    private const int TotalPoints = 27;
+    private const int MinScore    = 8;
+    private const int MaxScore    = 18; // Normally 15
+
     private List<AbilityScore> _abilities = new()
     {
-        new AbilityScore { Name = "Strength", Value = 10 },
-        new AbilityScore { Name = "Dexterity", Value = 10 },
-        new AbilityScore { Name = "Constitution", Value = 10 },
-        new AbilityScore { Name = "Intelligence", Value = 10 },
-        new AbilityScore { Name = "Wisdom", Value = 10 },
-        new AbilityScore { Name = "Charisma", Value = 10 }
+        new() { Name = "Strength",     Value = 8 },
+        new() { Name = "Dexterity",    Value = 8 },
+        new() { Name = "Constitution", Value = 8 },
+        new() { Name = "Intelligence", Value = 8 },
+        new() { Name = "Wisdom",       Value = 8 },
+        new() { Name = "Charisma",     Value = 8 }
     };
 
-    private void OnNext()
+    private int PointsSpent    => _abilities.Sum(a => GetCost(a.Value));
+    private int PointsRemaining => TotalPoints - PointsSpent;
+
+    // Standard D&D point-buy cost table
+    private static int GetCost(int score) => score switch
     {
-        Console.WriteLine("Ability scores selected:");
-        foreach (var a in _abilities)
+        8  => 0,
+        9  => 1,
+        10 => 2,
+        11 => 3,
+        12 => 4,
+        13 => 5,
+        14 => 7,
+        15 => 9,
+        16 => 11,
+        17 => 13,
+        18 => 15,
+        _  => 0
+    };
+
+    private string GetModifier(int value)
+    {
+        int mod = (value - 10) / 2;
+        return mod >= 0 ? $"+{mod}" : $"{mod}";
+    }
+
+    private async Task Increment(AbilityScore ability)
+    {
+        if (ability.Value < MaxScore && PointsRemaining > 0)
         {
-            Console.WriteLine($"  {a.Name}: {a.Value} (Modifier: {(a.Value - 10) / 2})");
+            ability.Value++;
+            await ScoresChanged.InvokeAsync(_abilities);
         }
+    }
+
+    private async Task Decrement(AbilityScore ability)
+    {
+        if (ability.Value > MinScore)
+        {
+            ability.Value--;
+            await ScoresChanged.InvokeAsync(_abilities);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Scores is { Count: > 0 }) _abilities = Scores;
     }
 
     public class AbilityScore
     {
-        public string Name { get; set; } = string.Empty;
-        public int Value { get; set; }
+        public string Name  { get; set; } = string.Empty;
+        public int    Value { get; set; }
     }
 }
