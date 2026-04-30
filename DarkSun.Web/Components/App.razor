@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="DarkSun.Web.styles.css" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <HeadOutlet />
 </head>
 <body>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -19,5 +20,7 @@
             </LayoutView>
         </NotFound>
     </Router>
+
+    <script src="_framework/blazor.web.js"></script>
 </body>
 </html>

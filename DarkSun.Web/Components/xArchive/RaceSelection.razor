@@ -49,7 +49,21 @@
     // [Parameter]
     // public EventCallback OnNext { get; set; }
 
+    public static class AthasianRaces
+    {
+        public static readonly IReadOnlyList<AthasianRace> All = new List<AthasianRace>
+            {
+                new() { Name = "Human", Subtype = "Versatile Survivor", ShortDescription = "...", KeyTraits = new[] { "+1 any", "Bonus Skill", "Bonus Feat" }, ImageUrl = "https://via.placeholder.com/400x200/8B4513/fff?text=Human" },
+                new() { Name = "Elf", Subtype = "Desert Runner", ShortDescription = "...", KeyTraits = new[] { "+2 Dex", "Fleet of Foot" }, ImageUrl = "https://via.placeholder.com/400x200/556B2F/fff?text=Elf" },
+                new() { Name = "Mul", Subtype = "Born Warrior", ShortDescription = "...", KeyTraits = new[] { "+2 Str", "+2 Con" }, ImageUrl = "https://via.placeholder.com/400x200/8B0000/fff?text=Mul" },
+                new() { Name = "Half-Giant", Subtype = "Colossal Brute", ShortDescription = "...", KeyTraits = new[] { "+4 Str" }, ImageUrl = "https://via.placeholder.com/400x200/4B0082/fff?text=Half-Giant" },
+                new() { Name = "Thri-Kreen", Subtype = "Mantis Warrior", ShortDescription = "...", KeyTraits = new[] { "Four Arms", "Natural Armor" }, ImageUrl = "https://via.placeholder.com/400x200/006400/fff?text=Thri-Kreen" }
+            };
+    }
+
     private List<AthasianRace> AvailableRaces { get; set; } = new(); // From Grok
+
+    protected override void OnInitialized() => AvailableRaces = AthasianRaces.All.ToList();   // Use your static seed class
 
     private async Task SelectRace(AthasianRace race)
     {
@@ -67,19 +81,8 @@
     //     new AthasianRace { Name = "Half-Giant", Subtype = "Colossal Brute",      ShortDescription = "Enormous descendants of giants — incredibly strong but impulsive.",    KeyTraits = new[] { "+4 Strength", "+2 Constitution", "Powerful Build" },       ImageUrl = "https://via.placeholder.com/300x180/4B0082/FFFFFF?text=Half-Giant" },
     //     new AthasianRace { Name = "Thri-Kreen", Subtype = "Mantis Warrior",      ShortDescription = "Insectoid hunters with four arms and natural chitin armor.",           KeyTraits = new[] { "+2 Dexterity", "Natural Armor", "Four Arms" },             ImageUrl = "https://via.placeholder.com/300x180/006400/FFFFFF?text=Thri-Kreen" }
     // };
-    public static class AthasianRaces
-    {
-        public static readonly IReadOnlyList<AthasianRace> All = new List<AthasianRace>
-    {
-        new() { Name = "Human", Subtype = "Versatile Survivor", ShortDescription = "...", KeyTraits = new[] { "+1 any", "Bonus Skill", "Bonus Feat" }, ImageUrl = "https://via.placeholder.com/400x200/8B4513/fff?text=Human" },
-        new() { Name = "Elf", Subtype = "Desert Runner", ShortDescription = "...", KeyTraits = new[] { "+2 Dex", "Fleet of Foot" }, ImageUrl = "https://via.placeholder.com/400x200/556B2F/fff?text=Elf" },
-        new() { Name = "Mul", Subtype = "Born Warrior", ShortDescription = "...", KeyTraits = new[] { "+2 Str", "+2 Con" }, ImageUrl = "https://via.placeholder.com/400x200/8B0000/fff?text=Mul" },
-        new() { Name = "Half-Giant", Subtype = "Colossal Brute", ShortDescription = "...", KeyTraits = new[] { "+4 Str" }, ImageUrl = "https://via.placeholder.com/400x200/4B0082/fff?text=Half-Giant" },
-        new() { Name = "Thri-Kreen", Subtype = "Mantis Warrior", ShortDescription = "...", KeyTraits = new[] { "Four Arms", "Natural Armor" }, ImageUrl = "https://via.placeholder.com/400x200/006400/fff?text=Thri-Kreen" }
-    };
-    }
 
-    protected override void OnInitialized() => AvailableRaces = AthasianRaces.All.ToList();   // Use your static seed class
+    // protected override void OnInitialized() => AvailableRaces = AthasianRaces.All.ToList();   // Use your static seed class
     // protected override void OnInitialized()
     // {
     //     AvailableRaces = AthasianRaces.All.ToList();   // Use your static seed class
