@@ -1,4 +1,4 @@
-﻿@page "/character/create/race"
+﻿@* @page "/character/create/race" *@
 @using DarkSun.Application.Interfaces
 @using DarkSun.Domain.Entities
 @using MudBlazor
@@ -11,7 +11,7 @@
     <MudGrid Spacing="4">
         @foreach (var race in _availableRaces) {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="4" Class="h-100" Style="cursor:pointer;" @onclick="() => SelectRace(race)">
+                <MudCard Elevation="4" Class="h-100" Style="cursor:pointer;" @onclick="async () => await SelectRace(race)">
                     <MudCardMedia Image="@race.ImageUrl" Height="180" />
                     <MudCardHeader>
                         <CardHeaderContent>
@@ -39,6 +39,7 @@
         Console.WriteLine($"✅ Selected race: {race.Name}");
         // TODO: Save to shared character sheet later
         await OnNext.InvokeAsync();   // Advance to next step
+        StateHasChanged(); // Force UI update
     }
     public class AthasianRace
     {
