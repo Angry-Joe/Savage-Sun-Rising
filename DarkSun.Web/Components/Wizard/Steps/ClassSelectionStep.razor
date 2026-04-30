@@ -1,17 +1,25 @@
-﻿@* @page "/character/create/class" *@
-@using DarkSun.Application.Interfaces
-@using DarkSun.Domain.Entities
+﻿@using DarkSun.Domain.Entities
 @using MudBlazor
-@inject ISpellRepository SpellRepo // placeholder
 
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Choose Your Path</MudText>
     <MudText Typo="Typo.subtitle1" Class="mb-8">Athas demands strength, cunning, and will. What power will you wield?</MudText>
 
+    @if (SelectedClass != null)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">
+            You have selected: <strong>@SelectedClass.Name</strong>
+        </MudAlert>
+    }
+
     <MudGrid Spacing="4">
-        @foreach (var cls in _availableClasses) {
+        @foreach (var cls in _availableClasses)
+        {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="4" Class="h-100" Style="cursor:pointer;" @onclick="() => SelectClass(cls)">
+                <MudCard Elevation="@(SelectedClass?.Name == cls.Name ? 8 : 4)"
+                         Class="@(SelectedClass?.Name == cls.Name ? "mud-theme-primary" : "")"
+                         Style="cursor:pointer;height:100%;"
+                         @onclick="() => SelectClass(cls)">
                     <MudCardMedia Image="@cls.ImageUrl" Height="160" />
                     <MudCardHeader>
                         <CardHeaderContent>
@@ -21,10 +29,21 @@
                     </MudCardHeader>
                     <MudCardContent>
                         <p>@cls.ShortDescription</p>
-                        <MudChipSet T="string">
-                            @foreach (var trait in cls.KeyTraits) { <MudChip>@trait</MudChip> }
+                        <MudChipSet T="string" Class="mt-3">
+                            @foreach (var trait in cls.KeyTraits)
+                            {
+                                <MudChip>@trait</MudChip>
+                            }
                         </MudChipSet>
                     </MudCardContent>
+@*                     <MudCardActions>
+                        <MudButton FullWidth="true"
+                                   Variant="@(SelectedClass?.Name == cls.Name ? Variant.Filled : Variant.Outlined)"
+                                   Color="Color.Primary"
+                                   OnClick="() => SelectClass(cls)">
+                            @(SelectedClass?.Name == cls.Name ? "Selected ✓" : "Select")
+                        </MudButton>
+                    </MudCardActions> *@
                 </MudCard>
             </MudItem>
         }
@@ -32,65 +51,22 @@
 </MudContainer>
 
 @code {
-    private List<AthasianClass> _availableClasses = new()
+    [Parameter] public AthasianClass? SelectedClass { get; set; }
+    [Parameter] public EventCallback<AthasianClass> SelectedClassChanged { get; set; }
+
+    private async Task SelectClass(AthasianClass cls)
     {
-        new AthasianClass
-        {
-            Name = "Psionicist",
-            Role = "Mind Weaver",
-            ShortDescription = "Master of the Way — bends reality with thought alone. The only power that cannot be defiled.",
-            KeyTraits = new[] { "Psionic Power", "Disciplines", "High PSP Pool" },
-            ImageUrl = "https://via.placeholder.com/300x160/4B0082/FFFFFF?text=Psionicist"
-        },
-        new AthasianClass
-        {
-            Name = "Elemental Cleric",
-            Role = "Priest of the Planes",
-            ShortDescription = "Channels raw power from Earth, Air, Fire, or Water to survive and destroy.",
-            KeyTraits = new[] { "Elemental Magic", "Gating", "Ignore Element" },
-            ImageUrl = "https://via.placeholder.com/300x160/8B4513/FFFFFF?text=Cleric"
-        },
-        new AthasianClass
-        {
-            Name = "Gladiator",
-            Role = "Arena Warrior",
-            ShortDescription = "Hardened fighter trained in the brutal arenas of the city-states.",
-            KeyTraits = new[] { "Martial Mastery", "Brutal Strike", "Survivalist" },
-            ImageUrl = "https://via.placeholder.com/300x160/8B0000/FFFFFF?text=Gladiator"
-        },
-        new AthasianClass
-        {
-            Name = "Rogue",
-            Role = "Dune Trader / Thief",
-            ShortDescription = "Master of guile, stealth, and the black markets of Athas.",
-            KeyTraits = new[] { "Sneak Attack", "Expertise", "Evasion" },
-            ImageUrl = "https://via.placeholder.com/300x160/556B2F/FFFFFF?text=Rogue"
-        },
-        new AthasianClass
-        {
-            Name = "Templar",
-            Role = "Servant of the King",
-            ShortDescription = "Divine agent of a Sorcerer-King — wields granted power and political might.",
-            KeyTraits = new[] { "Granted Magic", "Authority", "Fear Aura" },
-            ImageUrl = "https://via.placeholder.com/300x160/4B0082/FFFFFF?text=Templar"
-        }
+        Console.WriteLine($"✅ Selected: {cls.Name}");
+        SelectedClass = cls;
+        await SelectedClassChanged.InvokeAsync(cls);
+    }
+
+    private readonly List<AthasianClass> _availableClasses = new()
+    {
+        new() { Name = "Psionicist",       Role = "Mind Weaver",          ShortDescription = "Master of the Way — bends reality with thought alone.",              KeyTraits = new[] { "Psionic Power", "Disciplines", "High PSP Pool" },    ImageUrl = "https://via.placeholder.com/300x160/4B0082/FFFFFF?text=Psionicist" },
+        new() { Name = "Elemental Cleric", Role = "Priest of the Planes",  ShortDescription = "Channels raw power from Earth, Air, Fire, or Water.",               KeyTraits = new[] { "Elemental Magic", "Gating", "Ignore Element" },      ImageUrl = "https://via.placeholder.com/300x160/8B4513/FFFFFF?text=Cleric" },
+        new() { Name = "Gladiator",        Role = "Arena Warrior",         ShortDescription = "Hardened fighter trained in the brutal arenas of the city-states.", KeyTraits = new[] { "Martial Mastery", "Brutal Strike", "Survivalist" },   ImageUrl = "https://via.placeholder.com/300x160/8B0000/FFFFFF?text=Gladiator" },
+        new() { Name = "Rogue",            Role = "Dune Trader / Thief",   ShortDescription = "Master of guile, stealth, and the black markets of Athas.",         KeyTraits = new[] { "Sneak Attack", "Expertise", "Evasion" },             ImageUrl = "https://via.placeholder.com/300x160/556B2F/FFFFFF?text=Rogue" },
+        new() { Name = "Templar",          Role = "Servant of the King",   ShortDescription = "Divine agent of a Sorcerer-King — wields granted power.",          KeyTraits = new[] { "Granted Magic", "Authority", "Fear Aura" },          ImageUrl = "https://via.placeholder.com/300x160/4B0082/FFFFFF?text=Templar" }
     };
-
-    [Parameter]
-    public EventCallback OnNext { get; set; }
-
-    private async Task SelectClass(AthasianClass selectedClass)
-    {
-        Console.WriteLine($"✅ Selected class: {selectedClass.Name}");
-        await OnNext.InvokeAsync();
-    }
-
-    public class AthasianClass
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-        public string ShortDescription { get; set; } = string.Empty;
-        public string[] KeyTraits { get; set; } = Array.Empty<string>();
-        public string ImageUrl { get; set; } = string.Empty;
-    }
 }

@@ -7,62 +7,53 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
 
-    @* Stepper is ONLY for the nav header - no content inside *@
-    <MudStepper @bind-ActiveStepIndex="_currentStep" Linear="false">
-        <MudStep Title="Race"          Icon="@Icons.Material.Filled.Person" />
-        <MudStep Title="Class"         Icon="@Icons.Material.Filled.School" />
-        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter" />
+    <MudStepper @bind-ActiveStepIndex="_currentStep"
+                Linear="true"
+                Color="Color.Primary"
+                Variant="Variant.Filled">
+
+        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
+                 HasError="false"
+                 Completed="@(_character.Race != null)">
+            <RaceSelectionStep SelectedRace="_character.Race"
+                               SelectedRaceChanged="OnRaceSelected" />
+        </MudStep>
+
+        <MudStep Title="Class" Icon="@Icons.Material.Filled.School"
+                 Disabled="@(_character.Race == null)"
+                 Completed="@(_character.Class != null)">
+            <ClassSelectionStep SelectedClass="_character.Class"
+                                SelectedClassChanged="OnClassSelected" />
+        </MudStep>
+
+        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter"
+                 Disabled="@(_character.Class == null)">
+            <AbilityScoreStep @bind-Scores="_character.Scores" />
+        </MudStep>
+
     </MudStepper>
-
-    @* Content renders HERE, outside the stepper, driven by _currentStep *@
-    <MudPaper Class="pa-6 mt-4" Elevation="3">
-        @switch (_currentStep)
-        {
-            case 0:
-                <RaceSelectionStep @bind-SelectedRace="_character.Race" />
-                break;
-            case 1:
-                <MudText>Class selection coming soon.</MudText>
-                break;
-            case 2:
-                <MudText>Ability Score Generator will go here.</MudText>
-                break;
-            default:
-                <MudText Typo="Typo.h5">Finished!</MudText>
-                break;
-        }
-    </MudPaper>
-
-    <div class="d-flex justify-space-between mt-4">
-        <MudButton Variant="Variant.Text"
-                   OnClick="PreviousStep"
-                   Disabled="@(_currentStep == 0)">
-            Back
-        </MudButton>
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   OnClick="NextStep"
-                   Disabled="@IsNextDisabled()">
-            Next
-        </MudButton>
-    </div>
 </MudContainer>
 
 @code {
     private int _currentStep = 0;
     private CharacterCreationModel _character = new();
 
-    private void NextStep() { if (_currentStep < 2) _currentStep++; }
-    private void PreviousStep() { if (_currentStep > 0) _currentStep--; }
-
-    private bool IsNextDisabled() => _currentStep switch
+    private void OnRaceSelected(AthasianRace race)
     {
-        0 => _character.Race == null,
-        _ => false
-    };
+        _character.Race = race;
+        StateHasChanged();
+    }
+
+    private void OnClassSelected(AthasianClass cls)
+    {
+        _character.Class = cls;
+        StateHasChanged();
+    }
 
     private class CharacterCreationModel
     {
-        public AthasianRace? Race { get; set; }
+        public AthasianRace?  Race   { get; set; }
+        public AthasianClass? Class  { get; set; }
+        public List<AbilityScoreStep.AbilityScore> Scores { get; set; } = new();
     }
 }
