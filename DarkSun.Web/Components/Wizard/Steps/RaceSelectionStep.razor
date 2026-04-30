@@ -1,10 +1,9 @@
-﻿@* Add this using statement at the top *@
-@using DarkSun.Domain.Entities
+﻿@using DarkSun.Domain.Entities
 @using MudBlazor
 
 <MudContainer MaxWidth="MaxWidth.Large">
-    @* ... rest of your HTML is correct ... *@
     <MudText Typo="Typo.h4" GutterBottom="true">Choose Your Race</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-4">The harsh wastes of Athas forge only the strongest.</MudText>
 
     @if (SelectedRace != null)
     {
@@ -12,33 +11,37 @@
             You have selected: <strong>@SelectedRace.Name</strong>
         </MudAlert>
     }
-    else
-    {
-        <MudText Typo="Typo.subtitle1" Class="mb-8">The harsh wastes of Athas forge only the strongest.</MudText>
-    }
 
     <MudGrid Spacing="4">
         @foreach (var race in _availableRaces)
         {
             <MudItem xs="12" sm="6" md="4">
-                <MudCard Elevation="@(SelectedRace == race ? 8 : 4)"
-                         Class="@(SelectedRace == race ? "mud-theme-primary" : "")"
-                         Style="cursor:pointer;"
+                <MudCard Elevation="@(SelectedRace?.Name == race.Name ? 8 : 4)"
+                         Class="@(SelectedRace?.Name == race.Name ? "mud-theme-primary" : "")"
+                         Style="cursor:pointer; height:100%;"
                          @onclick="() => SelectRace(race)">
                     <MudCardMedia Image="@race.ImageUrl" Height="180" />
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@race.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@race.Subtype</MudText>
                         </CardHeaderContent>
                     </MudCardHeader>
                     <MudCardContent>
-                        <p>@race.ShortDescription</p>
+                        <MudText Typo="Typo.body2">@race.ShortDescription</MudText>
+                        <MudChipSet T="string" Class="mt-3">
+                            @foreach (var trait in race.KeyTraits)
+                            {
+                                <MudChip Size="Size.Small">@trait</MudChip>
+                            }
+                        </MudChipSet>
                     </MudCardContent>
                 </MudCard>
             </MudItem>
         }
     </MudGrid>
 </MudContainer>
+
 @code {
     [Parameter]
     public AthasianRace? SelectedRace { get; set; }
@@ -46,43 +49,37 @@
     [Parameter]
     public EventCallback<AthasianRace> SelectedRaceChanged { get; set; }
 
-    private async Task SelectRace(AthasianRace race)
+    private List<AthasianRace> _availableRaces = new()
     {
-        SelectedRace = race;
-        await SelectedRaceChanged.InvokeAsync(SelectedRace);
-        Console.WriteLine($"✅ Selected race: {race.Name}");
-    }
-
-    private List<AthasianRace> _availableRaces = new() {
-        new AthasianRace {
+        new() {
             Name = "Human",
             Subtype = "Versatile Survivor",
             ShortDescription = "The most common people of the Tablelands — adaptable and ambitious.",
             KeyTraits = new[] { "+1 to any ability", "Extra skill", "Extra feat" },
             ImageUrl = "https://via.placeholder.com/300x180/8B4513/FFFFFF?text=Human"
         },
-        new AthasianRace {
+        new() {
             Name = "Elf",
             Subtype = "Desert Runner",
             ShortDescription = "Tall, lithe, and built for long-distance travel across the wastes.",
             KeyTraits = new[] { "+2 Dexterity", "Fleet of Foot", "Elf Run" },
             ImageUrl = "https://via.placeholder.com/300x180/556B2F/FFFFFF?text=Elf"
         },
-        new AthasianRace {
+        new() {
             Name = "Mul",
             Subtype = "Born Warrior",
             ShortDescription = "Sturdy half-dwarves bred for gladiatorial combat and hard labor.",
             KeyTraits = new[] { "+2 Strength", "+2 Constitution", "Tough" },
             ImageUrl = "https://via.placeholder.com/300x180/8B0000/FFFFFF?text=Mul"
         },
-        new AthasianRace {
+        new() {
             Name = "Half-Giant",
             Subtype = "Colossal Brute",
             ShortDescription = "Enormous descendants of giants — incredibly strong but impulsive.",
             KeyTraits = new[] { "+4 Strength", "+2 Constitution", "Powerful Build" },
             ImageUrl = "https://via.placeholder.com/300x180/4B0082/FFFFFF?text=Half-Giant"
         },
-        new AthasianRace {
+        new() {
             Name = "Thri-Kreen",
             Subtype = "Mantis Warrior",
             ShortDescription = "Insectoid hunters with four arms and natural chitin armor.",
@@ -90,4 +87,16 @@
             ImageUrl = "https://via.placeholder.com/300x180/006400/FFFFFF?text=Thri-Kreen"
         }
     };
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine($"🎲 RaceSelectionStep loaded with {_availableRaces.Count} races");
+    }
+
+    private async Task SelectRace(AthasianRace race)
+    {
+        Console.WriteLine($"✅ Selected: {race.Name}");
+        SelectedRace = race;
+        await SelectedRaceChanged.InvokeAsync(race);
+    }
 }

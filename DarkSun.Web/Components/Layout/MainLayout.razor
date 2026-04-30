@@ -6,22 +6,22 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-	<MudAppBar Elevation="1">
-		<MudIcon Icon="@Icons.Material.Filled.MenuBook" Class="mr-3" />
-		<MudText Typo="Typo.h5" Class="ml-2">Dark Sun Character Builder</MudText>
-		<MudSpacer />
-		<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/spells">Spell Browser</MudButton>
-	</MudAppBar>
+    <MudAppBar Elevation="1">
+        <MudIcon Icon="@Icons.Material.Filled.MenuBook" Class="mr-3" />
+        <MudText Typo="Typo.h5" Class="ml-2">Dark Sun Character Builder</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/spells">Spell Browser</MudButton>
+    </MudAppBar>
 
-	<MudDrawer Open="true" Elevation="2" ClipMode="DrawerClipMode.Docked">
-		<MudNavMenu>
-			<MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-			<MudNavLink Href="/spells" Icon="@Icons.Material.Filled.MenuBook">Spells</MudNavLink>
-			<MudNavLink Href="/character/" Icon="@Icons.Material.Filled.Person">Character Builder</MudNavLink>
-		</MudNavMenu>
-	</MudDrawer>
+    <MudDrawer Open="true" Elevation="2" ClipMode="DrawerClipMode.Docked">
+        <MudNavMenu>
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="/spells" Icon="@Icons.Material.Filled.MenuBook">Spells</MudNavLink>
+            <MudNavLink Href="/character" Icon="@Icons.Material.Filled.Person">Character Builder</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
 
-	<MudMainContent>
-		@Body
-	</MudMainContent>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
 </MudLayout>
