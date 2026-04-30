@@ -1,32 +1,51 @@
-﻿@page "/spells"
+﻿@*
+	TODO:
+	Add more spells
+	Change color layout/css
+	Alphabetize output
+
+*@
+@page "/spells"
 @using DarkSun.Domain.Entities
+@using MudBlazor
 @inject DarkSun.Application.Interfaces.ISpellRepository SpellRepo
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h3" GutterBottom="true">Athasian 1st-Level Priest Spells</MudText>
-    <MudText Typo="Typo.subtitle1" Class="mb-6">15 spells loaded from DynamoDB</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-6">@_spells.Count spells loaded from DynamoDB<br /></MudText>
 
-    <MudSimpleTable Dense="true" Hover="true" Striped="true" Bordered="true">
-        <thead>
-            <tr>
-                <th>Spell Name</th>
-                <th>School</th>
-                <th>Major Spheres</th>
-                <th style="width: 40%">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var spell in _spells)
-            {
-                <tr>
-                    <td><strong>@spell.Name</strong></td>
-                    <td>@spell.School</td>
-                    <td>@string.Join(", ", spell.SpheresJson)</td>
-                    <td>@spell.Description.Substring(0, Math.Min(120, spell.Description.Length))...</td>
-                </tr>
-            }
-        </tbody>
-    </MudSimpleTable>
+    <MudGrid>
+        @foreach (var spell in _spells)
+        {
+            <MudItem xs="12" md="6" lg="4" Class="mb-4">
+                <MudCard Elevation="3">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h5" Color="Color.Primary">@spell.Name</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@spell.School</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="pa-4">
+                        <p><strong>Major Spheres:</strong> @string.Join(", ", spell.SpheresJson)</p>
+
+                    <MudDivider Class="my-3" />
+                        <p><strong>Casting Time:</strong> @spell.CastingTime | <strong>Range:</strong> @spell.Range</p>
+                        <p><strong>Duration:</strong> @spell.Duration</p>
+
+                        <MudDivider Class="my-3" />
+                        <p>@spell.Description</p>
+
+                        @if (!string.IsNullOrEmpty(spell.FlavorLore))
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Info" Class="mt-3 font-italic">
+                                "@spell.FlavorLore"
+                            </MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
 </MudContainer>
 
 @code {

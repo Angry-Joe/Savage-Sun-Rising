@@ -17,7 +17,7 @@
 		<MudNavMenu>
 			<MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 			<MudNavLink Href="/spells" Icon="@Icons.Material.Filled.MenuBook">Spells</MudNavLink>
-			<MudNavLink Href="/character" Icon="@Icons.Material.Filled.Person">Character Builder</MudNavLink>
+			<MudNavLink Href="/character/" Icon="@Icons.Material.Filled.Person">Character Builder</MudNavLink>
 		</MudNavMenu>
 	</MudDrawer>
 
@@ -25,30 +25,3 @@
 		@Body
 	</MudMainContent>
 </MudLayout>
-@* @inherits LayoutComponentBase
-@using MudBlazor
-
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-
-<MudLayout>
-	<MudAppBar Elevation="1">
-		<MudIcon Icon="@Icons.Material.Filled.Menu" Class="mr-3" />
-		<MudText Typo="Typo.h5" Class="ml-2">Dark Sun Character Builder</MudText>
-		<MudSpacer />
-		<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/spells">Spells</MudButton>
-	</MudAppBar>
-
-	<MudDrawer Open="true" Elevation="2">
-		<MudNavMenu>
-			<MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-			<MudNavLink Href="/spells" Icon="@Icons.Material.Filled.MenuBook">Spell Browser</MudNavLink>
-			<MudNavLink Href="/character" Icon="@Icons.Material.Filled.Person">Character Builder</MudNavLink>
-		</MudNavMenu>
-	</MudDrawer>
-
-	<MudMainContent>
-		@Body
-	</MudMainContent>
-</MudLayout> *@
