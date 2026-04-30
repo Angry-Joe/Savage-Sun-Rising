@@ -35,10 +35,10 @@
     [Parameter]
     public EventCallback OnNext { get; set; }
 
-    private void SelectRace(AthasianRace race) {
+    private async Task SelectRace(AthasianRace race) {
         Console.WriteLine($"✅ Selected race: {race.Name}");
         // TODO: Save to shared character sheet later
-        OnNext.InvokeAsync();   // Advance to next step
+        await OnNext.InvokeAsync();   // Advance to next step
     }
     public class AthasianRace
     {
@@ -85,6 +85,4 @@
             ImageUrl = "https://via.placeholder.com/300x180/006400/FFFFFF?text=Thri-Kreen"
         }
     };
-
-
 }

@@ -9,8 +9,7 @@
     <MudText Typo="Typo.subtitle1" Class="mb-8">Athas demands strength, cunning, and will. What power will you wield?</MudText>
 
     <MudGrid Spacing="4">
-        @foreach (var cls in _availableClasses)
-        {
+        @foreach (var cls in _availableClasses) {
             <MudItem xs="12" sm="6" md="4">
                 <MudCard Elevation="4" Class="h-100" Style="cursor:pointer;" @onclick="() => SelectClass(cls)">
                     <MudCardMedia Image="@cls.ImageUrl" Height="160" />
@@ -80,10 +79,10 @@
     [Parameter]
     public EventCallback OnNext { get; set; }
 
-    private void SelectClass(AthasianClass selectedClass)
+    private async Task SelectClass(AthasianClass selectedClass)
     {
         Console.WriteLine($"✅ Selected class: {selectedClass.Name}");
-        OnNext.InvokeAsync();
+        await OnNext.InvokeAsync();
     }
 
     public class AthasianClass
