@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DarkSun.Application/DarkSun.Application.csproj" />
+  <Project Path="DarkSun.Domain/DarkSun.Domain.csproj" />
+  <Project Path="DarkSun.Infrastructure/DarkSun.Infrastructure.csproj" />
+  <Project Path="DarkSun.Tests/DarkSun.Tests.csproj" />
+  <Project Path="DarkSun.Web/DarkSun.Web.csproj" />
+</Solution>
