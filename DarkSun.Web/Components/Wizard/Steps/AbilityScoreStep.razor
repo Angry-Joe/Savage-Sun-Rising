@@ -1,0 +1,62 @@
+﻿@page "/character/create/ability-scores"
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Ability Scores</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-8">Athas rewards the strong and the clever. Assign your attributes.</MudText>
+
+    <MudGrid Spacing="6">
+        @foreach (var ability in _abilities)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudPaper Class="pa-4 text-center" Elevation="2">
+                    <MudText Typo="Typo.h5">@ability.Name</MudText>
+                    <MudText Typo="Typo.h2" Color="Color.Primary">@ability.Value</MudText>
+
+                    <MudSlider @bind-Value="ability.Value"
+                               Min="8"
+                               Max="18"
+                               Step="1"
+                               Class="mt-4" />
+
+                    <MudText Typo="Typo.caption" Class="mt-2">
+                        Modifier: @((ability.Value - 10) / 2)
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+
+    <div class="mt-8 d-flex justify-end">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="OnNext">
+            Continue to Background
+        </MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    private List<AbilityScore> _abilities = new()
+    {
+        new AbilityScore { Name = "Strength", Value = 10 },
+        new AbilityScore { Name = "Dexterity", Value = 10 },
+        new AbilityScore { Name = "Constitution", Value = 10 },
+        new AbilityScore { Name = "Intelligence", Value = 10 },
+        new AbilityScore { Name = "Wisdom", Value = 10 },
+        new AbilityScore { Name = "Charisma", Value = 10 }
+    };
+
+    private void OnNext()
+    {
+        Console.WriteLine("Ability scores selected:");
+        foreach (var a in _abilities)
+        {
+            Console.WriteLine($"  {a.Name}: {a.Value} (Modifier: {(a.Value - 10) / 2})");
+        }
+    }
+
+    public class AbilityScore
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Value { get; set; }
+    }
+}

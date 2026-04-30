@@ -1,0 +1,20 @@
+﻿@page "/character"
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 text-center">
+    <MudText Typo="Typo.h3" GutterBottom="true">Character Builder</MudText>
+    <MudText Typo="Typo.h5" Class="mb-8">Forge your legend under the crimson sun of Athas</MudText>
+
+    <MudButton  Variant="Variant.Filled"
+                Color="Color.Primary"
+                Size="Size.Large"
+                Href="/character/create"
+                Class="mb-4"
+                Style="width:320px; height:60px;">
+        Create New Character
+    </MudButton>
+
+    <MudButton Variant="Variant.Outlined" Size="Size.Large" Style="width:320px; height:60px;">
+        Load Existing Character
+    </MudButton>
+</MudContainer>

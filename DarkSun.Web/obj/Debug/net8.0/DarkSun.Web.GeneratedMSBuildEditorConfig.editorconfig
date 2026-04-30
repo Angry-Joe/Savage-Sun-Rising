@@ -33,6 +33,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDb21wb25lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Dialogs/SpellDetailDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xEaWFsb2dzXFNwZWxsRGV0YWlsRGlhbG9nLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Pages/Character.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDaGFyYWN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -55,6 +63,22 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/CharacterWizard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcQ2hhcmFjdGVyV2l6YXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/Steps/AbilityScoreStep.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcU3RlcHNcQWJpbGl0eVNjb3JlU3RlcC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/Steps/ClassSelection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcU3RlcHNcQ2xhc3NTZWxlY3Rpb24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/Wizard/Steps/RaceSelection.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xXaXphcmRcU3RlcHNcUmFjZVNlbGVjdGlvbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/jdlcode/repos/Savage-Sun-Rising/DarkSun.Web/Components/_Imports.razor]

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DarkSun.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2ddb535cd9399f0873bcc0a4d7b93bf81fad2967")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d83048bb7fbb22aa793fe4334aefdb2f868fdd60")]
 [assembly: System.Reflection.AssemblyProductAttribute("DarkSun.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DarkSun.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
