@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+**/appsettings.Development.json
+<<<<<<< Updated upstream
+/bin
+=======
+appsettings.Development.json
+obj/
+>>>>>>> Stashed changes
+bin/

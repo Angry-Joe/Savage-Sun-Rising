@@ -1,0 +1,113 @@
+﻿@page "/character/create"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using DarkSun.Domain.Entities
+@using DarkSun.Domain.Data.Seed
+@using DarkSun.Web.Components.Wizard.Steps
+@using DarkSun.Application.Interfaces
+@using MudBlazor
+@inject ICharacterService CharacterService
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
+
+    <MudStepper @bind-ActiveStepIndex="_currentStep"
+                Linear="true"
+                Color="Color.Primary"
+                Variant="Variant.Filled">
+
+        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
+            HasError="false"
+            Completed="@(_character.Race != null)">
+            <RaceSelectionStep SelectedRace="_character.Race"
+                SelectedRaceChanged="OnRaceSelected" />
+        </MudStep>
+
+        <MudStep Title="Class" Icon="@Icons.Material.Filled.School"
+            Disabled="@(_character.Race == null)"
+            Completed="@(_character.Class != null)">
+            <ClassSelectionStep SelectedClass="_character.Class"
+                SelectedClassChanged="OnClassSelected" />
+        </MudStep>
+
+        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter"
+                 Disabled="@(_character.Class == null)"
+                 Completed="@(_scoresConfirmed)">
+            <AbilityScoreStep Scores="_character.Scores"
+                ScoresChanged="OnScoresChanged" />
+        </MudStep>
+
+        <MudStep Title="Background" Icon="@Icons.Material.Filled.Work"
+                 Disabled="@(!_scoresConfirmed)"
+                 Completed="@(_character.Background != null)">
+            <BackgroundSelectionStep SelectedBackground="_character.Background"
+                SelectedBackgroundChanged="OnBackgroundSelected" />
+        </MudStep>
+
+        <MudStep Title="Equipment" Icon="@Icons.Material.Filled.Inventory"
+                 Disabled="@(_character.Background == null)">
+            <EquipmentSelectionStep SelectedEquipment="_character.Equipment"
+                SelectedEquipmentChanged="OnEquipmentChanged" />
+        </MudStep>
+
+        <MudStep Title="Review" Icon="@Icons.Material.Filled.Save"
+                 Disabled="@(_character.Background == null)">
+            <ReviewStep Race="_character.Race"
+                Class="_character.Class"
+                Scores="_character.Scores"
+                Background="_character.Background"
+                Equipment="_character.Equipment"
+                OnSave="HandleSave"
+                OnCancel="HandleCancel" />
+        </MudStep>
+    </MudStepper>
+</MudContainer>
+
+@code {
+    private int _currentStep = 0;
+    private bool _scoresConfirmed = false;
+    private CharacterCreationModel _character = new();
+
+    private void OnRaceSelected(AthasianRace race) { _character.Race = race; StateHasChanged(); }
+    private void OnClassSelected(AthasianClass cls) { _character.Class = cls; StateHasChanged(); }
+    private void OnBackgroundSelected(AthasianBackground bg) { _character.Background = bg; StateHasChanged(); }
+    private void OnEquipmentChanged(List<AthasianEquipment> equipment) { _character.Equipment = equipment; StateHasChanged(); }
+    private void OnScoresChanged(List<AbilityScoreStep.AbilityScore> scores)
+    {
+        _character.Scores = scores;
+        _scoresConfirmed = scores.Count > 0;
+        StateHasChanged();
+    }
+
+    private class CharacterCreationModel
+    {
+        public AthasianRace?  Race   { get; set; }
+        public AthasianClass? Class  { get; set; }
+        public List<AbilityScoreStep.AbilityScore> Scores { get; set; } = new();
+        public AthasianBackground? Background { get; set; }
+        public List<AthasianEquipment> Equipment { get; set; } = new();
+    }
+
+    private async Task HandleSave()
+    {
+        var sheet = new DarkSun.Domain.Entities.CharacterSheet
+        {
+            Race = _character.Race,
+            Class = _character.Class,
+            Background = _character.Background,
+            Equipment = _character.Equipment,
+            AbilityScores = _character.Scores.ToDictionary(s => s.Name, s => s.Value)
+        };
+
+        await CharacterService.SaveCharacterAsync(sheet, "current-user-id"); // TODO: replace with real userId from auth
+        Navigation.NavigateTo("/characters");
+    }
+
+    private void HandleCancel()
+    {
+        _character = new CharacterCreationModel();
+        _currentStep = 0;
+        _scoresConfirmed = false;
+        StateHasChanged();
+    }
+}

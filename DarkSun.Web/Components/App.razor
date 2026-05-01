@@ -1,0 +1,23 @@
+﻿@* App.razor*@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <base href="/" />
+            <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+            <link href="DarkSun.Web.styles.css" rel="stylesheet" />
+            <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+            <HeadOutlet />
+        </head>
+        <body>
+            <CascadingAuthenticationState>
+                <Routes />
+            </CascadingAuthenticationState>
+
+            @* This part is important. I lost days trying to figure out why things won't work. You have to add the scripts you need *@
+            <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+            <script src="_framework/blazor.web.js"></script>
+
+        </body>
+    </html>

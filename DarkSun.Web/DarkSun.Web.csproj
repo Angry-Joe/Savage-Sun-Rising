@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <Content Remove="appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DarkSun.Application\DarkSun.Application.csproj" />
+    <ProjectReference Include="..\DarkSun.Domain\DarkSun.Domain.csproj" />
+    <ProjectReference Include="..\DarkSun.Infrastructure\DarkSun.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="9.4.0" />
+    <PackageReference Include="MudBlazor.Extensions" Version="9.3.0" />
+    <PackageReference Include="OpenMcdf" Version="3.1.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ccb7ea55-863c-4f5d-8dd8-13e152caffbb</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

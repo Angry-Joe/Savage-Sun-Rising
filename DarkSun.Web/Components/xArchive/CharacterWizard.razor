@@ -1,0 +1,93 @@
+﻿@* This has to be commented so we don't get multiple page names from the menu clls *@
+@* @page "/character/create" *@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using DarkSun.Domain.Entities
+@using DarkSun.Web.Components.Wizard.Steps
+@using MudBlazor
+@* @inherits OwningComponentBase *@
+@* @inject NavigationManager Navigation *@
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
+
+    @* The key is to two-way bind the ActiveStepIndex to our _currentStep variable *@
+    <MudStepper @bind-ActiveStepIndex="_currentStep">
+        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person" />
+        <MudStep Title="Class" Icon="@Icons.Material.Filled.School" />
+        <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter" />
+        @* Add other steps here *@
+    </MudStepper>
+
+    <MudPaper Class="pa-6 mt-6" Elevation="3">
+        @* Your switch statement is perfect for this pattern *@
+        @switch (_currentStep)
+        {
+            case 0:
+                @* <RaceSelection OnNext="NextStep" /> *@
+                <RaceSelection @rendermode="@InteractiveServer"
+                               @bind-SelectedRace="_character.Race" />
+                break;
+            case 1:
+                @* <ClassSelection OnNext="NextStep" /> *@
+                <MudText>Class selection coming soon.</MudText>
+                break;
+            case 2:
+                <MudText>Ability Score Generator will go here.</MudText>
+                break;
+            default:
+                <MudText Typo="Typo.h5">Finished!</MudText>
+                break;
+        }
+@*         @switch (_currentStep)
+        {
+            case 0:
+                <RaceSelection @bind-SelectedRace="_character.Race" />
+                break;
+            case 1:
+                <MudText>Class selection coming soon.</MudText>
+                break;
+            case 2:
+                <MudText>Ability Score Generator will go here.</MudText>
+                break;
+            default:
+                <MudText Typo="Typo.h5">Finished!</MudText>
+                break;
+        } *@
+    </MudPaper>
+
+    <div class="d-flex justify-space-between mt-4">
+        <MudButton Variant="Variant.Text"
+                   OnClick="PreviousStep"
+                   Disabled="@(_currentStep == 0)">Back</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="NextStep"
+                   Disabled="@IsNextDisabled()">Next</MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    // This is the correct way to manage the state
+    // private int _currentStep = 0;
+
+    // These methods are now correct and will work as intended
+    // because they change the value of _currentStep, which is bound to the stepper
+    // private void NextStep() { _currentStep++; }
+    // private void PreviousStep() { _currentStep--; }
+    private int _currentStep = 0;
+    private CharacterCreationModel _character = new();
+
+    private void NextStep() { if (_currentStep < 2) _currentStep++; }
+    private void PreviousStep() { if (_currentStep > 0) _currentStep--; }
+
+    private bool IsNextDisabled() => _currentStep switch
+    {
+        0 => _character.Race == null,
+        _ => false
+    };
+
+    private class CharacterCreationModel
+    {
+        public AthasianRace? Race { get; set; }
+    }
+}

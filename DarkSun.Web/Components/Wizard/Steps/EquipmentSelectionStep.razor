@@ -1,0 +1,116 @@
+﻿@* EquipmentSelectionStep.razor *@
+@using DarkSun.Domain.Entities
+@using DarkSun.Domain.Data.Seed
+@using MudBlazor
+@using System.Collections.Generic
+@using System.Linq
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Select Starting Equipment</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-8">Survival on Athas depends on what you carry.</MudText>
+
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mb-6">
+        Selected: <strong>@SelectedEquipment.Count</strong> items
+    </MudAlert>
+
+    @* Grok Content. Sitting on it for now *@
+    @if (SelectedEquipment.Any())
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-6">
+            Selected (@SelectedEquipment.Count):
+            <strong>@string.Join(", ", SelectedEquipment.Select(e => e.Name))</strong>
+        </MudAlert>
+    }
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="mb-4">
+        @foreach (var kvp in _equipmentByCategory)
+        {
+            var category = kvp.Key;
+            var items = kvp.Value;
+            <MudTabPanel Text="@category">
+                <MudGrid Class="mt-4">
+                    @foreach (var item in items)
+                    {
+                        var capturedItem = item;
+                        var isSelected = SelectedEquipment.Any(e => e.Id == capturedItem.Id);
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudCard Elevation="@(isSelected ? 8 : 2)"
+                                     Class="@(isSelected ? "mud-theme-primary" : "")"
+                                     Style="height:100%;">
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.h6">@capturedItem.Name</MudText>
+                                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@capturedItem.Cost · @capturedItem.Weight</MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText Typo="Typo.body2">@capturedItem.ShortDescription</MudText>
+                                    @if (capturedItem.Properties.Length > 0)
+                                    {
+                                        <MudChipSet T="string" Class="mt-2">
+                                            @foreach (var prop in capturedItem.Properties)
+                                            {
+                                                <MudChip Size="Size.Small">@prop</MudChip>
+                                            }
+                                        </MudChipSet>
+                                    }
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton FullWidth="true"
+                                               Variant="@(isSelected ? Variant.Filled : Variant.Outlined)"
+                                               Color="@(isSelected ? Color.Error : Color.Primary)"
+                                               OnClick="() => ToggleEquipment(capturedItem)">
+                                        @(isSelected ? "Remove ✕" : "Add ✓")
+                                    </MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudTabPanel>
+        }
+    </MudTabs>
+</MudContainer>
+
+@code {
+    [Parameter] public List<AthasianEquipment> SelectedEquipment { get; set; } = new();
+    [Parameter] public EventCallback<List<AthasianEquipment>> SelectedEquipmentChanged { get; set; }
+
+    private Dictionary<string, List<AthasianEquipment>> _equipmentByCategory = new();
+
+    protected override void OnInitialized()
+    {
+        _equipmentByCategory = AthasianEquipmentSeed.All
+            .GroupBy(e => e.Category)
+            .ToDictionary(g => g.Key, g => g.ToList());
+    }
+
+    private async Task ToggleEquipment(AthasianEquipment item)
+    {
+        if (SelectedEquipment.Any(e => e.Id == item.Id))
+            SelectedEquipment.RemoveAll(e => e.Id == item.Id);
+        else
+            SelectedEquipment.Add(item);
+
+        await SelectedEquipmentChanged.InvokeAsync(SelectedEquipment);
+        StateHasChanged();
+    }
+
+    // private readonly List<AthasianEquipment> _allEquipment = new()
+    // {
+    //     // Weapons
+    //     new() { Name = "Bone Spear",      Category = "Weapon",          ShortDescription = "A crude but reliable weapon carved from giant bone.",       Cost = "5 cp",  Weight = "4 lb",  Properties = new[] { "Thrown", "Range 20/60" },   IsStartingGear = true },
+    //     new() { Name = "Stone Axe",       Category = "Weapon",          ShortDescription = "Chipped obsidian edge on a hardwood haft.",                 Cost = "3 cp",  Weight = "2 lb",  Properties = new[] { "Light", "Thrown" },          IsStartingGear = true },
+    //     new() { Name = "Obsidian Dagger", Category = "Weapon",          ShortDescription = "Razor sharp but brittle. Common on Athas.",                 Cost = "2 cp",  Weight = "1 lb",  Properties = new[] { "Light", "Finesse" },         IsStartingGear = true },
+    //     new() { Name = "Gouge",           Category = "Weapon",          ShortDescription = "A brutal two-handed cleaver favored by gladiators.",        Cost = "10 cp", Weight = "6 lb",  Properties = new[] { "Two-Handed", "Heavy" },      IsStartingGear = true },
+    //     // Armor
+    //     new() { Name = "Leather Armor",   Category = "Armor",           ShortDescription = "Dried kank hide shaped into basic protection.",             Cost = "10 cp", Weight = "10 lb", Properties = new[] { "AC 11" },                   IsStartingGear = true },
+    //     new() { Name = "Bone Breastplate",Category = "Armor",           ShortDescription = "Layered giant bone plates — heavy but effective.",          Cost = "40 cp", Weight = "20 lb", Properties = new[] { "AC 14", "Str 13 required" }, IsStartingGear = true },
+    //     // Adventuring Gear
+    //     new() { Name = "Waterskin",       Category = "Adventuring Gear", ShortDescription = "Holds 4 pints of water. Critical in the Tablelands.",      Cost = "2 cp",  Weight = "5 lb",  Properties = new[] { "Essential" },               IsStartingGear = true },
+    //     new() { Name = "Sungoggles",      Category = "Adventuring Gear", ShortDescription = "Reduces glare from the crimson sun. Carved bone and leather.", Cost = "5 cp", Weight = "0 lb", Properties = new[] { "Sun protection" },         IsStartingGear = true },
+    //     new() { Name = "Rope (50 ft)",    Category = "Adventuring Gear", ShortDescription = "Braided kank silk — lightweight and strong.",              Cost = "1 cp",  Weight = "10 lb", Properties = new[] { "Climbing" },                IsStartingGear = true },
+    //     // Mounts
+    //     new() { Name = "Crodlu",          Category = "Mount",           ShortDescription = "A raptor-like mount, fast and aggressive.",                 Cost = "100 cp",Weight = "—",     Properties = new[] { "Speed 50 ft", "War trained" }, IsStartingGear = false },
+    //     new() { Name = "Inix",            Category = "Mount",           ShortDescription = "A massive lizard used as a pack animal or war mount.",      Cost = "150 cp",Weight = "—",     Properties = new[] { "Speed 25 ft", "Heavy load" }, IsStartingGear = false },
+    // };
+}

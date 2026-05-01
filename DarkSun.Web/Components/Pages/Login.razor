@@ -1,0 +1,126 @@
+@page "/login"
+@using Microsoft.AspNetCore.WebUtilities
+@using MudBlazor
+
+@inject NavigationManager Navigation
+
+<PageTitle>Login – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudPaper Elevation="4" Class="pa-8">
+
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">
+            @(_isRegistering ? "Create Account" : "Sign In")
+        </MudText>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+        }
+
+        @* data-enhance="false" prevents Blazor from intercepting the POST *@
+        <form method="post" action="/EmailLogin" data-enhance="false">
+            <input type="hidden" name="action" value="@(_isRegistering ? "register" : "login")" />
+            <input type="hidden" name="returnUrl" value="/" />
+
+            @if (_isRegistering)
+            {
+                <MudTextField T="string"
+                              Label="Full Name"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              @bind-Value="_fullName"
+                              InputAttributes="@(new Dictionary<string,object>{ ["name"] = "fullName" })"
+                              Required="true" />
+            }
+
+            <MudTextField T="string"
+                          Label="Email"
+                          InputType="InputType.Email"
+                          Variant="Variant.Outlined"
+                          Class="mb-4"
+                          @bind-Value="_email"
+                          InputAttributes="@(new Dictionary<string,object>{ ["name"] = "email" })"
+                          Required="true" />
+
+            <MudTextField T="string"
+                          Label="Password"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined"
+                          Class="mb-6"
+                          @bind-Value="_password"
+                          InputAttributes="@(new Dictionary<string,object>{ ["name"] = "password" })"
+                          Required="true" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large">
+                @(_isRegistering ? "Create Account" : "Sign In")
+            </MudButton>
+        </form>
+
+        <MudDivider Class="my-6" />
+
+        @* ── OAuth providers ── *@
+        <MudStack Spacing="2">
+            <MudButton Href="/ExternalLogin?provider=Microsoft&amp;returnUrl=/"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Custom.Brands.Microsoft"
+                       FullWidth="true">
+                Continue with Microsoft
+            </MudButton>
+
+            <MudButton Href="/ExternalLogin?provider=Google&amp;returnUrl=/"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Custom.Brands.Google"
+                       FullWidth="true">
+                Continue with Google
+            </MudButton>
+        </MudStack>
+
+        <MudDivider Class="my-6" />
+
+        @* ── Toggle register / login ── *@
+        <MudText Align="Align.Center">
+            @if (_isRegistering)
+            {
+                <span>Already have an account? </span>
+                <MudLink OnClick="ToggleMode">Sign in</MudLink>
+            }
+            else
+            {
+                <span>Don't have an account? </span>
+                <MudLink OnClick="ToggleMode">Register</MudLink>
+            }
+        </MudText>
+
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool   _isRegistering = false;
+    private string _email         = string.Empty;
+    private string _password      = string.Empty;
+    private string _fullName      = string.Empty;
+    private string _errorMessage  = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        var uri   = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("error", out var error))
+            _errorMessage = error.ToString();
+
+        if (query.TryGetValue("mode", out var mode) && mode == "register")
+            _isRegistering = true;
+    }
+
+    private void ToggleMode()
+    {
+        _isRegistering = !_isRegistering;
+        _errorMessage  = string.Empty;
+    }
+}
