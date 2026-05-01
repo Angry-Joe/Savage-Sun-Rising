@@ -1,6 +1,7 @@
 ﻿@page "/character/create"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using DarkSun.Domain.Entities
+@using DarkSun.Domain.Data.Seed
 @using DarkSun.Web.Components.Wizard.Steps
 @using MudBlazor
 
@@ -13,29 +14,59 @@
                 Variant="Variant.Filled">
 
         <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
-                 HasError="false"
-                 Completed="@(_character.Race != null)">
+            HasError="false"
+            Completed="@(_character.Race != null)">
             <RaceSelectionStep SelectedRace="_character.Race"
-                               SelectedRaceChanged="OnRaceSelected" />
+                            SelectedRaceChanged="OnRaceSelected" />
         </MudStep>
 
         <MudStep Title="Class" Icon="@Icons.Material.Filled.School"
-                 Disabled="@(_character.Race == null)"
-                 Completed="@(_character.Class != null)">
+            Disabled="@(_character.Race == null)"
+            Completed="@(_character.Class != null)">
             <ClassSelectionStep SelectedClass="_character.Class"
                                 SelectedClassChanged="OnClassSelected" />
         </MudStep>
 
         <MudStep Title="Ability Scores" Icon="@Icons.Material.Filled.FitnessCenter"
-                 Disabled="@(_character.Class == null)">
-            <AbilityScoreStep @bind-Scores="_character.Scores" />
+                 Disabled="@(_character.Class == null)"
+                 Completed="@(_scoresConfirmed)">
+            <AbilityScoreStep Scores="_character.Scores"
+                              ScoresChanged="OnScoresChanged" />
         </MudStep>
+
+        @* <MudStep Title="Background" Icon="@Icons.Material.Filled.Work"
+            Disabled="@(_character.Scores.Count == 0)">
+            <BackgroundSelectionStep SelectedBackground="_character.Background"
+                                     SelectedBackgroundChanged="@(bg => _character.Background = bg)" />
+        </MudStep>
+        <MudStep Title="Equipment" Icon="@Icons.Material.Filled.Inventory"
+            Disabled="@(_character.Background == null)">
+            @* <CharacterSummaryStep Character="_character" /> *@
+        @*</MudStep> *@
+@*         <MudStep Title="Review and Save" Icon="@Icons.Material.Filled.Save"
+                 Disabled="@(_character.Equipment == null)">
+            <ReviewAndSaveStep Character="_character" />
+        </MudStep> *@
+        <MudStep Title="Background" Icon="@Icons.Material.Filled.Work"
+                 Disabled="@(!_scoresConfirmed)"
+                 Completed="@(_character.Background != null)">
+            <BackgroundSelectionStep SelectedBackground="_character.Background"
+                                     SelectedBackgroundChanged="OnBackgroundSelected" />
+        </MudStep>
+
+        <MudStep Title="Equipment" Icon="@Icons.Material.Filled.Inventory"
+                 Disabled="@(_character.Background == null)">
+            <EquipmentSelectionStep SelectedEquipment="_character.Equipment"
+                                    SelectedEquipmentChanged="OnEquipmentChanged" />
+        </MudStep>
+
 
     </MudStepper>
 </MudContainer>
 
 @code {
     private int _currentStep = 0;
+    private bool _scoresConfirmed = false;
     private CharacterCreationModel _character = new();
 
     private void OnRaceSelected(AthasianRace race)
@@ -50,10 +81,31 @@
         StateHasChanged();
     }
 
+    private void OnScoresChanged(List<AbilityScoreStep.AbilityScore> scores)
+    {
+        _character.Scores = scores;
+        _scoresConfirmed = scores.Count > 0;
+        StateHasChanged();
+    }
+
+    private void OnBackgroundSelected(AthasianBackground bg)
+    {
+        _character.Background = bg;
+        StateHasChanged();
+    }
+
+    private void OnEquipmentChanged(List<AthasianEquipment> equipment)
+    {
+        _character.Equipment = equipment;
+        StateHasChanged();
+    }
+
     private class CharacterCreationModel
     {
         public AthasianRace?  Race   { get; set; }
         public AthasianClass? Class  { get; set; }
         public List<AbilityScoreStep.AbilityScore> Scores { get; set; } = new();
+        public AthasianBackground? Background { get; set; }
+        public List<AthasianEquipment> Equipment { get; set; } = new();
     }
 }
