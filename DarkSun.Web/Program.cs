@@ -74,8 +74,8 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
+app.MapRazorPages();
 app.MapRazorComponents<DarkSun.Web.Components.App>()
     .AddInteractiveServerRenderMode();
-app.MapRazorPages();
 
 await app.RunAsync();

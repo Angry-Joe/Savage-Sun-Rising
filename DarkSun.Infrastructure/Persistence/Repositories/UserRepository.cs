@@ -16,6 +16,9 @@ public class UserRepository : IUserRepository
 
     public async Task<DarkSunUser?> GetByEmailAsync(string email)
     {
+        if (string.IsNullOrWhiteSpace(email))
+            return null;
+
         var search = _context.ScanAsync<DarkSunUser>(new[]
         {
             new ScanCondition("Email", ScanOperator.Equal, email.ToLowerInvariant().Trim())

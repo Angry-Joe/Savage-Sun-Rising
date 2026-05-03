@@ -18,9 +18,9 @@
             <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
         }
 
-        @* data-enhance="false" prevents Blazor from intercepting the POST *@
-        <form method="post" action="/EmailLogin" data-enhance="false">
-            <input type="hidden" name="action" value="@(_isRegistering ? "register" : "login")" />
+        <form method="post" action="/EmailLogin">
+            <AntiforgeryToken />
+            <input type="hidden" name="action"    value="@(_isRegistering ? "register" : "login")" />
             <input type="hidden" name="returnUrl" value="/" />
 
             @if (_isRegistering)
@@ -29,8 +29,7 @@
                               Label="Full Name"
                               Variant="Variant.Outlined"
                               Class="mb-4"
-                              @bind-Value="_fullName"
-                              InputAttributes="@(new Dictionary<string,object>{ ["name"] = "fullName" })"
+                              name="fullName"
                               Required="true" />
             }
 
@@ -39,8 +38,7 @@
                           InputType="InputType.Email"
                           Variant="Variant.Outlined"
                           Class="mb-4"
-                          @bind-Value="_email"
-                          InputAttributes="@(new Dictionary<string,object>{ ["name"] = "email" })"
+                          name="email"
                           Required="true" />
 
             <MudTextField T="string"
@@ -48,8 +46,7 @@
                           InputType="InputType.Password"
                           Variant="Variant.Outlined"
                           Class="mb-6"
-                          @bind-Value="_password"
-                          InputAttributes="@(new Dictionary<string,object>{ ["name"] = "password" })"
+                          name="password"
                           Required="true" />
 
             <MudButton ButtonType="ButtonType.Submit"
@@ -82,17 +79,17 @@
 
         <MudDivider Class="my-6" />
 
-        @* ── Toggle register / login ── *@
+        @* ── Toggle register / login via query string (no JS needed) ── *@
         <MudText Align="Align.Center">
             @if (_isRegistering)
             {
                 <span>Already have an account? </span>
-                <MudLink OnClick="ToggleMode">Sign in</MudLink>
+                <MudLink Href="/login">Sign in</MudLink>
             }
             else
             {
                 <span>Don't have an account? </span>
-                <MudLink OnClick="ToggleMode">Register</MudLink>
+                <MudLink Href="/login?mode=register">Register</MudLink>
             }
         </MudText>
 
@@ -101,9 +98,6 @@
 
 @code {
     private bool   _isRegistering = false;
-    private string _email         = string.Empty;
-    private string _password      = string.Empty;
-    private string _fullName      = string.Empty;
     private string _errorMessage  = string.Empty;
 
     protected override void OnInitialized()
@@ -116,11 +110,5 @@
 
         if (query.TryGetValue("mode", out var mode) && mode == "register")
             _isRegistering = true;
-    }
-
-    private void ToggleMode()
-    {
-        _isRegistering = !_isRegistering;
-        _errorMessage  = string.Empty;
     }
 }

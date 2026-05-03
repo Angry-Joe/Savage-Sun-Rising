@@ -1,0 +1,110 @@
+@page "/register"
+@using MudBlazor
+@using System.ComponentModel.DataAnnotations
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>Register – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudPaper Class="pa-8" Elevation="4">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Create Account</MudText>
+
+        <EditForm Model="@_model" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+
+            <MudTextField Label="Full Name"
+                          @bind-Value="_model.FullName"
+                          For="@(() => _model.FullName)"
+                          Variant="Variant.Outlined"
+                          Class="mb-4" />
+
+            <MudTextField Label="Email"
+                          @bind-Value="_model.Email"
+                          For="@(() => _model.Email)"
+                          InputType="InputType.Email"
+                          Variant="Variant.Outlined"
+                          Class="mb-4" />
+
+            <MudTextField Label="Password"
+                          @bind-Value="_model.Password"
+                          For="@(() => _model.Password)"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined"
+                          Class="mb-4" />
+
+            <MudTextField Label="Confirm Password"
+                          @bind-Value="_model.ConfirmPassword"
+                          For="@(() => _model.ConfirmPassword)"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined"
+                          Class="mb-6" />
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+            }
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="_isLoading">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Register
+            </MudButton>
+        </EditForm>
+
+        <MudText Align="Align.Center" Class="mt-4">
+            Already have an account?
+            <MudLink Href="/login">Sign in</MudLink>
+        </MudText>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private readonly RegisterModel _model = new();
+    private string? _errorMessage;
+    private bool _isLoading;
+
+    private async Task HandleRegister()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var (success, error, _) = await UserService.RegisterAsync(_model.Email, _model.Password, _model.FullName);
+            if (!success)
+            {
+                _errorMessage = error ?? "Registration failed.";
+                return;
+            }
+            Navigation.NavigateTo("/login?registered=true");
+        }
+        catch (Exception ex) { _errorMessage = ex.Message; }
+        finally { _isLoading = false; }
+    }
+
+    private sealed class RegisterModel
+    {
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, MinimumLength = 8)]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

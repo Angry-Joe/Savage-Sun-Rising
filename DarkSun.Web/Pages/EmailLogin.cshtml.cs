@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DarkSun.Web.Pages;
 
-[Microsoft.AspNetCore.Mvc.IgnoreAntiforgeryToken]
 public class EmailLoginModel : PageModel
 {
     private readonly IUserService _userService;
@@ -18,13 +17,19 @@ public class EmailLoginModel : PageModel
     }
 
     // POST /EmailLogin?action=register OR ?action=login
-    public async Task<IActionResult> OnPostAsync(
+    public async Task<IActionResult> OnGetAsync(
         string action,
         string email,
         string password,
         string? fullName,
         string returnUrl = "/")
     {
+        if (string.IsNullOrWhiteSpace(email))
+            return Redirect($"/login?error={Uri.EscapeDataString("Email is required.")}");
+
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            return Redirect($"/login?error={Uri.EscapeDataString("Email and password are required.")}");
+
         if (action == "register")
         {
             var (success, error, user) = await _userService.RegisterAsync(email, password, fullName ?? email);

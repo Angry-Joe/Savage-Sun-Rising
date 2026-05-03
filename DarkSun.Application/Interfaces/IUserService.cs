@@ -1,3 +1,4 @@
+//@* IUserService interface *@
 using DarkSun.Domain.Entities;
 namespace DarkSun.Application.Interfaces;
 

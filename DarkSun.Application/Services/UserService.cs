@@ -16,6 +16,11 @@ public class UserService : IUserService
     public async Task<(bool Success, string? Error, DarkSunUser? User)> RegisterAsync(
         string email, string password, string fullName)
     {
+        if (string.IsNullOrWhiteSpace(email))
+            return (false, "Email is required.", null);
+        if (string.IsNullOrWhiteSpace(password))
+            return (false, "Password is required.", null);
+
         // Check if email already exists
         var existing = await _repository.GetByEmailAsync(email);
         if (existing != null)

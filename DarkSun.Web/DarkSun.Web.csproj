@@ -1,10 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <Content Remove="appsettings.Development.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DarkSun.Application\DarkSun.Application.csproj" />
     <ProjectReference Include="..\DarkSun.Domain\DarkSun.Domain.csproj" />
     <ProjectReference Include="..\DarkSun.Infrastructure\DarkSun.Infrastructure.csproj" />
