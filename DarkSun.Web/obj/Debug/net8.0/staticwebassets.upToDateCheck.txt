@@ -1,0 +1,6 @@
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\dark-sun-theme.css
+wwwroot\data\priest-1st-level-spells.json
+wwwroot\favicon.png

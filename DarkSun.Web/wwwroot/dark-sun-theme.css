@@ -1,0 +1,100 @@
+﻿/* ====================== DARK SUN – BROM AESTHETIC ====================== */
+:root {
+    --ds-crimson: #9B2A1F;
+    --ds-burnt-orange: #C44A2A;
+    --ds-ochre: #D4A017;
+    --ds-sand: #E8D5A3;
+    --ds-sickly-green: #8A9B4E;
+    --ds-shadow: #1C140F;
+    --ds-midnight: #2A211B;
+    --ds-bone: #E5D9C0;
+    --ds-metal: #A8A8A8;
+}
+
+/* MudBlazor Custom Theme */
+.mud-theme-dark {
+    --mud-palette-primary: var(--ds-burnt-orange);
+    --mud-palette-primary-darken: #A13C20;
+    --mud-palette-primary-lighten: #E06A4A;
+    --mud-palette-secondary: var(--ds-sickly-green);
+    --mud-palette-background: var(--ds-shadow);
+    --mud-palette-surface: var(--ds-midnight);
+    --mud-palette-drawer-background: #1F1814;
+    --mud-palette-appbar-background: var(--ds-crimson);
+    --mud-palette-text-primary: var(--ds-sand);
+    --mud-palette-text-secondary: var(--ds-bone);
+    --mud-palette-divider: #3F3228;
+    --mud-palette-action-default: var(--ds-metal);
+}
+
+/* Global overrides */
+body, .mud-layout {
+    background-color: var(--ds-shadow) !important;
+    color: var(--ds-sand) !important;
+    font-family: 'UnifrakturCook', system-ui, sans-serif; /* or any gritty font */
+}
+
+.mud-paper, .mud-card {
+    background-color: var(--ds-midnight) !important;
+    border: 1px solid #4A3A2F !important;
+    box-shadow: 0 4px 12px rgba(155, 42, 31, 0.3) !important;
+}
+
+/* AppBar – like the burning sun */
+.mud-appbar {
+    background: linear-gradient(180deg, var(--ds-crimson) 0%, #5C1A14 100%) !important;
+    box-shadow: 0 2px 8px rgba(196, 74, 42, 0.6);
+}
+
+/* Buttons */
+.mud-button-filled {
+    background-color: var(--ds-burnt-orange) !important;
+    color: white !important;
+}
+
+.mud-button-outlined {
+    border-color: var(--ds-ochre) !important;
+    color: var(--ds-ochre) !important;
+}
+
+/* Text */
+.mud-typography-h1, .mud-typography-h2, .mud-typography-h3 {
+    color: var(--ds-sand) !important;
+    text-shadow: 2px 2px 4px var(--ds-shadow);
+}
+
+/* NavMenu / Drawer */
+.mud-nav-link {
+    color: var(--ds-bone) !important;
+}
+
+    .mud-nav-link:hover, .mud-nav-link-active {
+        background-color: rgba(212, 160, 23, 0.2) !important;
+        color: var(--ds-ochre) !important;
+    }
+
+/* Alerts & accents */
+.mud-alert-error {
+    background-color: rgba(155, 42, 31, 0.3) !important;
+}
+
+.mud-alert-success {
+    background-color: rgba(138, 155, 78, 0.3) !important;
+}
+
+/* Character cards – desert worn look */
+.mud-card-media {
+    filter: contrast(1.1) saturate(0.85);
+}
+
+/* Scrollbar (desert dust) */
+::-webkit-scrollbar-thumb {
+    background: var(--ds-burnt-orange);
+}
+
+/* Force Dark Sun colors over MudBlazor defaults */
+.mud-theme-dark, .mud-layout, body {
+    --mud-palette-primary: #C44A2A !important;
+    --mud-palette-background: #1C140F !important;
+    --mud-palette-surface: #2A211B !important;
+}

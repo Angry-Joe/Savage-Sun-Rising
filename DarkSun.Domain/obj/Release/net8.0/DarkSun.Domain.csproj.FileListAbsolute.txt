@@ -1,0 +1,13 @@
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\bin\Release\net8.0\DarkSun.Domain.deps.json
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\bin\Release\net8.0\DarkSun.Domain.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\bin\Release\net8.0\DarkSun.Domain.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.csproj.AssemblyReference.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.AssemblyInfoInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.AssemblyInfo.cs
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.csproj.CoreCompileInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.sourcelink.json
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\refint\DarkSun.Domain.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\DarkSun.Domain.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Domain\obj\Release\net8.0\ref\DarkSun.Domain.dll

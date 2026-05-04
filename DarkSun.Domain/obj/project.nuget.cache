@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "9+9zX9keew8=",
+  "success": true,
+  "projectFilePath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\JDL\\.nuget\\packages\\awssdk.core\\4.0.4\\awssdk.core.4.0.4.nupkg.sha512",
+    "C:\\Users\\JDL\\.nuget\\packages\\awssdk.dynamodbv2\\4.0.17.11\\awssdk.dynamodbv2.4.0.17.11.nupkg.sha512"
+  ],
+  "logs": []
+}

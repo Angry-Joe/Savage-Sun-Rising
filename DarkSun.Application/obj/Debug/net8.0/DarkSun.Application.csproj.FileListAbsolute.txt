@@ -1,0 +1,16 @@
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\bin\Debug\net8.0\DarkSun.Application.deps.json
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\bin\Debug\net8.0\DarkSun.Application.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\bin\Debug\net8.0\DarkSun.Application.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\bin\Debug\net8.0\DarkSun.Domain.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\bin\Debug\net8.0\DarkSun.Domain.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.csproj.AssemblyReference.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.AssemblyInfoInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.AssemblyInfo.cs
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.csproj.CoreCompileInputs.cache
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.sourcelink.json
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun..2683D21E.Up2Date
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\refint\DarkSun.Application.dll
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\DarkSun.Application.pdb
+C:\jdlcode\repos\Savage-Sun-Rising\DarkSun.Application\obj\Debug\net8.0\ref\DarkSun.Application.dll

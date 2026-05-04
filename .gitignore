@@ -4,10 +4,13 @@
 
 /.vs
 **/appsettings.Development.json
-<<<<<<< Updated upstream
 /bin
-=======
-appsettings.Development.json
-obj/
->>>>>>> Stashed changes
 bin/
+# Secrets
+appsettings*.json
+*.user
+.secrets/
+**/.env
+.aws/
+C:\Users\JDL\.aws\credentials
+.gitignore

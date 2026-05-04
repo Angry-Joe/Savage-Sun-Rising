@@ -1,0 +1,25 @@
+version: '3.8'
+
+# Usage: docker-compose up --build
+
+services:
+  darksun-web:
+    # The name of the image to use, which we will build.
+    image: darksun-web:latest
+    build:
+      # The context is the current directory.
+      context: .
+      # The Dockerfile is in the current directory.
+      dockerfile: Dockerfile
+
+    # Maps port 8080 on your host machine to port 8080 in the container.
+    ports:
+      - "8081:8080"
+
+    # Environment variables for configuring the application.
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+    # Mounts your local AWS credentials folder into the container as read-only.
+    volumes:
+      - ${USERPROFILE}\.aws:/root/.aws:ro

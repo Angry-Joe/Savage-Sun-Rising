@@ -2,8 +2,9 @@
 @inherits LayoutComponentBase
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Authorization
+@inject MudTheme DarkSunTheme
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@DarkSunTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
