@@ -1,3 +1,6 @@
+/* Import Dark Sun theme first so it can be overridden if needed */
+@import url("dark-sun-theme.css");
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
