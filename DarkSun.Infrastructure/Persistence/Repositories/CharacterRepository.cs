@@ -21,9 +21,24 @@ namespace DarkSun.Infrastructure.Persistence.Repositories
             await _context.SaveAsync(character);
         }
 
-        public async Task<CharacterSheet?> GetByIdAsync(string id, string userId)
+        public async Task<CharacterSheet?> GetByIdAsync(string CharId, string userId)
         {
-            return await _context.LoadAsync<CharacterSheet>(userId, id);
+            return await _context.LoadAsync<CharacterSheet>(userId, CharId);
+        }
+
+        // New Guid version (recommended)
+        public async Task<CharacterSheet?> GetByIdAsync(Guid charId, string userId)
+        {
+            string idStr = charId.ToString();
+            var character = await _context.LoadAsync<CharacterSheet>(userId, idStr);
+
+            if (character == null)
+            {
+                // Optional: log here
+                Console.WriteLine($"Character {charId} not found for user {userId}");
+            }
+
+            return character;
         }
 
         public async Task<List<CharacterSheet>> GetAllByUserAsync(string userId)
@@ -33,7 +48,8 @@ namespace DarkSun.Infrastructure.Persistence.Repositories
             new ScanCondition("UserId", ScanOperator.Equal, userId)
         };
             var results = await _context.ScanAsync<CharacterSheet>(conditions).GetRemainingAsync();
-            return results;
+            return results ?? new List<CharacterSheet>();
         }
+
     }
 }

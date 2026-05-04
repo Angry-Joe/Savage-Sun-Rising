@@ -1,0 +1,175 @@
+﻿@* CharacteDetail.razor *@
+@page "/retired/character/{CharId}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@* @rendermode InteractiveServer Moved to App.razor *@
+@using MudBlazor
+@inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@inject ICharacterService CharacterService
+@inject ILogger<CharacterDetail> Logger
+
+@* New Additions *@
+@using DarkSun.Domain.Entities
+@using System.Security.Claims
+
+<PageTitle>Character Detail – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h3">Hero of Athas</MudText>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="BackToList">
+            Back to Roster
+        </MudButton>
+    </div>
+    @if (_isLoading)
+    {
+        <div class="d-flex justify-center my-16">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="ml-4">The veiled masters consult the records...</MudText>
+        </div>
+    }
+    else if (_loadError != null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="my-4">
+            @_loadError
+        </MudAlert>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="BackToList">← Return to the Tablelands</MudButton>
+    }
+    else
+    {
+        <MudCard Elevation="4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4">@_character.Name</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">
+                        @_character.Race @_character.Class Level @_character.Level
+                    </MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+
+            <MudCardContent>
+                <MudGrid Spacing="4">
+                    <MudGridItem xs="12" sm="6">
+                        <MudText Typo="Typo.subtitle1">Background</MudText>
+                        <MudText>@_character.Background</MudText>
+                    </MudGridItem>
+                    <MudGridItem xs="12" sm="6">
+                        <MudText Typo="Typo.subtitle1">Alignment</MudText>
+                        <MudText>@_character.Alignment</MudText>
+                    </MudGridItem>
+
+                    <MudGridItem xs="12">
+                        <MudDivider />
+                        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Ability Scores</MudText>
+                        <MudGrid Spacing="2">
+                            @foreach (var score in _character.AbilityScores)
+                            {
+                                <MudGridItem xs="6" sm="4" md="3">
+                                    <MudText><strong>@score.Key</strong>: @score.Value</MudText>
+                                </MudGridItem>
+                            }
+                        </MudGrid>
+                    </MudGridItem>
+
+                    @* Future development when I figure out Skills *@
+                    @* <MudGridItem xs="12">
+                        <MudText Typo="Typo.h6" Class="mt-4 mb-2">Skills & Proficiencies</MudText>
+                        <MudChipSet T="string">
+                            @foreach (var skill in _character.Skills)
+                            {
+                                <MudChip>@skill</MudChip>
+                            }
+                        </MudChipSet>
+                    </MudGridItem> *@
+                </MudGrid>
+            </MudCardContent>
+
+            <MudCardActions>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="EditCharacter">
+                    Edit Character
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="BackToList">
+                    Back to My Characters
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string CharId { get; set; } = string.Empty;
+
+    private CharacterSheet? _character;
+    private bool _isLoading = true;
+    private string? _loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // await LoadCharacter();
+        await LoadCharacterDataAsync();
+    }
+
+    private async Task LoadCharacterDataAsync()
+    {
+        _isLoading = true;
+        _loadError = null;
+
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(CharId))
+            {
+                _loadError = "You must be logged in to view this survivor.";
+                return;
+            }
+
+            _character = await CharacterService.GetByIdAsync(CharId, userId);
+
+            if (_character == null)
+                _loadError = "That hero was lost to the desert or you lack permission to view them.";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load character {CharId}", CharId);
+            _loadError = "The sands swallowed the record. Try again later.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+    private async Task LoadCharacter()
+    {
+        _isLoading = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(CharId))
+            {
+                Logger.LogWarning("Missing userId or CharId for character detail");
+                return;
+            }
+
+            _character = await CharacterService.GetByIdAsync(CharId, userId);
+
+            if (_character == null)
+                Logger.LogWarning("Character {CharId} not found for user {UserId}", CharId, userId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load character {CharId}", CharId);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void EditCharacter() { Navigation.NavigateTo($"/character/edit/{CharId}"); }
+    private void BackToList() { Navigation.NavigateTo("/character"); }
+}

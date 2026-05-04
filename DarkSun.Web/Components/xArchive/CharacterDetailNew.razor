@@ -1,0 +1,156 @@
+﻿@* CharacterDetailNew.razor *@
+@page "/retired/character/grok/{CharId}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+@using MudBlazor
+@using DarkSun.Domain.Entities
+@using System.Security.Claims
+
+@inject ICharacterService CharacterService
+@inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@inject ILogger<CharacterDetail> Logger
+
+<PageTitle>@(_character?.Name ?? "Hero of Athas") – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h3">Hero of Athas</MudText>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="BackToList">
+            Back to Roster
+        </MudButton>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="d-flex justify-center my-16">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="ml-4">The veiled masters consult the records...</MudText>
+        </div>
+    }
+    else if (_loadError != null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="my-4">
+            @_loadError
+        </MudAlert>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="BackToList">← Return to the Tablelands</MudButton>
+    }
+    else if (_character != null)
+    {
+        <MudCard Elevation="4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@_character.Name</MudText>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+                        @(_character.Race?.Name ?? "Unknown Race") •
+                        @(_character.Class?.Name ?? "Unknown Class")
+                    </MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditCharacter">Edit Hero</MudButton>
+                </CardHeaderActions>
+            </MudCardHeader>
+
+            <MudCardContent>
+                <MudGrid Spacing="4">
+                    <MudItem xs="12" sm="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary">BACKGROUND</MudText>
+                            <MudText>@(_character.Background?.Name ?? "None")</MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudPaper Elevation="0" Class="pa-4">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary">ALIGNMENT</MudText>
+                            <MudText>@(_character.Alignment ?? "Neutral")</MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Class="mt-6 mb-2">Ability Scores</MudText>
+                        @if (_character.AbilityScores?.Any() == true)
+                        {
+                            <MudGrid Spacing="2">
+                                @foreach (var score in _character.AbilityScores)
+                                {
+                                    <MudItem xs="6" sm="4" md="2">
+                                        <MudPaper Elevation="1" Class="pa-3 text-center">
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary" Style="text-transform: uppercase;">@score.Key</MudText>
+                                            <MudText Typo="Typo.h5" Color="Color.Primary"><strong>@score.Value</strong></MudText>
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Class="mt-6 mb-2">Equipment</MudText>
+                        @if (_character.Equipment?.Any() == true)
+                        {
+                            <MudChipSet T="string">
+                                @foreach (var item in _character.Equipment)
+                                {
+                                    <MudChip>@item.Name</MudChip>
+                                }
+                            </MudChipSet>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Warning">Travels light under the crimson sun.</MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public string CharId { get; set; } = string.Empty;
+
+    private CharacterSheet? _character;
+    private bool _isLoading = true;
+    private string? _loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharacterDataAsync();
+    }
+
+    private async Task LoadCharacterDataAsync()
+    {
+        _isLoading = true;
+        _loadError = null;
+
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(CharId))
+            {
+                _loadError = "You must be logged in to view this survivor.";
+                return;
+            }
+
+            _character = await CharacterService.GetByIdAsync(CharId, userId);
+
+            if (_character == null)
+                _loadError = "That hero was lost to the desert or you lack permission to view them.";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load character {CharId}", CharId);
+            _loadError = "The sands swallowed the record. Try again later.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void EditCharacter() => Navigation.NavigateTo($"/character/edit/{CharId}");
+    private void BackToList() => Navigation.NavigateTo("/character");
+}

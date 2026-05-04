@@ -1,13 +1,15 @@
 ﻿@* ReviewStep.razor *@
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 @using DarkSun.Domain.Entities
 @using DarkSun.Web.Components.Wizard.Steps
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Authorization
+@*
 @inject ICharacterService CharacterService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject AuthenticationStateProvider AuthStateProvider
-
+ *@
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mb-6">Review Your Hero of Athas</MudText>
     <MudText Typo="Typo.subtitle1" Class="mb-8">The crimson sun judges the worthy. Let us see what you have forged.</MudText>
@@ -25,6 +27,9 @@
                         <div class="d-flex align-center gap-4">
                             <MudAvatar Image="@Race.ImageUrl" Size="Size.Large" />
                             <div>
+                                <MudText Typo="Typo.h5" Color="Color.Primary">
+                                    @(string.IsNullOrWhiteSpace(CharacterName) ? "Unnamed Hero" : CharacterName)
+                                </MudText>
                                 <MudText Typo="Typo.h5">@Race.Name</MudText>
                                 <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@Race.Subtype</MudText>
                             </div>
@@ -149,55 +154,77 @@
 </MudContainer>
 
 @code {
+    [Parameter] public string? CharacterName { get; set; }
     [Parameter] public AthasianRace? Race { get; set; }
     [Parameter] public AthasianClass? Class { get; set; }
     [Parameter] public List<AbilityScoreStep.AbilityScore>? Scores { get; set; }
     [Parameter] public AthasianBackground? Background { get; set; }
     [Parameter] public List<AthasianEquipment>? Equipment { get; set; }
+
     [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
-    [Parameter] public CharacterSheet Character { get; set; } = default!;
+    // [Parameter] public CharacterSheet Character { get; set; } = default!;
 
-    private async Task SaveCharacter()
-    {
-        if (Race == null) return;
-        await OnSave.InvokeAsync();
-    }
+    // private async Task SaveCharacter()
+    // {
+    //     if (Race == null) return;
+    //     await OnSave.InvokeAsync();
+    // }
     private bool _isSaving;
 
     private async Task HandleSave()
     {
-        if (Race == null) return;
+        // Prevent double-clicking
+        if (_isSaving) return;
+
         _isSaving = true;
+
         try
         {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                Navigation.NavigateTo("/login", forceLoad: true);
-                return;
-            }
-
-            var character = new CharacterSheet
-                {
-                    Race          = Race!,
-                    Class         = Class!,
-                    AbilityScores = Scores?.ToDictionary(s => s.Name, s => s.Value) ?? new(),
-                    Background    = Background!,
-                    Equipment     = Equipment ?? new()
-                };
-
-            await CharacterService.SaveCharacterAsync(character, userId);
-            Snackbar.Add("Hero saved to Athas!", Severity.Success);
-            Navigation.NavigateTo("/");
+            // Invoke the parent's save logic
+            await OnSave.InvokeAsync();
         }
-        catch (Exception ex)
+        finally
         {
-            Snackbar.Add($"Failed to save: {ex.GetType().Name} - {ex.Message}", Severity.Error);
-            Console.Error.WriteLine(ex.ToString());
+            // Reset state in case the parent's save failed and we stay on the page
+            _isSaving = false;
         }
-        finally { _isSaving = false; }
+    }
+
+    // private async Task HandleSave()
+    // {
+    //     if (Race == null) return;
+    //     _isSaving = true;
+    //     try
+    //     {
+    //         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    //         var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    //         if (string.IsNullOrEmpty(userId))
+    //         {
+    //             Navigation.NavigateTo("/login", forceLoad: true);
+    //             return;
+    //         }
+
+    //         var character = new CharacterSheet
+    //             {
+    //                 Race          = Race!,
+    //                 Class         = Class!,
+    //                 AbilityScores = Scores?.ToDictionary(s => s.Name, s => s.Value) ?? new(),
+    //                 Background    = Background!,
+    //                 Equipment     = Equipment ?? new()
+    //             };
+
+    //         await CharacterService.SaveCharacterAsync(character, userId);
+    //         Snackbar.Add("Hero saved to Athas!", Severity.Success);
+    //         Navigation.NavigateTo("/");
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Snackbar.Add($"Failed to save: {ex.GetType().Name} - {ex.Message}", Severity.Error);
+    //         Console.Error.WriteLine(ex.ToString());
+    //     }
+    //     finally { _isSaving = false; }
+    // }
     }
 }

@@ -1,0 +1,173 @@
+﻿@* NewCharDetail.razor *@
+@page "/character/newui/{CharId}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+@using MudBlazor
+@using DarkSun.Domain.Entities
+@using System.Security.Claims
+@inject ICharacterService CharacterService
+@inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>@(_character?.Name ?? "Loading...") – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h3">Hero Details</MudText>
+        <MudButton Variant="Variant.Outlined"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="BackToList">
+            Back to Roster
+        </MudButton>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="d-flex justify-center my-16">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </div>
+    }
+    else if (_loadError != null)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="my-4">
+            @_loadError
+        </MudAlert>
+    }
+    else if (_character != null)
+    {
+        <MudCard Elevation="4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h4" Color="Color.Primary">@_character.Name</MudText>
+                    <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+                        @(_character.Race?.Name ?? "Unknown Race") • @(_character.Class?.Name ?? "Unknown Class")
+                    </MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="EditCharacter" Class="mt-2">
+                        Edit Hero
+                    </MudButton>
+                </CardHeaderActions>
+            </MudCardHeader>
+
+            <MudCardContent>
+                <MudGrid Spacing="4">
+
+                    @* Background Section *@
+                    <MudItem xs="12" sm="6">
+                        <MudPaper Elevation="0" Class="pa-4 mud-background-gray">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary" GutterBottom="true">BACKGROUND</MudText>
+                            <MudText Typo="Typo.body1">
+                                @(_character.Background?.Name ?? "None selected")
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    @* Alignment Section (Assuming it's a string property) *@
+                    <MudItem xs="12" sm="6">
+                        <MudPaper Elevation="0" Class="pa-4 mud-background-gray">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Primary" GutterBottom="true">ALIGNMENT</MudText>
+                            <MudText Typo="Typo.body1">
+                                @(string.IsNullOrWhiteSpace(_character.Alignment) ? "Not Set" : _character.Alignment)
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    @* Ability Scores Section *@
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Class="mt-6 mb-2 border-b-1 mud-border-lines-default pb-2">Ability Scores</MudText>
+                        @if (_character.AbilityScores != null && _character.AbilityScores.Any())
+                        {
+                            <MudGrid Spacing="2">
+                                @foreach (var score in _character.AbilityScores)
+                                {
+                                    <MudItem xs="6" sm="4" md="2">
+                                        <MudPaper Elevation="1" Class="pa-3 text-center">
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary" Style="text-transform: uppercase;">
+                                                @score.Key
+                                            </MudText>
+                                            <MudText Typo="Typo.h5" Color="Color.Primary">
+                                                <strong>@score.Value</strong>
+                                            </MudText>
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Warning">No ability scores recorded.</MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string CharId { get; set; } = string.Empty;
+
+    private CharacterSheet? _character;
+    private bool _isLoading = true;
+    private string? _loadError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharacterDataAsync();
+    }
+
+    private async Task LoadCharacterDataAsync()
+    {
+        _isLoading = true;
+        _loadError = null;
+
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                _loadError = "You must be logged in to view this character.";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(CharId))
+            {
+                _loadError = "Invalid character ID.";
+                return;
+            }
+
+            // CORRECTED: Using the GetByIdAsync method from your other pages.
+            _character = await CharacterService.GetByIdAsync(CharId, userId);
+
+            if (_character == null)
+            {
+                _loadError = "Character not found or you do not have permission to view it.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading character: {ex.Message}");
+            _loadError = "An unexpected error occurred while loading the character.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void EditCharacter()
+    {
+        Navigation.NavigateTo($"/character/edit/{CharId}");
+    }
+
+
+
+    private void BackToList()
+    {
+        Navigation.NavigateTo("/character");
+    }
+}

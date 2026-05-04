@@ -7,6 +7,7 @@ using DarkSun.Infrastructure.Persistence.Seeders;
 using MudBlazor;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+//using DarkSun.Application.State;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,7 +68,24 @@ builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+// New DarkSun.Applications.State folder for services that manage state across components
+builder.Services.AddScoped<CharacterStateService>();
+
+// This makes the HTTP context available via dependency injection
+builder.Services.AddHttpContextAccessor();
+
+// This enables session state
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
+
+// IMPORTANT: Add this line to enable session middleware
+app.UseSession();
 
 // Seed data in Development
 if (app.Environment.IsDevelopment())

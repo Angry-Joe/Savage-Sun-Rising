@@ -19,10 +19,11 @@ namespace DarkSun.Application.Services
             await _repository.SaveAsync(character);
         }
 
-        public Task<CharacterSheet?> GetByIdAsync(string id, string userId) =>
-            _repository.GetByIdAsync(id, userId);
+        public Task<CharacterSheet?> GetByIdAsync(string charId, string userId) =>
+            _repository.GetByIdAsync(charId, userId);
 
         public Task<List<CharacterSheet>> GetAllByUserAsync(string userId) =>
             _repository.GetAllByUserAsync(userId);
+
     }
 }

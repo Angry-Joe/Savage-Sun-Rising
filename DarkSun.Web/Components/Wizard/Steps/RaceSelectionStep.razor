@@ -9,16 +9,15 @@
     <MudText Typo="Typo.subtitle1" Class="mb-4">The harsh wastes of Athas forge only the strongest.</MudText>
 
     <!-- Character Name (Required) -->
-    <MudTextField Label="Character Name *"
-                  @bind-Value="@CharacterName"
-                  For="@(() => CharacterName)"
+    <MudTextField T="string"
+                  Label="Character Name *"
+                  Value="@CharacterName"
+                  ValueChanged="OnNameChanged"
                   Variant="Variant.Outlined"
                   Class="mb-8"
                   Immediate="true"
                   Required="true"
-                  MaxLength="60"
-                  InputType="InputType.Text"
-                  DebounceInterval="200" />
+                  MaxLength="60" />
 
     <MudText Typo="Typo.h5" GutterBottom="true" Class="mt-6">Choose Your Race</MudText>
     <MudText Typo="Typo.subtitle1" Class="mb-4">The harsh wastes of Athas forge only the strongest.</MudText>
@@ -62,8 +61,7 @@
 
 @code {
     [Parameter]public string? CharacterName { get; set; }
-
-    [Parameter]public EventCallback<string> CharacterNameChanged { get; set; }
+    [Parameter]public EventCallback<string?> CharacterNameChanged { get; set; }
     // public AthasianRace? SelectedRace { get; set; }
     // [Parameter] public string? CharacterName { get; set; }
     // [Parameter] public EventCallback<string> CharacterNameChanged { get; set; }
@@ -113,25 +111,22 @@
         }
     };
 
+    private async Task OnNameChanged(string value)
+    {
+        CharacterName = value; // Update local parameter
+        await CharacterNameChanged.InvokeAsync(value); // Notify parent immediately
+    }
+
     protected override void OnInitialized()
     {
         Console.WriteLine($"🎲 RaceSelectionStep loaded with {_availableRaces.Count} races");
     }
 
-    // This handles two-way binding for the name field
-    // private async Task OnNameChanged(string? value)
-    // {
-    //     _localName = value;
-    //     await CharacterNameChanged.InvokeAsync(value ?? string.Empty);
-    // }
     private async Task SelectRace(AthasianRace race)
     {
         Console.WriteLine($"✅ Selected: {race.Name}");
         SelectedRace = race;
         await SelectedRaceChanged.InvokeAsync(race);
-        // Re-sync the name so it doesn't disappear
-        if (!string.IsNullOrEmpty(CharacterName))
-            await CharacterNameChanged.InvokeAsync(CharacterName);
     }
 
 

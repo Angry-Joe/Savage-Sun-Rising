@@ -1,6 +1,7 @@
 ﻿@* CharacterCreation.razor *@
 @page "/character/create"
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@* @rendermode @(new InteractiveServerRenderMode(prerender: false)) Moved to App.razor *@
 @using DarkSun.Domain.Entities
 @using DarkSun.Domain.Data.Seed
 @using DarkSun.Web.Components.Wizard.Steps
@@ -13,7 +14,10 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
-
+    @* Temporary for debugging  TODO: Remove before production *@
+    <MudAlert Severity="Severity.Info" Class="mb-4">
+        Logged in as User ID: @(GetUserIdSync())
+    </MudAlert>
     <MudStepper @bind-ActiveStepIndex="_currentStep"
                 Linear="true"
                 Color="Color.Primary"
@@ -26,12 +30,13 @@
                                @bind-SelectedRace="_character.Race" />
         </MudStep>
 
-        <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
+        @* Combined this step with the above
+            <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
             HasError="false"
             Completed="@(_character.Race != null)">
             <RaceSelectionStep SelectedRace="_character.Race"
                 SelectedRaceChanged="OnRaceSelected" />
-        </MudStep>
+        </MudStep> *@
 
         <MudStep Title="Class" Icon="@Icons.Material.Filled.School"
             Disabled="@(_character.Race == null)"
@@ -62,7 +67,9 @@
 
         <MudStep Title="Review" Icon="@Icons.Material.Filled.Save"
                  Disabled="@(_character.Background == null)">
-            <ReviewStep Race="_character.Race"
+            <ReviewStep
+                CharacterName="@_character.Name"
+                Race="_character.Race"
                 Class="_character.Class"
                 Scores="_character.Scores"
                 Background="_character.Background"
@@ -74,6 +81,18 @@
 </MudContainer>
 
 @code {
+    // Temporary for debugging. TODO: Remove before production
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+    private string GetUserIdSync()
+    {
+        // This is a synchronous, safe way to grab the ID just for UI display
+        var authState = AuthStateTask.Result;
+        return authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Not Found";
+    }
+    // End temporary debugging code
+
     private int _currentStep = 0;
     private bool _scoresConfirmed = false;
     private CharacterCreationModel _character = new();
@@ -103,11 +122,26 @@
     private async Task HandleSave()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+        var user = authState.User;
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            // Session expired! Send them to login.
+            Navigation.NavigateTo("/login", forceLoad: true);
+            return;
+        }
+        // var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // Last safety check: if the user is authenticated but somehow doesn't have a NameIdentifier claim, we shouldn't save to the DB.
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("Error: User is authenticated but missing a NameIdentifier claim.");
+            return; // Don't save to the DB without a valid ID!
+        }
+
         var sheet = new DarkSun.Domain.Entities.CharacterSheet
         {
             CharId = Guid.NewGuid().ToString(),
-            Name = _character.Name ?? "Unnamed Hero",
+            Name = _character.Name!,
             Race = _character.Race,
             Class = _character.Class,
             Background = _character.Background,
@@ -118,8 +152,8 @@
             UpdatedAt = DateTime.UtcNow
         };
 
-        await CharacterService.SaveCharacterAsync(sheet, userId); // TODO: replace with real userId from auth
-        Navigation.NavigateTo("/characters");
+        await CharacterService.SaveCharacterAsync(sheet, userId);
+        Navigation.NavigateTo("/character");
     }
 
     private void HandleCancel()
