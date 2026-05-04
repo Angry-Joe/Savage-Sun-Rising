@@ -16,9 +16,11 @@ appsettings*.json
 .aws/
 C:\Users\JDL\.aws\credentials
 .gitignore
+launchsettings.json
 # Environment-specific configs
 appsettings.json
 appsettings.*.json
+
 !appsettings.json.example
 !appsettings.Development.json.example
 
@@ -28,3 +30,5 @@ secrets.json
 .aws/
 *.pem
 *.pfx
+/DarkSun.Web/Properties/launchSettings.json
+/.gitignore
