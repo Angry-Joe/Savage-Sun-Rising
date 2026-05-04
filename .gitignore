@@ -6,7 +6,10 @@
 **/appsettings.Development.json
 /bin
 bin/
+**/bin/
+**/obj/
 .dockerignore
+*.log
 
 # Secrets
 appsettings*.json
