@@ -141,7 +141,7 @@
         CharacterState.SetSelectedCharacter(character.CharId);
 
         // Navigation.NavigateTo($"/character/{character.CharId}");
-        Navigation.NavigateTo("/character/detail");
+        Navigation.NavigateTo($"/character/detail?id={character.CharId}");
         // Navigation.NavigateTo($"/character/{character.CharId}");
     }
 }
