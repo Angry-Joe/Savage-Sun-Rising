@@ -1,0 +1,69 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5039"
+    },
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7229;http://localhost:5039"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "AWS_PROFILE": "DarkSunDev",
+        "AWS_REGION": "us-east-1",
+        "AWS_ACCESS_KEY_ID": "AKIATRPNELMQMPH7CSUV",
+        "AWS_SECRET_ACCESS_KEY": "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"
+      },
+      "publishAllPorts": true,
+      "useSSL": true,
+      "containerRunEnvironmentFiles": "aws_access_key_id=AKIATRPNELMQMPH7CSUV;aws_secret_access_key=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"
+    }
+  },
+  "Docker": {
+    "commandName": "Docker",
+    "launchBrowser": true,
+    "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+    "publishAllPorts": true,
+    "useSSL": true,
+    "hotReloadEnabled": true,
+    "hotReloadProfile": "aspnetcore",
+    "environmentVariables": {
+      "ASPNETCORE_HTTPS_PORTS": "8081",
+      "ASPNETCORE_HTTP_PORTS": "8080",
+      "AWS_PROFILE": "DarkSunDev",
+      "AWS_REGION": "us-east-1"
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:33573",
+      "sslPort": 44380
+    }
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Infrastructure\\DarkSun.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\DarkSun.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\DarkSun.Application.csproj",
+        "projectName": "DarkSun.Application",
+        "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\DarkSun.Application.csproj",
+        "packagesPath": "C:\\Users\\JDL\\.nuget\\packages\\",
+        "outputPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\JDL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj": {
+                "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[16.1.1, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[12.1.1, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[14.1.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.Cookies": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            },
+            "Microsoft.AspNetCore.Http": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj",
+        "projectName": "DarkSun.Domain",
+        "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj",
+        "packagesPath": "C:\\Users\\JDL\\.nuget\\packages\\",
+        "outputPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\JDL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AWSSDK.DynamoDBv2": {
+              "target": "Package",
+              "version": "[4.0.17.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Infrastructure\\DarkSun.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Infrastructure\\DarkSun.Infrastructure.csproj",
+        "projectName": "DarkSun.Infrastructure",
+        "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Infrastructure\\DarkSun.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\JDL\\.nuget\\packages\\",
+        "outputPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\JDL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "framework": "net8.0",
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\DarkSun.Application.csproj": {
+                "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Application\\DarkSun.Application.csproj"
+              },
+              "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj": {
+                "projectPath": "C:\\jdlcode\\repos\\Savage-Sun-Rising\\DarkSun.Domain\\DarkSun.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "framework": "net8.0",
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AWSSDK.DynamoDBv2": {
+              "target": "Package",
+              "version": "[4.0.17.11, )"
+            },
+            "AWSSDK.Extensions.NETCore.Setup": {
+              "target": "Package",
+              "version": "[4.0.3.35, )"
+            },
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[10.0.7, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
