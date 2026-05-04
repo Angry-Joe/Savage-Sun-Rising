@@ -1,0 +1,162 @@
+@* @page "/login" *@
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@using MudBlazor
+@using DarkSun.Application.Interfaces
+
+@inject NavigationManager Navigation
+@inject IUserService UserService
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Login – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudPaper Elevation="4" Class="pa-8">
+
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">
+            @(_isRegistering ? "Create Account" : "Sign In")
+        </MudText>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+        }
+
+        <form method="post" @formname="email-auth-form">
+            <AntiforgeryToken />
+            <input type="hidden" name="IsRegistering" value="@_isRegistering" />
+
+            @if (_isRegistering)
+            {
+                <div class="mb-4">
+                    <label>Full Name</label>
+                    <input type="text" name="FullName" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;" />
+                </div>
+            }
+
+            <div class="mb-4">
+                <label>Email</label>
+                <input type="email" name="Email" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;" required />
+            </div>
+
+            <div class="mb-6">
+                <label>Password</label>
+                <input type="password" name="Password" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;" required />
+            </div>
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large">
+                @(_isRegistering ? "Create Account" : "Sign In")
+            </MudButton>
+        </form>
+
+        <MudDivider Class="my-6" />
+
+        <MudStack Spacing="2">
+            <MudButton Href="/ExternalLogin?provider=Microsoft&amp;returnUrl=/"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Custom.Brands.Microsoft"
+                       FullWidth="true">
+                Continue with Microsoft
+            </MudButton>
+
+            <MudButton Href="/ExternalLogin?provider=Google&amp;returnUrl=/"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Custom.Brands.Google"
+                       FullWidth="true">
+                Continue with Google
+            </MudButton>
+        </MudStack>
+
+        <MudDivider Class="my-6" />
+
+        <MudText Align="Align.Center">
+            @if (_isRegistering)
+            {
+                <span>Already have an account? </span>
+                <MudLink Href="/login">Sign in</MudLink>
+            }
+            else
+            {
+                <span>Don't have an account? </span>
+                @* <MudLink Href="/login?mode=register">Register</MudLink> *@
+                <MudLink Href="/register">Register</MudLink>
+            }
+        </MudText>
+
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [SupplyParameterFromForm] public LoginFormModel? Form { get; set; }
+    [SupplyParameterFromQuery] public string? Mode { get; set; }
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+
+    private bool   _isRegistering;
+    private string _errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isRegistering = Mode == "register";
+        _errorMessage  = Error ?? string.Empty;
+
+        if (Form?.Email is null) return;
+
+        var httpContext = HttpContextAccessor.HttpContext!;
+
+        if (Form.IsRegistering)
+        {
+            var (success, error, user) = await UserService.RegisterAsync(
+                Form.Email, Form.Password!, Form.FullName ?? Form.Email);
+
+            if (!success)
+            {
+                _errorMessage = error ?? "Registration failed.";
+                return;
+            }
+
+            await SignInAsync(httpContext, user!.UserId, user.Email, user.FullName ?? user.Email);
+        }
+        else
+        {
+            var (success, error, user) = await UserService.LoginAsync(Form.Email, Form.Password!);
+
+            if (!success)
+            {
+                _errorMessage = error ?? "Login failed.";
+                return;
+            }
+
+                await SignInAsync(httpContext, user!.UserId, user.Email, user.FullName ?? user.Email);
+                }
+
+                Navigation.NavigateTo("/", forceLoad: true);
+            }
+
+    private static async Task SignInAsync(HttpContext ctx, string userId, string email, string name)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Email,          email),
+            new(ClaimTypes.Name,           name),
+        };
+        var identity  = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
+            new AuthenticationProperties { IsPersistent = true });
+    }
+
+    public class LoginFormModel
+    {
+        public string?  Email         { get; set; }
+        public string?  Password      { get; set; }
+        public string?  FullName      { get; set; }
+        public bool     IsRegistering { get; set; }
+    }
+}

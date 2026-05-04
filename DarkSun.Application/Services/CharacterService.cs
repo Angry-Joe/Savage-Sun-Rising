@@ -1,4 +1,5 @@
-﻿using DarkSun.Application.Interfaces;
+﻿//CharacterService.cs
+using DarkSun.Application.Interfaces;
 using DarkSun.Domain.Entities;
 
 namespace DarkSun.Application.Services

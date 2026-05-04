@@ -1,3 +1,4 @@
+// EmailLogin.cshtml.cs
 using System.Security.Claims;
 using DarkSun.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication;

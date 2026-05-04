@@ -1,3 +1,4 @@
+// ExternalEmailLogin.cshtml.cs
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;

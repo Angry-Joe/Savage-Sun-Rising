@@ -1,8 +1,12 @@
 @page "/register"
+@rendermode InteractiveServer
+
 @using MudBlazor
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject NavigationManager Navigation
+@* My own edits *@
+@inject ILogger<Register> Logger
 
 <PageTitle>Register – Dark Sun</PageTitle>
 
@@ -10,7 +14,7 @@
     <MudPaper Class="pa-8" Elevation="4">
         <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Create Account</MudText>
 
-        <EditForm Model="@_model" OnValidSubmit="HandleRegister">
+        <EditForm Model="@_model" OnValidSubmit="HandleRegister" FormName="register-form">
             <DataAnnotationsValidator />
 
             <MudTextField Label="Full Name"
@@ -75,18 +79,44 @@
         _isLoading = true;
         _errorMessage = null;
 
+        // try
+        // {
+        //     var (success, error, _) = await UserService.RegisterAsync(_model.Email, _model.Password, _model.FullName);
+        //     if (!success)
+        //     {
+        //         _errorMessage = error ?? "Registration failed.";
+        //         return;
+        //     }
+        //     Navigation.NavigateTo("/login?registered=true");
+        // }
         try
         {
-            var (success, error, _) = await UserService.RegisterAsync(_model.Email, _model.Password, _model.FullName);
-            if (!success)
+            Logger.LogInformation("Registration attempt for {Email}", _model.Email);
+
+            var (success, error, _) = await UserService.RegisterAsync(
+                _model.Email,
+                _model.Password,
+                _model.FullName);
+
+            if (success)
             {
-                _errorMessage = error ?? "Registration failed.";
-                return;
+                Logger.LogInformation("Registration successful for {Email}", _model.Email);
+                Navigation.NavigateTo("/login?registered=true", forceLoad: true);
             }
-            Navigation.NavigateTo("/login?registered=true");
+            else
+            {
+                _errorMessage = error ?? "Registration failed. Please try again.";
+                Logger.LogWarning("Registration failed: {Error}", error);
+            }
         }
-        catch (Exception ex) { _errorMessage = ex.Message; }
-        finally { _isLoading = false; }
+        catch (Exception ex)
+        {
+            _errorMessage = "An unexpected error occurred. Please try again.";
+            Logger.LogError(ex, "Registration exception for {Email}", _model.Email);
+        }
+        finally {
+            _isLoading = false;
+        }
     }
 
     private sealed class RegisterModel

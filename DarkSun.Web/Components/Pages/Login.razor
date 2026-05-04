@@ -1,66 +1,65 @@
 @page "/login"
-@using Microsoft.AspNetCore.WebUtilities
-@using MudBlazor
+@rendermode InteractiveServer
 
+@using MudBlazor
+@using System.ComponentModel.DataAnnotations
+@inject IUserService UserService
 @inject NavigationManager Navigation
+@inject ILogger<Login> Logger
+
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@using DarkSun.Application.Interfaces
+
+@* @inject NavigationManager Navigation
+@inject IUserService UserService
+@inject IHttpContextAccessor HttpContextAccessor *@
 
 <PageTitle>Login – Dark Sun</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
-    <MudPaper Elevation="4" Class="pa-8">
+    <MudPaper Class="pa-8" Elevation="4">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Sign In</MudText>
 
-        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">
-            @(_isRegistering ? "Create Account" : "Sign In")
-        </MudText>
+        <EditForm Model="@_model" OnValidSubmit="HandleLogin" FormName="login-form">
+            <DataAnnotationsValidator />
 
-        @if (!string.IsNullOrEmpty(_errorMessage))
-        {
-            <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
-        }
-
-        <form method="post" action="/EmailLogin">
-            <AntiforgeryToken />
-            <input type="hidden" name="action"    value="@(_isRegistering ? "register" : "login")" />
-            <input type="hidden" name="returnUrl" value="/" />
-
-            @if (_isRegistering)
-            {
-                <MudTextField T="string"
-                              Label="Full Name"
-                              Variant="Variant.Outlined"
-                              Class="mb-4"
-                              name="fullName"
-                              Required="true" />
-            }
-
-            <MudTextField T="string"
-                          Label="Email"
+            <MudTextField Label="Email"
+                          @bind-Value="_model.Email"
+                          For="@(() => _model.Email)"
                           InputType="InputType.Email"
                           Variant="Variant.Outlined"
-                          Class="mb-4"
-                          name="email"
-                          Required="true" />
+                          Class="mb-4" />
 
-            <MudTextField T="string"
-                          Label="Password"
+            <MudTextField Label="Password"
+                          @bind-Value="_model.Password"
+                          For="@(() => _model.Password)"
                           InputType="InputType.Password"
                           Variant="Variant.Outlined"
-                          Class="mb-6"
-                          name="password"
-                          Required="true" />
+                          Class="mb-6" />
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+            }
 
             <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
                        FullWidth="true"
-                       Size="Size.Large">
-                @(_isRegistering ? "Create Account" : "Sign In")
+                       Disabled="_isLoading">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Sign In
             </MudButton>
-        </form>
+        </EditForm>
 
         <MudDivider Class="my-6" />
 
-        @* ── OAuth providers ── *@
         <MudStack Spacing="2">
             <MudButton Href="/ExternalLogin?provider=Microsoft&amp;returnUrl=/"
                        Variant="Variant.Outlined"
@@ -77,38 +76,57 @@
             </MudButton>
         </MudStack>
 
-        <MudDivider Class="my-6" />
-
-        @* ── Toggle register / login via query string (no JS needed) ── *@
-        <MudText Align="Align.Center">
-            @if (_isRegistering)
-            {
-                <span>Already have an account? </span>
-                <MudLink Href="/login">Sign in</MudLink>
-            }
-            else
-            {
-                <span>Don't have an account? </span>
-                <MudLink Href="/login?mode=register">Register</MudLink>
-            }
+        <MudText Align="Align.Center" Class="mt-4">
+            Don't have an account?
+            <MudLink Href="/register">Register</MudLink>
         </MudText>
-
     </MudPaper>
 </MudContainer>
 
 @code {
-    private bool   _isRegistering = false;
-    private string _errorMessage  = string.Empty;
+    private readonly LoginModel _model = new();
+    private string? _errorMessage;
+    private bool _isLoading;
 
-    protected override void OnInitialized()
+    private async Task HandleLogin()
     {
-        var uri   = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var query = QueryHelpers.ParseQuery(uri.Query);
+        _isLoading = true;
+        _errorMessage = null;
 
-        if (query.TryGetValue("error", out var error))
-            _errorMessage = error.ToString();
+        try
+        {
+            Logger.LogInformation("Login attempt for {Email}", _model.Email);
 
-        if (query.TryGetValue("mode", out var mode) && mode == "register")
-            _isRegistering = true;
+            var (success, error, user) = await UserService.LoginAsync(_model.Email, _model.Password);
+
+            if (success)
+            {
+                Logger.LogInformation("✅ Login successful for {Email}", _model.Email);
+                Navigation.NavigateTo("/character", forceLoad: true);
+            }
+            else
+            {
+                _errorMessage = error ?? "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+            Logger.LogError(ex, "Login error");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private sealed class LoginModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
     }
 }

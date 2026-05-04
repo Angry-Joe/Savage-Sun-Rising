@@ -1,12 +1,15 @@
-﻿@page "/character/create"
+﻿@* CharacterCreation.razor *@
+@page "/character/create"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using DarkSun.Domain.Entities
 @using DarkSun.Domain.Data.Seed
 @using DarkSun.Web.Components.Wizard.Steps
 @using DarkSun.Application.Interfaces
 @using MudBlazor
+@using System.Security.Claims
 @inject ICharacterService CharacterService
 @inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6">Create New Hero of Athas</MudText>
@@ -15,6 +18,13 @@
                 Linear="true"
                 Color="Color.Primary"
                 Variant="Variant.Filled">
+
+        @* New step for adding name, alignment, etc. *@
+        <MudStep Title="Basic Info" Icon="@Icons.Material.Filled.Person"
+                 Completed="@(!string.IsNullOrWhiteSpace(_character.Name) && _character.Race != null)">
+            <RaceSelectionStep @bind-CharacterName="_character.Name"
+                               @bind-SelectedRace="_character.Race" />
+        </MudStep>
 
         <MudStep Title="Race" Icon="@Icons.Material.Filled.Person"
             HasError="false"
@@ -81,6 +91,8 @@
 
     private class CharacterCreationModel
     {
+        [Required(ErrorMessage = "Character name is required")]
+        public string? Name { get; set; }
         public AthasianRace?  Race   { get; set; }
         public AthasianClass? Class  { get; set; }
         public List<AbilityScoreStep.AbilityScore> Scores { get; set; } = new();
@@ -90,16 +102,23 @@
 
     private async Task HandleSave()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
         var sheet = new DarkSun.Domain.Entities.CharacterSheet
         {
+            CharId = Guid.NewGuid().ToString(),
+            Name = _character.Name ?? "Unnamed Hero",
             Race = _character.Race,
             Class = _character.Class,
             Background = _character.Background,
             Equipment = _character.Equipment,
-            AbilityScores = _character.Scores.ToDictionary(s => s.Name, s => s.Value)
+            AbilityScores = _character.Scores.ToDictionary(s => s.Name, s => s.Value),
+            UserId = userId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
-        await CharacterService.SaveCharacterAsync(sheet, "current-user-id"); // TODO: replace with real userId from auth
+        await CharacterService.SaveCharacterAsync(sheet, userId); // TODO: replace with real userId from auth
         Navigation.NavigateTo("/characters");
     }
 

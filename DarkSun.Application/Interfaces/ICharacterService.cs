@@ -1,4 +1,5 @@
-﻿using DarkSun.Domain.Entities;
+﻿//IcharacterSewrvice.cs
+using DarkSun.Domain.Entities;
 
 namespace DarkSun.Application.Interfaces
 {

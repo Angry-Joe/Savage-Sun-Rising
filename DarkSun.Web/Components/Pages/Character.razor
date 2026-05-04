@@ -1,7 +1,18 @@
 ﻿@page "/character"
 @using MudBlazor
+@* New additions for list of player's' characters *@
+@using DarkSun.Domain.Entities
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject ICharacterService CharacterService   // We'll create this
+@inject ILogger<Character> Logger
+@inject AuthenticationStateProvider AuthStateProvider
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 text-center">
+
+@*  Original page
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8 text-center">
     <MudText Typo="Typo.h3" GutterBottom="true">Character Builder</MudText>
     <MudText Typo="Typo.h5" Class="mb-8">Forge your legend under the crimson sun of Athas</MudText>
 
@@ -17,4 +28,110 @@
     <MudButton Variant="Variant.Outlined" Size="Size.Large" Class="mb-4" Style="width:320px; height:60px;">
         Load Existing Character (Coming Soon)
     </MudButton>
+</MudContainer> *@
+
+@* @page "/character"
+@rendermode InteractiveServer
+@using MudBlazor
+@inject ICharacterService CharacterService
+@inject NavigationManager Navigation
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthStateProvider
+@inject ILogger<Character> Logger *@
+
+<PageTitle>Character Builder – Dark Sun</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <MudText Typo="Typo.h3" GutterBottom="true">My Characters</MudText>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Size="Size.Large"
+               OnClick="CreateNewCharacter"
+               Class="mb-6">
+        + Create New Character
+    </MudButton>
+
+    <!-- Existing Characters Grid -->
+    @if (_isLoading)
+    {
+        <MudProgressCircular Indeterminate="true" Class="my-8" />
+    }
+    else if (_characters == null || !_characters.Any())
+    {
+        <MudText Typo="Typo.body1" Color="Color.Warning" Class="mt-4">
+            You have no characters yet. Create your first one above!
+        </MudText>
+    }
+    else
+    {
+        <MudGrid Spacing="4">
+            @foreach (var character in _characters)
+            {
+                <MudGridItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Elevation="2" Style="cursor: pointer; height: 100%;"
+                             OnClick="() => OpenCharacter(character)">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@character.Name</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    @character.Race – @character.Class @character.Level
+                                </MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2" Class="mb-2">
+                                @character.Background
+                            </MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Info">
+                                Last played: @character.UpdatedAt?.ToString("MMM dd, yyyy")
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudGridItem>
+            }
+        </MudGrid>
+    }
 </MudContainer>
+
+@code {
+    private List<CharacterSheet> _characters = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharacters();
+    }
+
+    private async Task LoadCharacters()
+    {
+        _isLoading = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _characters = await CharacterService.GetAllByUserAsync(userId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load characters");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void CreateNewCharacter()
+    {
+        Navigation.NavigateTo("/character/create");
+    }
+
+    private void OpenCharacter(CharacterSheet character)
+    {
+        Navigation.NavigateTo($"/character/review/{character.CharId}");
+    }
+}

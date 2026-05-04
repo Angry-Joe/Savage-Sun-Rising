@@ -1,8 +1,26 @@
-﻿@using DarkSun.Domain.Entities
+﻿@* RaceSelectionStep.razor *@
+@using DarkSun.Domain.Entities
 @using MudBlazor
+@* Added for Name, Alignment, etc fields *@
+@using System.ComponentModel.DataAnnotations
 
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudText Typo="Typo.h4" GutterBottom="true">Choose Your Race</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-4">The harsh wastes of Athas forge only the strongest.</MudText>
+
+    <!-- Character Name (Required) -->
+    <MudTextField Label="Character Name *"
+                  @bind-Value="@CharacterName"
+                  For="@(() => CharacterName)"
+                  Variant="Variant.Outlined"
+                  Class="mb-8"
+                  Immediate="true"
+                  Required="true"
+                  MaxLength="60"
+                  InputType="InputType.Text"
+                  DebounceInterval="200" />
+
+    <MudText Typo="Typo.h5" GutterBottom="true" Class="mt-6">Choose Your Race</MudText>
     <MudText Typo="Typo.subtitle1" Class="mb-4">The harsh wastes of Athas forge only the strongest.</MudText>
 
     @if (SelectedRace != null)
@@ -43,11 +61,18 @@
 </MudContainer>
 
 @code {
-    [Parameter]
-    public AthasianRace? SelectedRace { get; set; }
+    [Parameter]public string? CharacterName { get; set; }
 
-    [Parameter]
-    public EventCallback<AthasianRace> SelectedRaceChanged { get; set; }
+    [Parameter]public EventCallback<string> CharacterNameChanged { get; set; }
+    // public AthasianRace? SelectedRace { get; set; }
+    // [Parameter] public string? CharacterName { get; set; }
+    // [Parameter] public EventCallback<string> CharacterNameChanged { get; set; }
+
+    [Parameter] public AthasianRace? SelectedRace { get; set; }
+    [Parameter] public EventCallback<AthasianRace> SelectedRaceChanged { get; set; }
+
+    // [Parameter]
+    // public EventCallback<AthasianRace> SelectedRaceChanged { get; set; }
 
     private List<AthasianRace> _availableRaces = new()
     {
@@ -93,10 +118,21 @@
         Console.WriteLine($"🎲 RaceSelectionStep loaded with {_availableRaces.Count} races");
     }
 
+    // This handles two-way binding for the name field
+    // private async Task OnNameChanged(string? value)
+    // {
+    //     _localName = value;
+    //     await CharacterNameChanged.InvokeAsync(value ?? string.Empty);
+    // }
     private async Task SelectRace(AthasianRace race)
     {
         Console.WriteLine($"✅ Selected: {race.Name}");
         SelectedRace = race;
         await SelectedRaceChanged.InvokeAsync(race);
+        // Re-sync the name so it doesn't disappear
+        if (!string.IsNullOrEmpty(CharacterName))
+            await CharacterNameChanged.InvokeAsync(CharacterName);
     }
+
+
 }

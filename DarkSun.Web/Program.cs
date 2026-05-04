@@ -13,7 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Blazor + MudBlazor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddRazorPages();
+//builder.Services.AddRazorPages();
+// My attempt at preventing these pages from being accessed directly
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AddPageRoute("/EmailLogin", "/disabled-email-login"); // rename it
+    options.Conventions.AddPageRoute("/ExternalLogin", "/disabled-external-login");
+});
 
 builder.Services.AddMudServices(config =>
 {
@@ -51,6 +57,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor();
 
 // Stuff I built
 builder.Services.AddScoped<ISpellRepository, DynamoSpellRepository>();
