@@ -21,22 +21,17 @@ namespace DarkSun.Infrastructure.Persistence.Repositories
             await _context.SaveAsync(character);
         }
 
-        public async Task<CharacterSheet?> GetByIdAsync(string CharId, string userId)
+        /// <summary>
+        /// Loads a character by its hash key (CharId) and validates ownership.
+        /// </summary>
+        public async Task<CharacterSheet?> GetByIdAsync(string charId, string userId)
         {
-            return await _context.LoadAsync<CharacterSheet>(userId, CharId);
-        }
+            // CharId is the DynamoDB hash key — load directly by it
+            var character = await _context.LoadAsync<CharacterSheet>(charId);
 
-        // New Guid version (recommended)
-        public async Task<CharacterSheet?> GetByIdAsync(Guid charId, string userId)
-        {
-            string idStr = charId.ToString();
-            var character = await _context.LoadAsync<CharacterSheet>(userId, idStr);
-
-            if (character == null)
-            {
-                // Optional: log here
-                Console.WriteLine($"Character {charId} not found for user {userId}");
-            }
+            // Validate the character belongs to the requesting user
+            if (character != null && character.UserId != userId)
+                return null;
 
             return character;
         }
@@ -44,12 +39,16 @@ namespace DarkSun.Infrastructure.Persistence.Repositories
         public async Task<List<CharacterSheet>> GetAllByUserAsync(string userId)
         {
             var conditions = new List<ScanCondition>
-        {
-            new ScanCondition("UserId", ScanOperator.Equal, userId)
-        };
+            {
+                new ScanCondition("UserId", ScanOperator.Equal, userId)
+            };
             var results = await _context.ScanAsync<CharacterSheet>(conditions).GetRemainingAsync();
             return results ?? new List<CharacterSheet>();
         }
 
+        public Task<CharacterSheet?> GetByIdAsync(Guid CharId, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

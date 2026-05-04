@@ -2,82 +2,38 @@
 # Savage-Sun-Setting - Optimized .dockerignore
 # =============================================
 
-# === Ignore everything by default (safety) ===
+# === Ignore everything by default ===
 **
 
-# === Explicitly ALLOW only what we need ===
-!*.sln
-!*.csproj
-!Dockerfile
-!.dockerignore
-!Directory.Build.props
-!Directory.Packages.props
-!global.json
+# === Allow solution file ===
+!*.slnx
 
-# Allow source code for all projects
-!src/**/*
-!tests/**/*
+# === Allow project source files ===
+!DarkSun.Web/**
+!DarkSun.Application/**
+!DarkSun.Domain/**
+!DarkSun.Infrastructure/**
 
-# Allow necessary config files (examples only)
-!**/appsettings.json.example
-!**/appsettings.*.example
-!**/README.md
-!**/LICENSE
-
-# =============================================
-# Explicitly IGNORE large/unnecessary items
-# =============================================
-
-# Build artifacts
+# === OVERRIDE: Re-exclude build artifacts and sensitive runtime key material (must come AFTER the allow rules) ===
+# The ** prefix is required to override the allow rules above
+**/bin/**
+**/obj/**
 **/bin/
 **/obj/
-**/out/
-**/PublishOutput/
-**/App_Data/
+**/DataProtection-Keys/**
 
-# IDE / temporary files
+# === Ignore secrets and IDE files ===
 **/.vs/
-**/.vscode/
 **/*.user
-**/*.suo
-**/*.sln.user
-**/.rider/
-
-# Secrets & sensitive files
-**/appsettings.json
-**/appsettings.*.json
-**/.user-secrets/
-**/.aws/
-**/*.pfx
-**/*.pem
-**/*.key
-
-# Large data files (your lore PDFs!)
-**/*.pdf
-**/attachments/
-**/lore-*.pdf
-
-# Package caches
-**/packages/
-**/*.nupkg
-**/node_modules/
-
-# Git
+**/appsettings.Development.json
+**/.git/
+**/.gitignore
+**/*.md
 .git/
-.gitignore
-.gitattributes
+DarkSun.Tests/
+Dockerfile
+docker-compose.yml
 
-# Docker
-docker-compose*.yml
-.dockerignore
-Dockerfile.*
-
-# Logs & temp
-**/*.log
-**/logs/
-**/tmp/
-
-# OS junk
-**/.DS_Store
-**/*.swp
-**Thumbs.db
+.env
+.vs
+.vscode
