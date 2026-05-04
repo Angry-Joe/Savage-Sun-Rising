@@ -1,6 +1,6 @@
 ﻿@* CharacteDetail.razor (Revised) *@
 @* @page "/character/detail/{CharId}" *@
-@page "/character/detail"
+@page "/character/detail/{CharId}"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 @using MudBlazor
@@ -84,13 +84,12 @@
 </MudContainer>
 
 @code {
-    [Parameter]
-    public string CharId { get; set; } = string.Empty;
+    [Parameter]public string CharId { get; set; } = string.Empty;
 
     private CharacterSheet? _character;
     private bool _isLoading = true;
     private string? _loadError;
-    private string? _charId;
+    // private string? _charId;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -98,28 +97,31 @@
         await LoadCharacterDataAsync();
     }
     // Temp for troubleshooting
-    protected override async Task OnInitializedAsync()
-    {
-        // Extract ?id= from URL
-        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var idValue))
-            _charId = idValue;
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     // Extract ?id= from URL
+    //     var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+    //     if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var idValue))
+    //         CharId = idValue;
 
-        await LoadCharacterDataAsync();
-    }
+    //     await LoadCharacterDataAsync();
+    // }
     private async Task LoadCharacterDataAsync()
     {
         _isLoading = true;
         _loadError = null;
 
+        if (string.IsNullOrEmpty(CharId))
+        {
+            _loadError = "No character ID provided.";
+            _isLoading = false;
+            return;
+        }
+        _isLoading = true;
+        _loadError = null;
+
         try
         {
-            if (string.IsNullOrEmpty(_charId))
-            {
-                _loadError = "No character ID provided.";
-                return;
-            }
-
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -129,14 +131,14 @@
                 return;
             }
 
-            _character = await CharacterService.GetByIdAsync(_charId, userId);
+            _character = await CharacterService.GetByIdAsync(CharId, userId);
 
             if (_character == null)
                 _loadError = "That hero was lost to the desert or you lack permission to view them.";
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load character {CharId}", _charId);
+            Logger.LogError(ex, "Failed to load character {CharId}", CharId);
             _loadError = "The sands swallowed the record. Try again later.";
         }
         finally
@@ -202,8 +204,5 @@
         }
     }
 
-    private void BackToList()
-    {
-        Navigation.NavigateTo("/character");
-    }
+    private void BackToList() { Navigation.NavigateTo("/character"); }
 }

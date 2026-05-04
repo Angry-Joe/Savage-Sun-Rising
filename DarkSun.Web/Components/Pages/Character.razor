@@ -54,8 +54,8 @@
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
                     <MudCard
-                        Elevation="2"
-                        Style="cursor: pointer; height: 100%;">
+                        Elevation="4">
+                        @* Style="cursor: pointer; height: 100%;"> *@
                              @* @onclick="() => OpenCharacter(character)"> *@
                         <MudCardHeader>
                             <CardHeaderContent>
@@ -74,11 +74,9 @@
                             </MudText>
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Text"
-                                       Color="Color.Primary"
-                                       OnClick="() => OpenCharacter(character)">
-                                View Character
-                            </MudButton>
+                            <MudButton
+                                Color="Color.Primary"
+                                OnClick="@(() => ViewCharacter(@character.CharId))">View</MudButton>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -143,5 +141,9 @@
         // Navigation.NavigateTo($"/character/{character.CharId}");
         Navigation.NavigateTo($"/character/detail?id={character.CharId}");
         // Navigation.NavigateTo($"/character/{character.CharId}");
+    }
+    private void ViewCharacter(string characterId)
+    {
+        Navigation.NavigateTo($"/character/detail/{characterId}");
     }
 }

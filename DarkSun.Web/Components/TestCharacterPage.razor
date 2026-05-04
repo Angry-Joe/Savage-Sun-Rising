@@ -1,0 +1,19 @@
+﻿@page "/test-character"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<PageTitle>Test Character Detail</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hard-coded Character Detail Page</MudText>
+<MudText Class="mb-4">
+    This page is designed to test the <code>CharacterDetail</code> component by passing it a hard-coded ID.
+    If the character details load correctly below, it confirms the component and its data-fetching logic are working as expected.
+</MudText>
+
+<hr class="my-4" />
+
+@*
+  We are directly embedding the CharacterDetail component and passing the ID
+  "40653b07-c687-4a65-aec7-637ad46e43d8" as the CharId parameter.
+*@
+<CharacterDetail CharId="40653b07-c687-4a65-aec7-637ad46e43d8" />
+
