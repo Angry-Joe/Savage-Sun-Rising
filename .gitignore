@@ -14,3 +14,15 @@ appsettings*.json
 .aws/
 C:\Users\JDL\.aws\credentials
 .gitignore
+# Environment-specific configs
+appsettings.json
+appsettings.*.json
+!appsettings.json.example
+!appsettings.Development.json.example
+
+# Secrets
+secrets.json
+**/.user-secrets/
+.aws/
+*.pem
+*.pfx
