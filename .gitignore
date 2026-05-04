@@ -6,6 +6,8 @@
 **/appsettings.Development.json
 /bin
 bin/
+.dockerignore
+
 # Secrets
 appsettings*.json
 *.user
