@@ -2,14 +2,12 @@
 @page "/character"
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 @using MudBlazor
-@* New additions for list of player's' characters *@
 @using DarkSun.Domain.Entities
-@* @using DarkSun.Application.State *@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
-@* @rendermode InteractiveServer *@
+
 @inject NavigationManager Navigation
-@inject ICharacterService CharacterService   // We'll create this
+@inject ICharacterService CharacterService
 @inject ILogger<Character> Logger
 @inject AuthenticationStateProvider AuthStateProvider
 

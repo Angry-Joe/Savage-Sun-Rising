@@ -1,11 +1,9 @@
 @page "/register"
-@* @rendermode InteractiveServer *@
-
 @using MudBlazor
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity;
 @inject IUserService UserService
 @inject NavigationManager Navigation
-@* My own edits *@
 @inject ILogger<Register> Logger
 
 <PageTitle>Register – Dark Sun</PageTitle>
@@ -16,6 +14,7 @@
 
         <EditForm Model="@_model" OnValidSubmit="HandleRegister" FormName="register-form">
             <DataAnnotationsValidator />
+            <ValidationSummary /> @* Grok add*@
 
             <MudTextField Label="Full Name"
                           @bind-Value="_model.FullName"
@@ -60,6 +59,13 @@
                 }
                 Register
             </MudButton>
+            <div class="mud-grid mud-grid-spacing-4">
+                <MudTextField @bind-Value="@_model.FullName" Label="Name on Athas" Required="true" />
+            </div>
+
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+                Forge Character
+            </MudButton>
         </EditForm>
 
         <MudText Align="Align.Center" Class="mt-4">
@@ -70,7 +76,8 @@
 </MudContainer>
 
 @code {
-    private readonly RegisterModel _model = new();
+    // private readonly RegisterModel _model = new();
+    private RegisterModel _model { get; set; } = new();
     private string? _errorMessage;
     private bool _isLoading;
 
@@ -78,26 +85,17 @@
     {
         _isLoading = true;
         _errorMessage = null;
-
-        // try
-        // {
-        //     var (success, error, _) = await UserService.RegisterAsync(_model.Email, _model.Password, _model.FullName);
-        //     if (!success)
-        //     {
-        //         _errorMessage = error ?? "Registration failed.";
-        //         return;
-        //     }
-        //     Navigation.NavigateTo("/login?registered=true");
+        // var result = await UserService.RegisterAsync(_model);
+        // if (result.Succeeded) { Navigation.NavigateTo("/character-creation"); }
+        // else { // show errors
         // }
         try
         {
             Logger.LogInformation("Registration attempt for {Email}", _model.Email);
-
             var (success, error, _) = await UserService.RegisterAsync(
                 _model.Email,
                 _model.Password,
                 _model.FullName);
-
             if (success)
             {
                 Logger.LogInformation("Registration successful for {Email}", _model.Email);
@@ -121,20 +119,15 @@
 
     private sealed class RegisterModel
     {
-        [Required]
-        [StringLength(100, MinimumLength = 2)]
+        [Required][StringLength(100, MinimumLength = 2)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        [Required][EmailAddress]public string Email { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100, MinimumLength = 8)]
+        [Required][StringLength(100, MinimumLength = 8)]
         public string Password { get; set; } = string.Empty;
 
-        [Required]
-        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
+        [Required][Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

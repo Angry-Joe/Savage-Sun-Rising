@@ -9,15 +9,13 @@ public class UserRepository : IUserRepository
 {
     private readonly IDynamoDBContext _context;
 
-    public UserRepository(IDynamoDBContext context)
-    {
-        _context = context;
-    }
+    public UserRepository(IDynamoDBContext context) { _context = context; }
+
+    public Task CreateAsync(DarkSunUser user) { throw new NotImplementedException(); }
 
     public async Task<DarkSunUser?> GetByEmailAsync(string email)
     {
-        if (string.IsNullOrWhiteSpace(email))
-            return null;
+        if (string.IsNullOrWhiteSpace(email)) return null;
 
         var search = _context.ScanAsync<DarkSunUser>(new[]
         {
@@ -35,5 +33,10 @@ public class UserRepository : IUserRepository
     public async Task SaveAsync(DarkSunUser user)
     {
         await _context.SaveAsync(user);
+    }
+
+    public Task UpdateAsync(DarkSunUser user)
+    {
+        throw new NotImplementedException();
     }
 }
