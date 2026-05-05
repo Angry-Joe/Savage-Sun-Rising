@@ -1,0 +1,66 @@
+﻿@page "/ExternalLogin"
+@using DarkSun.Application.Interfaces
+@using DarkSun.Domain.Entities
+@using Microsoft.AspNetCore.Components.Web
+@using MudBlazor
+@inject IUserService UserService
+@inject NavigationManager Navigation
+@inject ILogger<ExternalLogin> Logger
+
+<PageTitle>External Login</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+    <MudPaper Class="pa-8" Elevation="4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Processing external login...</MudText>
+        <MudProgressCircular Indeterminate="true" Class="mx-auto mt-4" />
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]public string? Provider { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]public string? ReturnUrl { get; set; } = "/character";
+
+    protected override void OnInitialized()
+    {
+        var target = string.IsNullOrWhiteSpace(ReturnUrl) || ReturnUrl == "/"
+                     ? "/character"
+                     : ReturnUrl;
+
+        Navigation.NavigateTo(target, forceLoad: true);
+    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     Logger.LogInformation("External login started. Provider={Provider}", Provider);
+
+    //     if (string.IsNullOrEmpty(Provider))
+    //     {
+    //         Navigation.NavigateTo("/login?error=no-provider");
+    //         return;
+    //     }
+
+    //     try
+    //     {
+    //         var email = $"demo.{Provider.ToLower()}@athas.com";
+    //         var result = await UserService.FindOrCreateExternalUserAsync(email, null);
+
+    //         if (result.Success && result.User != null)
+    //         {
+    //             Logger.LogInformation("✅ External login successful for {Email}", email);
+    //             Navigation.NavigateTo(ReturnUrl ?? "/character", forceLoad: true);
+    //         }
+    //         else
+    //         {
+    //             Logger.LogWarning("External login failed: {Error}", result.Error);
+    //             Navigation.NavigateTo($"/login?error=external-failed&provider={Provider}");
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Logger.LogError(ex, "External login exception");
+    //         Navigation.NavigateTo($"/login?error=external-exception&provider={Provider}");
+    //     }
+    // }
+}

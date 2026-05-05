@@ -8,13 +8,42 @@ using DarkSun.Infrastructure.Persistence.Seeders;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
+using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==================== HOSTING CONFIG ====================
-builder.WebHost.UseUrls("http://*:8080"); // Required for Docker / ECS
+// ==================== AUTHENTICATION (MUST BE FIRST) ====================
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+    })
+    .AddCookie("ExternalCookie")
+    .AddMicrosoftAccount(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
+        options.SignInScheme = "ExternalCookie";
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        options.SignInScheme = "ExternalCookie";
+    });
 
-// ==================== BLAZOR + MUD BLAZOR ====================
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor();
+
+// ==================== HOSTING ====================
+if (!builder.Environment.IsDevelopment())
+    builder.WebHost.UseUrls("http://*:8080");
+
+// ==================== BLAZOR + MUD ====================
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -24,13 +53,21 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.PreventDuplicates = true;
 });
 
+// ==================== SERVICES ====================
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<CharacterStateService>();
+builder.Services.AddScoped<SpellSeederService>();
+
 // ==================== DARK SUN THEME ====================
 var darkSunTheme = new MudTheme()
 {
     PaletteLight = new PaletteLight
     {
-        Primary = "#C44A2A",           // Burnt Orange
-        Secondary = "#8A9B4E",         // Sickly Green
+        Primary = "#C44A2A",
+        Secondary = "#8A9B4E",
         Background = "#1C140F",
         Surface = "#2A211B",
         TextPrimary = "#E8D5A3",
@@ -45,32 +82,13 @@ builder.Services.AddSingleton(darkSunTheme);
 // ==================== AWS + DYNAMODB ====================
 if (builder.Environment.IsDevelopment())
 {
-    // Support multiple common naming mistakes
-    var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID")
-                 ?? Environment.GetEnvironmentVariable("AWS_KEY_ID")
-                 ?? builder.Configuration["AWS:AccessKeyId"];
+    var creds = AwsCredentials.ParseFromFile()
+        ?? AwsCredentials.ParseFromEnvironment()
+        ?? throw new InvalidOperationException("❌ AWS credentials not found!");
 
-    var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")
-                 ?? builder.Configuration["AWS:SecretAccessKey"];
-
-    if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
-    {
-        Console.WriteLine("❌ AWS credentials not found in environment variables!");
-        Console.WriteLine("   Expected: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY");
-    }
-    else
-    {
-        Console.WriteLine("✅ AWS Credentials loaded successfully (Account will be verified)");
-    }
-
-    var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
-    var config = new Amazon.DynamoDBv2.AmazonDynamoDBConfig
-    {
-        RegionEndpoint = Amazon.RegionEndpoint.USEast1
-    };
-
-    builder.Services.AddSingleton<IAmazonDynamoDB>(
-        new Amazon.DynamoDBv2.AmazonDynamoDBClient(credentials, config));
+    builder.Services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(
+        new Amazon.Runtime.BasicAWSCredentials(creds.AccessKeyId, creds.SecretAccessKey),
+        new AmazonDynamoDBConfig { RegionEndpoint = Amazon.RegionEndpoint.USEast1 }));
 }
 else
 {
@@ -78,28 +96,6 @@ else
 }
 
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
-
-// ==================== SERVICES ====================
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ICharacterService, CharacterService>();
-builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
-builder.Services.AddScoped<CharacterStateService>();
-builder.Services.AddScoped<SpellSeederService>();
-
-// ==================== AUTHENTICATION ====================
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";
-        options.LogoutPath = "/logout";
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-        options.SlidingExpiration = true;
-    });
-
-builder.Services.AddAuthorization();
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddHttpContextAccessor();   // Required for UserService
 
 // ==================== SESSION ====================
 builder.Services.AddDistributedMemoryCache();
@@ -113,27 +109,22 @@ builder.Services.AddSession(options =>
 // ==================== BUILD APP ====================
 var app = builder.Build();
 
-// ==================== MIDDLEWARE PIPELINE ====================
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseDeveloperExceptionPage();
+// ==================== SEEDING ====================
+try
+{
+    using var scope = app.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<SpellSeederService>();
+    await seeder.SeedAsync(forceOverwrite: false);
+    Console.WriteLine("✅ Development seeding completed");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ Seeding skipped: {ex.Message}");
+}
 
-//    // Safe Seeding
-//    try
-//    {
-//        using var scope = app.Services.CreateScope();
-//        var seeder = scope.ServiceProvider.GetRequiredService<SpellSeederService>();
-//        await seeder.SeedAsync(forceOverwrite: false);
-//        Console.WriteLine("✅ Development seeding completed");
-//    }
-//    catch (Exception ex)
-//    {
-//        Console.WriteLine($"⚠️ Seeding skipped: {ex.Message}");
-//    }
-//}
-
+// ==================== MIDDLEWARE ====================
 app.UseStaticFiles();
-app.UseSession();                    // Must be before Authentication
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
@@ -142,3 +133,34 @@ app.MapRazorComponents<DarkSun.Web.Components.App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();
+
+// ==================== AWS CREDENTIAL HELPER ====================
+internal record AwsCredentials(string AccessKeyId, string SecretAccessKey)
+{
+    public void Deconstruct(out string accessKeyId, out string secretAccessKey)
+    {
+        accessKeyId = AccessKeyId;
+        secretAccessKey = SecretAccessKey;
+    }
+
+    public static AwsCredentials? ParseFromFile()
+    {
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".aws", "credentials");
+        if (!File.Exists(filePath)) return null;
+
+        var content = File.ReadAllText(filePath);
+        var keyMatch = Regex.Match(content, @"aws_access_key_id\s*=\s*(?<v>[A-Za-z0-9]+)", RegexOptions.IgnoreCase);
+        var secretMatch = Regex.Match(content, @"aws_secret_access_key\s*=\s*(?<v>.+)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+        return (keyMatch.Success && secretMatch.Success)
+            ? new AwsCredentials(keyMatch.Groups["v"].Value.Trim(), secretMatch.Groups["v"].Value.Trim())
+            : null;
+    }
+
+    public static AwsCredentials? ParseFromEnvironment()
+    {
+        var key = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? Environment.GetEnvironmentVariable("AWS_KEY_ID");
+        var secret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
+        return (key, secret) is (not null, not null) ? new AwsCredentials(key, secret) : null;
+    }
+}

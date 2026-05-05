@@ -1,64 +1,47 @@
 @page "/login"
-@* @rendermode InteractiveServer  Moved to App.razor*@
-
 @using MudBlazor
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
 
-@using Microsoft.AspNetCore.WebUtilities
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Authentication.Cookies
-@using System.Security.Claims
-@using DarkSun.Application.Interfaces
-
-@* @inject NavigationManager Navigation
-@inject IUserService UserService
-@inject IHttpContextAccessor HttpContextAccessor *@
-
-<PageTitle>Login – Dark Sun</PageTitle>
+<PageTitle>Login - Dark Sun</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
     <MudPaper Class="pa-8" Elevation="4">
-        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Sign In</MudText>
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Welcome to Athas</MudText>
 
-        <EditForm Model="@_model" OnValidSubmit="HandleLogin" FormName="login-form">
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+        }
+
+        <EditForm Model="_model" OnValidSubmit="HandleLogin" FormName="AthasLoginForm">
             <DataAnnotationsValidator />
 
-            <MudTextField Label="Email"
-                          @bind-Value="_model.Email"
-                          For="@(() => _model.Email)"
-                          InputType="InputType.Email"
-                          Variant="Variant.Outlined"
-                          Class="mb-4" />
+            <MudTextField @bind-Value="_model.Email" Label="Email" InputType="InputType.Email"
+                          Required="true" Class="mb-4" />
 
-            <MudTextField Label="Password"
-                          @bind-Value="_model.Password"
-                          For="@(() => _model.Password)"
-                          InputType="InputType.Password"
-                          Variant="Variant.Outlined"
-                          Class="mb-6" />
+            <MudTextField @bind-Value="_model.Password" Label="Password" InputType="InputType.Password"
+                          Required="true" Class="mb-6" />
 
-            @if (!string.IsNullOrEmpty(_errorMessage))
-            {
-                <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
-            }
-
-            <MudButton ButtonType="ButtonType.Submit"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Disabled="_isLoading">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary"
+                       FullWidth="true" Disabled="_isLoading">
                 @if (_isLoading)
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>Logging in...</span>
                 }
-                Sign In
+                else
+                {
+                    <span>Login</span>
+                }
             </MudButton>
         </EditForm>
 
         <MudDivider Class="my-6" />
+
+        <MudText Align="Align.Center" Class="mb-4">Or continue with</MudText>
 
         <MudStack Spacing="2">
             <MudButton Href="/ExternalLogin?provider=Microsoft&amp;returnUrl=/"
@@ -78,7 +61,7 @@
 
         <MudText Align="Align.Center" Class="mt-4">
             Don't have an account?
-            <MudLink Href="/register">Register</MudLink>
+            <a href="/register">Register</a>
         </MudText>
     </MudPaper>
 </MudContainer>
@@ -95,29 +78,19 @@
 
         try
         {
-            Logger.LogInformation("Login attempt for {Email}", _model.Email);
-
             var (success, error, user) = await UserService.LoginAsync(_model.Email, _model.Password);
 
-            if (success)
-            {
-                Logger.LogInformation("✅ Login successful for {Email}", _model.Email);
-                Navigation.NavigateTo("/character", forceLoad: true);
-            }
-            else
-            {
-                _errorMessage = error ?? "Invalid email or password.";
-            }
-        }
-        catch (Exception ex)
-        {
+            if (success) { Navigation.NavigateTo("/character", forceLoad: true); }
+            else { _errorMessage = error ?? "Invalid email or password."; }
+        } catch (Exception ex) {
             _errorMessage = ex.Message;
             Logger.LogError(ex, "Login error");
-        }
-        finally
-        {
-            _isLoading = false;
-        }
+        } finally { _isLoading = false; }
+    }
+
+    private void StartExternalLogin(string provider)
+    {
+        Navigation.NavigateTo($"/ExternalLogin?provider={provider}&returnUrl=/character", forceLoad: true);
     }
 
     private sealed class LoginModel

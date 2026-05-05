@@ -17,6 +17,8 @@
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.9" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.7" />
   </ItemGroup>
 
   <PropertyGroup>
