@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DarkSun.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42fccee97179ab4587b5e010b0eb50035d46171e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a1b76ad1e29a7a5db4b5fb56d447a80aa4c18a30")]
 [assembly: System.Reflection.AssemblyProductAttribute("DarkSun.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DarkSun.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

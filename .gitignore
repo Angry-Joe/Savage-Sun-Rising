@@ -6,8 +6,10 @@
 **/appsettings.Development.json
 /bin
 bin/
+**/bin/
+**/obj/
 .dockerignore
-**DarkSun.Web/DataProtection-Keys**
+*.log
 
 # Secrets
 appsettings*.json
@@ -34,6 +36,7 @@ secrets.json
 /DarkSun.Web/Properties/launchSettings.json
 /.gitignore
 /DarkSun.Web/DataProtection-Keys/key-d9906f5b-4fe2-4fd2-a362-6a254e7f49cf.xml
+/.gitignore
 /.gitignore
 /.gitignore
 /.gitignore

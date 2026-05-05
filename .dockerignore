@@ -14,12 +14,13 @@
 !DarkSun.Domain/**
 !DarkSun.Infrastructure/**
 
-# === OVERRIDE: Re-exclude build artifacts (must come AFTER the allow rules) ===
+# === OVERRIDE: Re-exclude build artifacts and sensitive runtime key material (must come AFTER the allow rules) ===
 # The ** prefix is required to override the allow rules above
 **/bin/**
 **/obj/**
 **/bin/
 **/obj/
+**/DataProtection-Keys/**
 
 # === Ignore secrets and IDE files ===
 **/.vs/
