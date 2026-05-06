@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 8081
-ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:80
 
 ENTRYPOINT ["dotnet", "DarkSun.Web.dll"]
