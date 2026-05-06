@@ -2,14 +2,20 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs
+.vs/
+.vscode/
+.idea/
+docker-compose*.yml
 **/appsettings.Development.json
 /bin
 bin/
+publish/
 **/bin/
 **/obj/
 .dockerignore
 *.log
+Debug/
+Release/
 
 # Secrets
 appsettings*.json
@@ -17,7 +23,7 @@ appsettings*.json
 .secrets/
 **/.env
 .aws/
-C:\Users\JDL\.aws\credentials
+C:/Users/JDL/.aws/credentials
 .gitignore
 launchsettings.json
 # Environment-specific configs
@@ -33,10 +39,8 @@ secrets.json
 .aws/
 *.pem
 *.pfx
-/DarkSun.Web/Properties/launchSettings.json
+DarkSun.Web/Properties/launchSettings.json
 /.gitignore
-/DarkSun.Web/DataProtection-Keys/key-d9906f5b-4fe2-4fd2-a362-6a254e7f49cf.xml
-/.gitignore
-/.gitignore
+DarkSun.Web/DataProtection-Keys/key-d9906f5b-4fe2-4fd2-a362-6a254e7f49cf.xml
 /.gitignore
 /.gitignore
