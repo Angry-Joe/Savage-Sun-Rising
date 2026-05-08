@@ -26,5 +26,7 @@ COPY --from=build /app/publish .
 
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_PORT=80
 
 ENTRYPOINT ["dotnet", "DarkSun.Web.dll"]

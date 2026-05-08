@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DarkSun.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+df1ddc0778b0baf3a9a48c77f4956c0a814c2bbe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+658364a4e67dc0b4b8b4e26cac17e5474a3bbf8d")]
 [assembly: System.Reflection.AssemblyProductAttribute("DarkSun.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DarkSun.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

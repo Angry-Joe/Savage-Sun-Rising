@@ -16,6 +16,7 @@ publish/
 *.log
 Debug/
 Release/
+.github/copilot-instructions.md
 
 # Secrets
 appsettings*.json
@@ -40,7 +41,5 @@ secrets.json
 *.pem
 *.pfx
 DarkSun.Web/Properties/launchSettings.json
-/.gitignore
 DarkSun.Web/DataProtection-Keys/key-d9906f5b-4fe2-4fd2-a362-6a254e7f49cf.xml
-/.gitignore
-/.gitignore
+/DarkSun.Web/DataProtection-Keys/key-d9906f5b-4fe2-4fd2-a362-6a254e7f49cf.xml

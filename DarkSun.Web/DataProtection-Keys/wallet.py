@@ -37,4 +37,5 @@ if __name__ == "__main__":
     creds = ShowId()
     if creds:
         print(f"Access Key ID:     {creds.access_key_id}")
-        print(f"Secret Access Key: {creds.secret_access_key}")
+        masked_secret = ("*" * max(len(creds.secret_access_key) - 4, 0)) + creds.secret_access_key[-4:]
+        print(f"Secret Access Key: {masked_secret}")
