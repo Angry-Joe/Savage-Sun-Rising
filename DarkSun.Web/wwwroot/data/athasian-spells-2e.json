@@ -1,1 +1,9 @@
-PLACEHOLDER
+[
+  {
+    "_note": "FULL FILE NOT PUSHED VIA API (4.0 MB exceeds practical tool payload).",
+    "_action": "Download athasian-spells-2e.json from the conversation artifacts or ask Grok to provide a download link / split files.",
+    "_sample": "See DarkSun.Web/wwwroot/data/athasian-spells-2e-sample.json (30 spells) for immediate testing with tools/athasian-spell-compendium.html",
+    "_totalSpells": 1626,
+    "_schema": "Extended Savage Sun Rising schema with verified, class, areaOfEffect, savingThrow, athasianStatus, etc."
+  }
+]
