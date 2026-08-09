@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DarkSun.Application.Interfaces;
 using DarkSun.Domain.Entities;
-using Microsoft.AspNetCore.Hosting;
 
 namespace DarkSun.Infrastructure.Persistence.Repositories;
 
@@ -12,14 +11,8 @@ namespace DarkSun.Infrastructure.Persistence.Repositories;
 /// </summary>
 public class LocalSpellRepository : ISpellRepository
 {
-    private readonly IWebHostEnvironment _env;
     private List<DarkSunSpell>? _cache;
     private readonly object _lock = new();
-
-    public LocalSpellRepository(IWebHostEnvironment env)
-    {
-        _env = env;
-    }
 
     public Task<DarkSunSpell?> GetByIdAsync(string id)
     {
@@ -44,10 +37,10 @@ public class LocalSpellRepository : ISpellRepository
         {
             if (_cache != null) return _cache;
 
-            var path = Path.Combine(_env.WebRootPath ?? "wwwroot", "data", "priest-1st-level-spells.json");
-            if (!File.Exists(path))
+            var path = ResolveSpellJsonPath();
+            if (path == null || !File.Exists(path))
             {
-                Console.WriteLine($"⚠️ Spell JSON not found at: {path}");
+                Console.WriteLine($"⚠️ Spell JSON not found. Searched from: {Directory.GetCurrentDirectory()}");
                 _cache = new List<DarkSunSpell>();
                 return _cache;
             }
@@ -63,7 +56,7 @@ public class LocalSpellRepository : ISpellRepository
                     }) ?? new List<SpellJsonDto>();
 
                 _cache = dtos.Select(MapToEntity).ToList();
-                Console.WriteLine($"✅ Loaded {_cache.Count} spells from local JSON");
+                Console.WriteLine($"✅ Loaded {_cache.Count} spells from {path}");
             }
             catch (Exception ex)
             {
@@ -73,6 +66,31 @@ public class LocalSpellRepository : ISpellRepository
 
             return _cache;
         }
+    }
+
+    /// <summary>
+    /// Tries several common locations so the repo works whether run from
+    /// the solution root, the Web project folder, or a published output folder.
+    /// </summary>
+    private static string? ResolveSpellJsonPath()
+    {
+        var candidates = new[]
+        {
+            Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "data", "priest-1st-level-spells.json"),
+            Path.Combine(Directory.GetCurrentDirectory(), "DarkSun.Web", "wwwroot", "data", "priest-1st-level-spells.json"),
+            Path.Combine(AppContext.BaseDirectory, "wwwroot", "data", "priest-1st-level-spells.json"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "wwwroot", "data", "priest-1st-level-spells.json"),
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "DarkSun.Web", "wwwroot", "data", "priest-1st-level-spells.json"),
+        };
+
+        foreach (var candidate in candidates)
+        {
+            var full = Path.GetFullPath(candidate);
+            if (File.Exists(full))
+                return full;
+        }
+
+        return null;
     }
 
     private static DarkSunSpell MapToEntity(SpellJsonDto dto)
