@@ -1,0 +1,21 @@
+{
+  "title": "Athasian Spell Compendium (2e → SSR schema)",
+  "totalSpells": 1626,
+  "schema": "Extended Savage Sun Rising (see DarkSunSpell.cs + verified/class/areaOfEffect extensions)",
+  "files": [
+    {"path": "athasian-spells-2e-cleric.json", "class": "Cleric", "count": 374},
+    {"path": "athasian-spells-2e-wizard-l0.json", "class": "Wizard", "level": 0, "count": 19},
+    {"path": "athasian-spells-2e-wizard-l1.json", "class": "Wizard", "level": 1, "count": 145},
+    {"path": "athasian-spells-2e-wizard-l2.json", "class": "Wizard", "level": 2, "count": 175},
+    {"path": "athasian-spells-2e-wizard-l3.json", "class": "Wizard", "level": 3, "count": 186},
+    {"path": "athasian-spells-2e-wizard-l4.json", "class": "Wizard", "level": 4, "count": 178},
+    {"path": "athasian-spells-2e-wizard-l5.json", "class": "Wizard", "level": 5, "count": 153},
+    {"path": "athasian-spells-2e-wizard-l6.json", "class": "Wizard", "level": 6, "count": 105},
+    {"path": "athasian-spells-2e-wizard-l7.json", "class": "Wizard", "level": 7, "count": 102},
+    {"path": "athasian-spells-2e-wizard-l8.json", "class": "Wizard", "level": 8, "count": 75},
+    {"path": "athasian-spells-2e-wizard-l9.json", "class": "Wizard", "level": 9, "count": 83},
+    {"path": "athasian-spells-2e-wizard-l10.json", "class": "Wizard", "level": 10, "count": 31}
+  ],
+  "editor": "tools/athasian-spell-compendium.html",
+  "note": "Load any of these JSON files (or concatenate) into the editor. All use the same extended SSR schema with verified flag."
+}

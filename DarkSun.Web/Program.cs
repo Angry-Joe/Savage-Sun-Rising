@@ -1,19 +1,18 @@
 // DarkSun.Web/Program.cs
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+// Local-development friendly version — no AWS / DynamoDB required.
 using DarkSun.Application.Interfaces;
 using DarkSun.Application.Services;
 using DarkSun.Infrastructure.Persistence.Repositories;
-using DarkSun.Infrastructure.Persistence.Seeders;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
-using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==================== AUTHENTICATION (MUST BE FIRST) ====================
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// ==================== AUTHENTICATION ====================
+// Cookie auth is always available. External providers are optional so the app
+// starts cleanly even when ClientId/Secret secrets are not configured.
+var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.LoginPath = "/login";
@@ -21,19 +20,41 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
     })
-    .AddCookie("ExternalCookie")
-    .AddMicrosoftAccount(options =>
+    .AddCookie("ExternalCookie");
+
+var msClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
+var msClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
+if (!string.IsNullOrWhiteSpace(msClientId) && !string.IsNullOrWhiteSpace(msClientSecret))
+{
+    authBuilder.AddMicrosoftAccount(options =>
     {
-        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"]!;
-        options.SignInScheme = "ExternalCookie";
-    })
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        options.ClientId = msClientId;
+        options.ClientSecret = msClientSecret;
         options.SignInScheme = "ExternalCookie";
     });
+    Console.WriteLine("✅ Microsoft external login configured");
+}
+else
+{
+    Console.WriteLine("ℹ️  Microsoft external login skipped (no ClientId/Secret)");
+}
+
+var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+        options.SignInScheme = "ExternalCookie";
+    });
+    Console.WriteLine("✅ Google external login configured");
+}
+else
+{
+    Console.WriteLine("ℹ️  Google external login skipped (no ClientId/Secret)");
+}
 
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
@@ -53,13 +74,15 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.PreventDuplicates = true;
 });
 
-// ==================== SERVICES ====================
+// ==================== LOCAL / OFFLINE SERVICES ====================
+// These replace the previous DynamoDB-backed repositories so the site
+// runs fully offline during the migration to PostgreSQL.
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, LocalUserRepository>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
-builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<ICharacterRepository, LocalCharacterRepository>();
+builder.Services.AddScoped<ISpellRepository, LocalSpellRepository>();
 builder.Services.AddScoped<CharacterStateService>();
-builder.Services.AddScoped<SpellSeederService>();
 
 // ==================== DARK SUN THEME ====================
 var darkSunTheme = new MudTheme()
@@ -79,24 +102,6 @@ var darkSunTheme = new MudTheme()
 };
 builder.Services.AddSingleton(darkSunTheme);
 
-// ==================== AWS + DYNAMODB ====================
-if (builder.Environment.IsDevelopment())
-{
-    var creds = AwsCredentials.ParseFromFile()
-        ?? AwsCredentials.ParseFromEnvironment()
-        ?? throw new InvalidOperationException("❌ AWS credentials not found!");
-
-    builder.Services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient(
-        new Amazon.Runtime.BasicAWSCredentials(creds.AccessKeyId, creds.SecretAccessKey),
-        new AmazonDynamoDBConfig { RegionEndpoint = Amazon.RegionEndpoint.USEast1 }));
-}
-else
-{
-    builder.Services.AddAWSService<IAmazonDynamoDB>();
-}
-
-builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
-
 // ==================== SESSION ====================
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -109,18 +114,9 @@ builder.Services.AddSession(options =>
 // ==================== BUILD APP ====================
 var app = builder.Build();
 
-// ==================== SEEDING ====================
-try
-{
-    using var scope = app.Services.CreateScope();
-    var seeder = scope.ServiceProvider.GetRequiredService<SpellSeederService>();
-    await seeder.SeedAsync(forceOverwrite: false);
-    Console.WriteLine("✅ Development seeding completed");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"⚠️ Seeding skipped: {ex.Message}");
-}
+Console.WriteLine("🌅 Savage Sun Rising — local offline mode");
+Console.WriteLine("   Spells loaded from wwwroot/data/*.json");
+Console.WriteLine("   Users & characters stored in-memory (reset on restart)");
 
 // ==================== MIDDLEWARE ====================
 app.UseStaticFiles();
@@ -133,34 +129,3 @@ app.MapRazorComponents<DarkSun.Web.Components.App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();
-
-// ==================== AWS CREDENTIAL HELPER ====================
-internal record AwsCredentials(string AccessKeyId, string SecretAccessKey)
-{
-    public void Deconstruct(out string accessKeyId, out string secretAccessKey)
-    {
-        accessKeyId = AccessKeyId;
-        secretAccessKey = SecretAccessKey;
-    }
-
-    public static AwsCredentials? ParseFromFile()
-    {
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".aws", "credentials");
-        if (!File.Exists(filePath)) return null;
-
-        var content = File.ReadAllText(filePath);
-        var keyMatch = Regex.Match(content, @"aws_access_key_id\s*=\s*(?<v>[A-Za-z0-9]+)", RegexOptions.IgnoreCase);
-        var secretMatch = Regex.Match(content, @"aws_secret_access_key\s*=\s*(?<v>.+)$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-
-        return (keyMatch.Success && secretMatch.Success)
-            ? new AwsCredentials(keyMatch.Groups["v"].Value.Trim(), secretMatch.Groups["v"].Value.Trim())
-            : null;
-    }
-
-    public static AwsCredentials? ParseFromEnvironment()
-    {
-        var key = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID") ?? Environment.GetEnvironmentVariable("AWS_KEY_ID");
-        var secret = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-        return (key, secret) is (not null, not null) ? new AwsCredentials(key, secret) : null;
-    }
-}

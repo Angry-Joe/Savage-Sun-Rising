@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Athasian Spell Compendium — Editor</title>
+<style>
+  :root{
+    --bg:#1c140d;--panel:#251a10;--panel2:#2f2114;--ink:#f2e4cf;--muted:#c7a97e;
+    --accent:#e0a53c;--accent2:#c9622b;--line:#4a3620;--chip:#3a2915;
+    --earth:#8a6a3a;--air:#7fa8c9;--fire:#d0632c;--water:#3f8f8a;
+    --magma:#b8442a;--rain:#5f7fa8;--silt:#9b8b5e;--sun:#e6b53c;--cosmos:#b483c9;
+    --ok:#6a9e6a;--danger:#c45c4a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column}
+  header{padding:12px 18px 6px;border-bottom:2px solid var(--line);background:linear-gradient(180deg,#2a1c0f,#1c140d);flex:none}
+  h1{margin:0;font-size:20px;color:var(--accent);letter-spacing:.4px}
+  .sub{color:var(--muted);font-size:12px;margin-top:3px;line-height:1.4}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 18px;background:var(--panel2);border-bottom:1px solid var(--line);flex:none}
+  button,.file-btn{
+    background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:6px;
+    padding:6px 12px;cursor:pointer;font:inherit;font-size:13px
+  }
+  button:hover:not(:disabled),.file-btn:hover{border-color:var(--accent);color:var(--accent)}
+  button:disabled{opacity:.4;cursor:default}
+  button.primary{background:var(--accent);color:#241704;border-color:var(--accent);font-weight:700}
+  button.danger{color:var(--danger);border-color:var(--danger)}
+  #status{margin-left:auto;color:var(--muted);font-size:12.5px}
+  #status.dirty{color:var(--accent);font-weight:600}
+  .tabs{display:flex;gap:6px;padding:8px 18px 0;flex:none}
+  .tab{padding:8px 16px;border:1px solid var(--line);border-bottom:none;border-radius:7px 7px 0 0;background:var(--panel);color:var(--muted);cursor:pointer;font-size:14px;font-weight:600}
+  .tab.on{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
+  .bar{padding:8px 18px;border-bottom:1px solid var(--line);background:var(--panel2);display:flex;flex-wrap:wrap;gap:12px;align-items:center;flex:none}
+  .grouplbl{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-right:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .chip{padding:3px 10px;border-radius:12px;background:var(--chip);color:var(--muted);cursor:pointer;font-size:12px;border:1px solid transparent}
+  .chip.on{background:var(--accent);color:#241704;font-weight:700}
+  .sep{width:1px;height:20px;background:var(--line)}
+  select,input[type=text]{background:#150e07;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit}
+  .layout{display:flex;flex:1;min-height:0}
+  .side{width:300px;border-right:1px solid var(--line);overflow-y:auto;background:var(--panel);flex:none;display:flex;flex-direction:column}
+  .search{padding:10px;position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);z-index:2}
+  .search input{width:100%}
+  .lvlrow{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+  .lvl{padding:2px 7px;border-radius:10px;background:var(--chip);color:var(--muted);cursor:pointer;font-size:11px;border:1px solid transparent}
+  .lvl.on{background:var(--accent2);color:#fff}
+  .count{color:var(--muted);font-size:12px;padding:5px 12px}
+  .grp{padding:7px 12px 2px;color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.85;border-top:1px solid #33240f}
+  .item{padding:6px 12px;border-bottom:1px solid #33240f;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+  .item:hover{background:var(--panel2)}
+  .item.on{background:#3a2913;border-left:3px solid var(--accent)}
+  .item .lv{color:var(--muted);font-size:11px;white-space:nowrap}
+  .item .vdot{color:var(--ok);font-size:10px;margin-left:4px}
+  .main{flex:1;overflow-y:auto;padding:18px 22px;min-width:0}
+  .empty{color:var(--muted);font-style:italic;margin-top:40px;text-align:center}
+  h2{margin:0 0 4px;color:var(--accent);font-size:22px}
+  .badges{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 12px}
+  .badge{font-size:11.5px;padding:2px 9px;border-radius:11px;background:var(--chip);color:var(--ink);border:1px solid var(--line)}
+  .badge.sp-Earth{background:var(--earth);color:#160f07}.badge.sp-Air{background:var(--air);color:#0e1a22}
+  .badge.sp-Fire{background:var(--fire);color:#1c0d05}.badge.sp-Water{background:var(--water);color:#04201e}
+  .badge.sp-Magma{background:var(--magma);color:#fff}.badge.sp-Rain{background:var(--rain);color:#0b1526}
+  .badge.sp-Silt{background:var(--silt);color:#161007}.badge.sp-Sun{background:var(--sun);color:#231701}
+  .badge.sp-Cosmos{background:var(--cosmos);color:#1c0d22}
+  .badge.new{background:var(--accent);color:#241704;font-weight:700}
+  .badge.mod{background:var(--accent2);color:#fff}
+  .badge.verified{background:var(--ok);color:#0f1a0f}
+  .stat{display:grid;grid-template-columns:140px 1fr;gap:2px 12px;margin:0 0 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .stat dt{color:var(--muted);font-size:12.5px}.stat dd{margin:0;font-size:13.5px}
+  .summary{font-size:15.5px;line-height:1.5;margin:0 0 10px}
+  .note{color:var(--muted);font-size:12.5px;font-style:italic;border-left:3px solid var(--line);padding-left:10px;margin-top:12px}
+  /* Editor panel */
+  #editor{
+    width:400px;min-width:320px;border-left:1px solid var(--line);background:var(--panel);
+    overflow-y:auto;padding:14px;display:none;flex:none
+  }
+  #editor.open{display:block}
+  #editor h3{margin:0 0 2px;font-size:16px;color:var(--accent)}
+  #editor .meta{color:var(--muted);font-size:11.5px;margin-bottom:10px}
+  .field{margin-bottom:9px}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+  .field input,.field textarea,.field select{
+    width:100%;background:#150e07;color:var(--ink);border:1px solid var(--line);
+    border-radius:5px;padding:5px 8px;font:inherit;font-size:13px
+  }
+  .field textarea{min-height:140px;resize:vertical;line-height:1.45}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .toggles{display:flex;gap:18px;margin:8px 0;flex-wrap:wrap}
+  .switch{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;user-select:none}
+  .switch input{position:absolute;opacity:0;width:0;height:0}
+  .switch .slider{
+    position:relative;flex:none;width:36px;height:18px;border-radius:18px;
+    background:var(--chip);border:1px solid var(--line);transition:.15s
+  }
+  .switch .slider::before{
+    content:'';position:absolute;top:1px;left:1px;width:14px;height:14px;
+    border-radius:50%;background:var(--muted);transition:.15s
+  }
+  .switch input:checked + .slider{background:var(--ok);border-color:var(--ok)}
+  .switch input:checked + .slider::before{transform:translateX(17px);background:#0f1a0f}
+  #editorBtns{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+  #editorBtns .spacer{flex:1}
+  .dropzone{
+    border:2px dashed var(--line);border-radius:10px;padding:28px;text-align:center;
+    color:var(--muted);margin:40px auto;max-width:520px;cursor:pointer
+  }
+  .dropzone:hover,.dropzone.drag{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Athasian Spell Compendium <span style="color:var(--muted);font-size:13px">— 2e → SSR Schema</span></h1>
+  <div class="sub">Browser + editor for the converted 2nd Edition spell corpus. Schema aligned with Savage Sun Rising. Use <strong>Verified</strong> to mark records you have checked against source.</div>
+</header>
+
+<div class="toolbar">
+  <button id="btnOpen" class="primary">Open JSON…</button>
+  <button id="btnSave" disabled>Save</button>
+  <button id="btnSaveAs" disabled>Save As…</button>
+  <button id="btnExportSample" disabled title="Export current selection as a small JSON array">Export filtered…</button>
+  <span id="status">No file loaded — open athasian-spells-2e.json</span>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="bar" id="bar"></div>
+
+<div class="layout">
+  <div class="side">
+    <div class="search">
+      <input id="q" placeholder="Search name / description…" autocomplete="off" disabled>
+      <div class="lvlrow" id="lvls"></div>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="list"></div>
+  </div>
+  <div class="main" id="main">
+    <div class="dropzone" id="dropzone">
+      <p><strong>Open <code>athasian-spells-2e.json</code></strong></p>
+      <p>or drag & drop the file here</p>
+      <p style="font-size:12px;margin-top:10px">Click a spell to view. Click <em>Edit</em> (or double-click) to modify fields and toggle Verified.</p>
+    </div>
+  </div>
+  <aside id="editor"></aside>
+</div>
+
+<script>
+'use strict';
+
+/* ── State ─────────────────────────────────────────────── */
+let spells = [];          // working array (SSR schema + extensions)
+let fileHandle = null;
+let fileName = '';
+let dirty = false;
+let state = { cls: 'Cleric', group: 'ALL', src: 'ALL', q: '', level: 0, sel: null };
+const editedIds = new Set();
+const SPHERE_ORDER = ["Earth","Air","Fire","Water","Magma","Rain","Silt","Sun","Cosmos"];
+const SPHERE_GROUPS = {
+  Elemental: ["Air","Earth","Fire","Water"],
+  Paraelemental: ["Magma","Rain","Silt","Sun"],
+  Cosmos: ["Cosmos"]
+};
+const hasFS = 'showOpenFilePicker' in window;
+
+const $ = id => document.getElementById(id);
+function esc(t){ const e=document.createElement('div'); e.textContent=t==null?'':String(t); return e.innerHTML; }
+
+/* ── Field helpers (SSR schema) ────────────────────────── */
+function spheresOf(s){
+  if (Array.isArray(s.spheres) && s.spheres.length){
+    return s.spheres.map(x => typeof x === 'string' ? x : (x.name || ''));
+  }
+  return [];
+}
+function primarySchool(s){ return (s.school || 'Unknown').split(',')[0].trim() || 'Unknown'; }
+
+/* ── File I/O ──────────────────────────────────────────── */
+async function openFile(){
+  if (dirty && !confirm('Unsaved changes will be lost. Continue?')) return;
+  let text;
+  if (hasFS){
+    try{
+      [fileHandle] = await window.showOpenFilePicker({
+        types: [{ description:'JSON', accept:{'application/json':['.json']} }]
+      });
+    }catch{ return; }
+    const f = await fileHandle.getFile();
+    fileName = f.name;
+    text = await f.text();
+  } else {
+    text = await pickViaInput();
+    if (text === null) return;
+  }
+  try { loadData(JSON.parse(text)); }
+  catch(e){ alert('Could not parse JSON: ' + e.message); }
+}
+
+function pickViaInput(){
+  return new Promise(resolve=>{
+    const inp = document.createElement('input');
+    inp.type='file'; inp.accept='.json,application/json';
+    inp.onchange = async ()=>{
+      if (!inp.files.length) return resolve(null);
+      fileName = inp.files[0].name;
+      resolve(await inp.files[0].text());
+    };
+    inp.click();
+  });
+}
+
+function serialise(){
+  return JSON.stringify(spells, null, 2);
+}
+
+async function saveFile(as=false){
+  const out = serialise();
+  if (hasFS){
+    try{
+      if (as || !fileHandle){
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: fileName || 'athasian-spells-2e.json',
+          types: [{ description:'JSON', accept:{'application/json':['.json']} }]
+        });
+        fileName = fileHandle.name;
+      }
+      const w = await fileHandle.createWritable();
+      await w.write(out); await w.close();
+    }catch(e){
+      if (e.name !== 'AbortError') alert('Save failed: ' + e.message);
+      return;
+    }
+  } else {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([out], {type:'application/json'}));
+    a.download = fileName || 'athasian-spells-2e.json';
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+  dirty = false; editedIds.clear();
+  refreshStatus(); renderList();
+}
+
+function exportFiltered(){
+  const rows = visible();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)], {type:'application/json'}));
+  a.download = 'filtered-spells.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+function loadData(json){
+  if (!Array.isArray(json)){
+    if (json && Array.isArray(json.spells)) json = json.spells;
+    else { alert('Expected a JSON array of spells (SSR schema).'); return; }
+  }
+  spells = json.map((s,i)=>{ s._id = i; return s; });
+  dirty = false; editedIds.clear(); state.sel = null;
+  closeEditor();
+  $('dropzone')?.remove();
+  $('q').disabled = false;
+  ['btnSave','btnSaveAs','btnExportSample'].forEach(id => $(id).disabled = false);
+  renderAll();
+  refreshStatus();
+}
+
+/* ── Filters & list ────────────────────────────────────── */
+function visible(){
+  const q = state.q.toLowerCase();
+  return spells.filter(s=>{
+    if (s.class !== state.cls) return false;
+    if (state.group !== 'ALL'){
+      if (state.cls === 'Cleric'){
+        if (!spheresOf(s).includes(state.group)) return false;
+      } else {
+        if (primarySchool(s) !== state.group) return false;
+      }
+    }
+    if (state.src !== 'ALL'){
+      const srcs = s.sourceBooks || [];
+      if (!srcs.includes(state.src) && s.originalSource !== state.src) return false;
+    }
+    if (state.level && s.level !== state.level) return false;
+    if (q){
+      const hay = (s.name + ' ' + (s.description||'') + ' ' + (s.summary||'')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderTabs(){
+  const t = $('tabs'); t.innerHTML = '';
+  [['Cleric','Cleric'],['Wizard','Wizard']].forEach(([c,lbl])=>{
+    const n = spells.filter(s=>s.class===c).length;
+    const el = document.createElement('div');
+    el.className = 'tab' + (state.cls===c?' on':'');
+    el.textContent = `${lbl} (${n})`;
+    el.onclick = ()=>{ state.cls=c; state.group='ALL'; state.src='ALL'; state.level=0; state.sel=null; closeEditor(); renderAll(); };
+    t.appendChild(el);
+  });
+}
+
+function renderBar(){
+  const bar = $('bar'); bar.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className = 'chips';
+  const lbl = document.createElement('span'); lbl.className='grouplbl';
+  lbl.textContent = state.cls==='Cleric' ? 'Sphere' : 'School';
+  wrap.appendChild(lbl);
+  const mk = (g,label)=>{
+    const e = document.createElement('div');
+    e.className = 'chip' + (state.group===g?' on':'');
+    e.textContent = label;
+    e.onclick = ()=>{ state.group=g; state.sel=null; closeEditor(); renderBar(); renderList(); };
+    return e;
+  };
+  wrap.appendChild(mk('ALL','All'));
+  if (state.cls==='Cleric'){
+    ['Elemental','Paraelemental','Cosmos'].forEach(tp=>{
+      (SPHERE_GROUPS[tp]||[]).forEach(sp=> wrap.appendChild(mk(sp,sp)));
+    });
+  } else {
+    const schools = [...new Set(spells.filter(s=>s.class==='Wizard').map(primarySchool))].sort();
+    schools.forEach(g=> wrap.appendChild(mk(g,g)));
+  }
+  bar.appendChild(wrap);
+  bar.appendChild(Object.assign(document.createElement('div'),{className:'sep'}));
+
+  // Source filter
+  const sources = [...new Set(spells.flatMap(s=> (s.sourceBooks||[]).concat(s.originalSource||[])).filter(Boolean))].sort();
+  const sl = document.createElement('div'); sl.className='chips';
+  const slb = document.createElement('span'); slb.className='grouplbl'; slb.textContent='Source';
+  sl.appendChild(slb);
+  const sel = document.createElement('select');
+  ['ALL',...sources].forEach(s=>{
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s==='ALL'?'All sources':s;
+    if (s===state.src) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.onchange = e=>{ state.src=e.target.value; state.sel=null; closeEditor(); renderList(); };
+  sl.appendChild(sel); bar.appendChild(sl);
+}
+
+function renderLevels(){
+  const lv = $('lvls'); lv.innerHTML = '';
+  if (!spells.length) return;
+  const maxL = Math.max(0, ...spells.filter(s=>s.class===state.cls).map(s=>s.level||0));
+  const mk = (n,label)=>{
+    const e = document.createElement('div');
+    e.className = 'lvl' + (state.level===n?' on':'');
+    e.textContent = label;
+    e.onclick = ()=>{ state.level=n; renderList(); renderLevels(); };
+    return e;
+  };
+  lv.appendChild(mk(0,'All Lv'));
+  for (let i=1;i<=maxL;i++) lv.appendChild(mk(i, String(i)));
+}
+
+function renderList(){
+  const list = $('list'); list.innerHTML = '';
+  const rows = visible();
+  $('count').textContent = rows.length + ' spell' + (rows.length!==1?'s':'');
+  const groups = {};
+  rows.forEach(s=>{
+    const g = state.cls==='Cleric'
+      ? (state.group!=='ALL' ? state.group : (spheresOf(s)[0]||'Other'))
+      : primarySchool(s);
+    (groups[g] = groups[g]||[]).push(s);
+  });
+  const gk = Object.keys(groups).sort((a,b)=>
+    state.cls==='Cleric' ? SPHERE_ORDER.indexOf(a)-SPHERE_ORDER.indexOf(b) : a.localeCompare(b)
+  );
+  gk.forEach(g=>{
+    if (state.group==='ALL'){
+      const h = document.createElement('div'); h.className='grp'; h.textContent=g; list.appendChild(h);
+    }
+    groups[g].sort((a,b)=>(a.level||0)-(b.level||0) || a.name.localeCompare(b.name)).forEach(s=>{
+      const el = document.createElement('div');
+      el.className = 'item' + (state.sel===s?' on':'');
+      const nm = document.createElement('span');
+      nm.innerHTML = esc(s.name) + (s.verified ? '<span class="vdot" title="Verified">✓</span>' : '') +
+        (editedIds.has(s._id) ? ' <span style="color:var(--accent)">●</span>' : '');
+      const lv = document.createElement('span'); lv.className='lv'; lv.textContent = 'Lv '+(s.level??'?');
+      el.appendChild(nm); el.appendChild(lv);
+      el.onclick = ()=>{ state.sel=s; renderList(); renderDetail(); };
+      el.ondblclick = ()=> openEditor(s);
+      list.appendChild(el);
+    });
+  });
+}
+
+function renderDetail(){
+  const main = $('main');
+  const s = state.sel;
+  if (!s){
+    main.innerHTML = '<div class="empty">Select a spell to view its details.</div>';
+    return;
+  }
+  let badges = `<span class="badge">${esc(s.class)}</span><span class="badge">Level ${esc(s.level)}</span>`;
+  if (s.class==='Cleric'){
+    spheresOf(s).forEach(sp=> badges += `<span class="badge sp-${esc(sp)}">${esc(sp)}</span>`);
+  } else {
+    badges += `<span class="badge">${esc(s.school||'Unknown')}</span>`;
+  }
+  (s.sourceBooks||[]).forEach(src=> badges += `<span class="badge">Source: ${esc(src)}</span>`);
+  if ((s.athasianStatus||'').startsWith('New')) badges += '<span class="badge new">New (Dark Sun)</span>';
+  else if ((s.athasianStatus||'').includes('Modified')) badges += '<span class="badge mod">Modified on Athas</span>';
+  if (s.verified) badges += '<span class="badge verified">Verified</span>';
+
+  // Stat block FIRST (user request)
+  const order = [
+    ['range','Range'], ['components','Components'], ['duration','Duration'],
+    ['castingTime','Casting Time'], ['areaOfEffect','Area of Effect'], ['savingThrow','Saving Throw']
+  ];
+  let hasStat = order.some(([k])=> s[k]);
+  let stat = '';
+  if (hasStat || spheresOf(s).length){
+    stat = '<dl class="stat">';
+    if (s.class==='Cleric') stat += `<dt>Sphere(s)</dt><dd>${esc(spheresOf(s).join(', '))}</dd>`;
+    else stat += `<dt>School</dt><dd>${esc(s.school||'')}</dd>`;
+    stat += `<dt>Level</dt><dd>${esc(s.levelName || s.level)}</dd>`;
+    order.forEach(([k,l])=>{
+      let v = s[k];
+      if (k==='components' && Array.isArray(v)) v = v.join(', ');
+      if (v) stat += `<dt>${l}</dt><dd>${esc(v)}</dd>`;
+    });
+    stat += '</dl>';
+  }
+
+  const body = s.description || s.summary || '';
+  const note = s.hasFullDescription
+    ? `<div class="note">Description is an original paraphrase / OCR extract drawn from ${(s.sourceBooks||[])[0]||'source'}.</div>`
+    : '';
+
+  main.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <h2>${esc(s.name)}</h2>
+      <button id="btnEditThis">Edit</button>
+    </div>
+    <div class="badges">${badges}</div>
+    ${stat}
+    ${body ? `<p class="summary">${esc(body)}</p>` : ''}
+    ${note}
+  `;
+  $('btnEditThis').onclick = ()=> openEditor(s);
+}
+
+/* ── Editor (from spell-editor, adapted to SSR schema) ─── */
+function openEditor(s){
+  if (!s) return;
+  state.sel = s;
+  const fields = [
+    ['name','Name'], ['class','Class'], ['level','Level'], ['school','School'],
+    ['castingTime','Casting Time'], ['range','Range'],
+    ['duration','Duration'], ['areaOfEffect','Area of Effect'],
+    ['savingThrow','Saving Throw'], ['athasianStatus','Athasian Status']
+  ];
+  const half = fields.map(([k,label])=>`
+    <div class="field">
+      <label>${label}</label>
+      <input data-k="${k}" value="${esc(s[k] ?? '')}">
+    </div>`).join('');
+
+  const comps = Array.isArray(s.components) ? s.components.join(', ') : (s.components||'');
+  const spheresStr = spheresOf(s).join(', ');
+  const sourcesStr = (s.sourceBooks||[]).join('; ');
+
+  $('editor').innerHTML = `
+    <h3>${esc(s.name)}</h3>
+    <div class="meta">id: ${esc(s.id)} · Lv ${esc(s.level)} · ${esc(s.class)}</div>
+    <div class="row2">${half}</div>
+    <div class="field"><label>Components (comma-separated)</label>
+      <input data-k="components" value="${esc(comps)}"></div>
+    <div class="field"><label>Spheres (comma-separated)</label>
+      <input data-k="spheres" value="${esc(spheresStr)}"></div>
+    <div class="field"><label>Source books (semicolon-separated)</label>
+      <input data-k="sourceBooks" value="${esc(sourcesStr)}"></div>
+    <div class="toggles">
+      <label class="switch">
+        <input type="checkbox" data-k="verified"${s.verified?' checked':''}>
+        <span class="slider"></span> Verified
+      </label>
+      <label class="switch">
+        <input type="checkbox" data-k="reversible"${s.reversible?' checked':''}>
+        <span class="slider"></span> Reversible
+      </label>
+      <label class="switch">
+        <input type="checkbox" data-k="concentration"${s.concentration?' checked':''}>
+        <span class="slider"></span> Concentration
+      </label>
+      <label class="switch">
+        <input type="checkbox" data-k="ritual"${s.ritual?' checked':''}>
+        <span class="slider"></span> Ritual
+      </label>
+    </div>
+    <div class="field"><label>Summary</label>
+      <textarea data-k="summary" style="min-height:60px">${esc(s.summary||'')}</textarea></div>
+    <div class="field"><label>Description</label>
+      <textarea data-k="description">${esc(s.description||'')}</textarea></div>
+    <div class="field"><label>Flavor Lore</label>
+      <textarea data-k="flavorLore" style="min-height:50px">${esc(s.flavorLore||'')}</textarea></div>
+    <div id="editorBtns">
+      <button id="btnApply" class="primary">Apply</button>
+      <button id="btnRevert">Revert</button>
+      <span class="spacer"></span>
+      <button id="btnClose">Close</button>
+    </div>`;
+  $('editor').classList.add('open');
+  $('btnApply').onclick  = ()=> applyEdit(s);
+  $('btnRevert').onclick = ()=> openEditor(s);
+  $('btnClose').onclick  = closeEditor;
+  renderList();
+  $('editor').scrollTop = 0;
+}
+
+function applyEdit(s){
+  let changed = false;
+  $('editor').querySelectorAll('[data-k]').forEach(el=>{
+    const k = el.dataset.k;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (k === 'level'){
+      const n = Number(v); v = Number.isFinite(n) && v!=='' ? n : v;
+    }
+    if (k === 'components'){
+      v = String(v).split(',').map(x=>x.trim()).filter(Boolean);
+    }
+    if (k === 'spheres'){
+      v = String(v).split(',').map(x=>x.trim()).filter(Boolean).map(name=>({name, access:'Major'}));
+    }
+    if (k === 'sourceBooks'){
+      v = String(v).split(';').map(x=>x.trim()).filter(Boolean);
+    }
+    const prev = s[k];
+    const same = Array.isArray(prev) && Array.isArray(v)
+      ? JSON.stringify(prev)===JSON.stringify(v)
+      : prev === v;
+    if (!same){ s[k] = v; changed = true; }
+  });
+  if (changed){ dirty = true; editedIds.add(s._id); }
+  renderDetail(); renderList(); refreshStatus();
+}
+
+function closeEditor(){
+  $('editor').classList.remove('open');
+  $('editor').innerHTML = '';
+  if (spells.length) renderList();
+}
+
+function refreshStatus(vis){
+  const st = $('status');
+  if (!spells.length){ st.textContent = 'No file loaded'; st.classList.remove('dirty'); return; }
+  const n = vis ?? visible().length;
+  st.textContent = `${fileName||'memory'} — ${n}/${spells.length} shown` + (dirty ? ' ● unsaved' : '');
+  st.classList.toggle('dirty', dirty);
+}
+
+function renderAll(){
+  renderTabs(); renderBar(); renderLevels(); renderList(); renderDetail();
+}
+
+/* ── Wiring ────────────────────────────────────────────── */
+$('btnOpen').onclick   = openFile;
+$('btnSave').onclick   = ()=> saveFile(false);
+$('btnSaveAs').onclick = ()=> saveFile(true);
+$('btnExportSample').onclick = exportFiltered;
+$('q').addEventListener('input', e=>{ state.q = e.target.value; renderList(); });
+
+// Drag & drop
+const dz = $('dropzone');
+['dragenter','dragover'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev=> dz.addEventListener(ev, e=>{ e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', async e=>{
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  fileName = f.name;
+  try { loadData(JSON.parse(await f.text())); }
+  catch(err){ alert('Parse error: '+err.message); }
+});
+dz.addEventListener('click', openFile);
+
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape') closeEditor();
+  if ((e.ctrlKey||e.metaKey) && e.key==='s'){ e.preventDefault(); if (spells.length) saveFile(false); }
+});
+window.addEventListener('beforeunload', e=>{ if (dirty) e.preventDefault(); });
+</script>
+</body>
+</html>
