@@ -2,10 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSpellPower } from "@/lib/fixtures";
 
-type Params = Promise<{ id: string }>;
+type Params = { id: string };
 
-export default async function SpellDetailPage({ params }: { params: Params }) {
-  const { id } = await params;
+export default function SpellDetailPage({ params }: { params: Params }) {
+  const { id } = params;
   const item = getSpellPower(decodeURIComponent(id));
   if (!item) notFound();
 
