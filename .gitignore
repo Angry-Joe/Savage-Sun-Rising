@@ -59,3 +59,9 @@ apps/web/.env.local
 apps/web/.env.*.local
 packages/**/node_modules/
 .turbo/
+
+# Working files that must never be committed
+_to_delete/
+secrets/
+.env
+.env.local
