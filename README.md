@@ -11,7 +11,6 @@ Stack constraints for new work: **no** AWS Cognito/DynamoDB, **no** MudBlazor, *
 ## How to run (product app)
 
 ```text
-docker compose up -d
 cd apps/web
 cp .env.example .env  # macOS/Linux (PowerShell: copy .env.example .env)
 # install Node dependencies, then:
@@ -24,7 +23,7 @@ Open http://localhost:3000
 - Spells & Powers: list + detail; filters for verified, setting, ruleset, combatMode (N/A | Att | Def)
 - Monsters: Athas list + detail (sample `monster_index`-shaped rows)
 
-Postgres is defined in root `docker-compose.yml` (local trust auth). Character sheets / overlays use JSONB via Prisma.
+Postgres runs as a system service on the database VM (no containers) — see `docs/ARCHITECTURE.md` for `listen_addresses`, `pg_hba.conf` and the dev/prod/Azure topology. Character sheets / overlays use JSONB via Prisma.
 
 ### Full corpora (local import later)
 

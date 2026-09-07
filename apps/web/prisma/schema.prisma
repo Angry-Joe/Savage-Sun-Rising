@@ -1,5 +1,6 @@
 // Prisma schema for Savage Sun Rising product app.
-// Character sheets and overlays live in JSONB — no AWS Cognito/DynamoDB.
+// Content corpus: Depp-Magic spell-powers schema v3.6.x.
+// Overlays and full records live in JSONB — no AWS Cognito/DynamoDB.
 
 generator client {
   provider = "prisma-client-js"
@@ -12,35 +13,97 @@ datasource db {
 
 model Character {
   id        String   @id @default(cuid())
+  /// Authentik OIDC subject claim (`sub`) of the owning user.
+  /// Nullable so local/dev rows predate auth; enforce NOT NULL once the
+  /// Authentik provider is live and existing rows are backfilled.
+  ownerId   String?
   name      String
   /// Full character document (allowedCampaignSettings, overlay bags, powers, etc.)
   sheet     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([ownerId])
+  @@index([ownerId, updatedAt])
+  @@index([sheet(ops: JsonbPathOps)], type: Gin)
   @@map("characters")
 }
 
+/// Provenance for each corpus import — which file, which schema version, how
+/// many rows. One row per import run; the newest row describes the live data.
+model Corpus {
+  id            String   @id @default(cuid())
+  /// "spells" | "monsters"
+  kind          String
+  sourceFile    String
+  schemaVersion String?
+  dateUpdated   String?
+  rowCount      Int
+  /// Vocabularies shipped with the corpus (rulesets, campaignSettings) + counts
+  meta          Json
+  importedAt    DateTime @default(now())
+
+  @@index([kind, importedAt])
+  @@map("corpora")
+}
+
+/// One row per spell or psionic power, Depp-Magic v3.6 shape.
+/// v3.6.2 ids are unique across both arrays — no composite key needed.
 model SpellPower {
-  id        String   @id
-  name      String
-  kind      String
-  /// Catalog row + overlays as JSONB
-  data      Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  /// Depp-Magic id, e.g. "spell_wakefulness_2e" / "psionic_probe_2e"
+  id                      String   @id
+  name                    String
+  /// "spell" | "psionic"
+  kind                    String
+  /// arcane | divine | psionic
+  tradition               String?
+  level                   Int?
+  /// Spells only
+  school                  String?
+  classes                 String[] @default([])
+  /// Psionics only
+  discipline              String?
+  tier                    String?
+  /// N/A | Att | Def
+  combatMode              String?
+  /// Curation axes from the v3.6 vocabulary: 2e | 2e-rev | 5e, xx | ds | fr
+  allowedRulesets         String[] @default([])
+  allowedCampaignSettings String[] @default([])
+  verified                Boolean  @default(false)
+  /// Importer data-quality flags. Empty array = clean row.
+  suspect                 String[] @default([])
+  /// Full v3.6 record, including the `rulesets` and `campaignSettings` overlay bags
+  data                    Json
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   @@index([kind])
+  @@index([kind, level])
+  @@index([tradition])
+  @@index([school])
+  @@index([discipline, tier])
+  @@index([verified])
+  @@index([allowedRulesets], type: Gin)
+  @@index([allowedCampaignSettings], type: Gin)
+  @@index([classes], type: Gin)
+  @@index([data(ops: JsonbPathOps)], type: Gin)
   @@map("spell_powers")
 }
 
 model Monster {
-  id        String   @id
-  name      String
+  /// Slug of the creature/page name.
+  id           String   @id
+  name         String
+  /// Source corpus this row was loaded from (e.g. "mc12").
+  corpus       String
+  multiVariant Boolean  @default(false)
   /// monster_index-shaped row as JSONB
-  data      Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  data         Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  @@index([corpus])
+  @@index([multiVariant])
+  @@index([data(ops: JsonbPathOps)], type: Gin)
   @@map("monsters")
 }

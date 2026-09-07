@@ -6,7 +6,7 @@ Next.js (App Router) + TypeScript read-only browser for Athasian spells, psionic
 
 From repo root:
 
-1. docker compose up -d
+1. Ensure Postgres is running and DATABASE_URL points at it (see ../../docs/ARCHITECTURE.md)
 2. cd apps/web
 3. Copy .env.example to .env
 4. Install Node dependencies
