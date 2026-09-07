@@ -20,7 +20,7 @@ export const CombatModeSchema = z.enum(["N/A", "Att", "Def"]);
 export type CombatMode = z.infer<typeof CombatModeSchema>;
 
 /** Opaque overlay bag keyed by content code (Depp-Magic style). */
-export const OverlayBagSchema = z.record(z.string(), z.unknown());
+export const OverlayBagSchema = z.record(ContentCodeSchema, z.unknown());
 export type OverlayBag = z.infer<typeof OverlayBagSchema>;
 
 /** Reference to a Depp-Magic spell or power by stable id. */
