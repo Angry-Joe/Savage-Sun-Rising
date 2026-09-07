@@ -1,25 +1,29 @@
-version: '3.8'
-
-# Usage: docker-compose up --build
+# Savage Sun Rising — local infrastructure
+# Product app (apps/web) uses Postgres. Legacy Blazor image is deprecated.
+#
+# Usage:
+#   docker compose up -d
+#   cd apps/web && copy .env.example .env
+#   then install deps, prisma db push, and next dev (see root README)
 
 services:
-  darksun-web:
-    # The name of the image to use, which we will build.
-    image: darksun-web:latest
-    build:
-      # The context is the current directory.
-      context: .
-      # The Dockerfile is in the current directory.
-      dockerfile: Dockerfile
-
-    # Maps port 8080 on your host machine to port 8080 in the container.
+  postgres:
+    image: postgres:16-alpine
+    container_name: ssr-postgres
+    restart: unless-stopped
     ports:
-      - "8081:8080"
-
-    # Environment variables for configuring the application.
+      - '127.0.0.1:5432:5432'
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-
-    # Mounts your local AWS credentials folder into the container as read-only.
+      POSTGRES_USER: ssr
+      POSTGRES_DB: savage_sun_rising
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - ${USERPROFILE}\.aws:/root/.aws:ro
+      - ssr_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ssr -d savage_sun_rising']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ssr_pgdata:

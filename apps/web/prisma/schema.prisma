@@ -1,0 +1,46 @@
+// Prisma schema for Savage Sun Rising product app.
+// Character sheets and overlays live in JSONB — no AWS Cognito/DynamoDB.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Character {
+  id        String   @id @default(cuid())
+  name      String
+  /// Full character document (allowedCampaignSettings, overlay bags, powers, etc.)
+  sheet     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("characters")
+}
+
+model SpellPower {
+  id        String   @id
+  name      String
+  kind      String
+  /// Catalog row + overlays as JSONB
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind])
+  @@map("spell_powers")
+}
+
+model Monster {
+  id        String   @id
+  name      String
+  /// monster_index-shaped row as JSONB
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("monsters")
+}

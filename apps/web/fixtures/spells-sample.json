@@ -1,0 +1,48 @@
+[
+  {
+    "id": "spell_sample_cooling_canopy",
+    "name": "Cooling Canopy (sample)",
+    "kind": "spell",
+    "verified": true,
+    "allowedCampaignSettings": ["ds"],
+    "allowedRulesets": ["2e", "5e"],
+    "campaignSettings": {
+      "ds": { "sphere": "Air", "athasNote": "fixture only — not full text" }
+    },
+    "rulesets": {
+      "2e": { "level": 1, "school": "Alteration" },
+      "5e": { "level": 1, "school": "transmutation" }
+    },
+    "combatMode": "N/A",
+    "level": 1,
+    "school": "Alteration",
+    "summary": "Sample Athasian priest cantrip-level fixture for UI wiring."
+  },
+  {
+    "id": "spell_sample_sunstroke",
+    "name": "Sunstroke (sample)",
+    "kind": "spell",
+    "verified": false,
+    "allowedCampaignSettings": ["ds"],
+    "allowedRulesets": ["2e"],
+    "campaignSettings": { "ds": { "sphere": "Fire" } },
+    "rulesets": { "2e": { "level": 3 } },
+    "combatMode": "N/A",
+    "level": 3,
+    "school": "Evocation",
+    "summary": "Unverified sample — replace via Depp-Magic import."
+  },
+  {
+    "id": "spell_sample_create_water",
+    "name": "Create Water (sample)",
+    "kind": "spell",
+    "verified": true,
+    "allowedCampaignSettings": ["ds", "2e"],
+    "allowedRulesets": ["2e", "2e-rev", "5e"],
+    "campaignSettings": { "ds": { "sphere": "Water" } },
+    "rulesets": { "5e": { "level": 1 } },
+    "combatMode": "N/A",
+    "level": 1,
+    "summary": "Cross-setting sample fixture."
+  }
+]

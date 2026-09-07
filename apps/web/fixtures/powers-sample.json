@@ -1,0 +1,41 @@
+[
+  {
+    "id": "psionic_sample_mind_thrust",
+    "name": "Mind Thrust (sample)",
+    "kind": "psionic",
+    "verified": true,
+    "allowedCampaignSettings": ["ds"],
+    "allowedRulesets": ["2e", "5e"],
+    "campaignSettings": { "ds": { "discipline": "Telepathy" } },
+    "rulesets": { "2e": { "science": false } },
+    "combatMode": "Att",
+    "discipline": "Telepathy",
+    "summary": "Sample attack-mode psionic for combatMode filter (Att)."
+  },
+  {
+    "id": "psionic_sample_tower_of_iron_will",
+    "name": "Tower of Iron Will (sample)",
+    "kind": "psionic",
+    "verified": true,
+    "allowedCampaignSettings": ["ds"],
+    "allowedRulesets": ["2e", "5e"],
+    "campaignSettings": { "ds": { "discipline": "Telepathy" } },
+    "rulesets": { "2e": { "science": true } },
+    "combatMode": "Def",
+    "discipline": "Telepathy",
+    "summary": "Sample defense-mode psionic for combatMode filter (Def)."
+  },
+  {
+    "id": "psionic_sample_object_reading",
+    "name": "Object Reading (sample)",
+    "kind": "psionic",
+    "verified": false,
+    "allowedCampaignSettings": ["ds", "2e"],
+    "allowedRulesets": ["2e"],
+    "campaignSettings": {},
+    "rulesets": {},
+    "combatMode": "N/A",
+    "discipline": "Clairsentience",
+    "summary": "Non-combat sample power (combatMode N/A)."
+  }
+]
