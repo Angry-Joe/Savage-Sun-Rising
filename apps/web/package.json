@@ -10,7 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:import": "node scripts/import-corpora.mjs"
+    "db:import": "node --env-file-if-exists=.env scripts/import-corpora.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",

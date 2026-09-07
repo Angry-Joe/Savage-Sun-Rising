@@ -31,7 +31,7 @@ the host firewall. Those are the real controls; Docker was only ever wrapping th
 ### 1. Dev — Visual Studio on TESLA-GRID
 
 ```
-TESLA-GRID (10.10.0.215)  ──pfSense LAN rule──►  192.168.78.136:5432
+TESLA-GRID (10.10.0.215)  ──pfSense LAN rule──►  192.168.78.100:5432
         │                                              │
         └── next dev / prisma / import-corpora.mjs ────┘
 ```
@@ -39,7 +39,7 @@ TESLA-GRID (10.10.0.215)  ──pfSense LAN rule──►  192.168.78.136:5432
 `postgresql.conf`
 
 ```conf
-listen_addresses = 'localhost,192.168.78.136'
+listen_addresses = 'localhost,192.168.78.100'
 ```
 
 `pg_hba.conf` — one line, scoped to the workstation, not the whole subnet:
