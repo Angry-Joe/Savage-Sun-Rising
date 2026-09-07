@@ -1,0 +1,46 @@
+[
+  {
+    "id": "monster_athas_baazrag",
+    "name": "Baazrag (sample)",
+    "cr": "1/2",
+    "type": "beast",
+    "size": "Small",
+    "source": "fixture",
+    "allowedSettings": ["ds"],
+    "tags": ["athas", "desert"],
+    "summary": "Sample Athasian fauna row shaped like monster_index."
+  },
+  {
+    "id": "monster_athas_tembo",
+    "name": "Tembo (sample)",
+    "cr": "5",
+    "type": "monstrosity",
+    "size": "Large",
+    "source": "fixture",
+    "allowedSettings": ["ds"],
+    "tags": ["athas", "psionic"],
+    "summary": "Sample predator fixture — no copyrighted bestiary text."
+  },
+  {
+    "id": "monster_athas_silt_horror",
+    "name": "Silt Horror, Adult (sample)",
+    "cr": "8",
+    "type": "aberration",
+    "size": "Huge",
+    "source": "fixture",
+    "allowedSettings": ["ds"],
+    "tags": ["athas", "silt"],
+    "summary": "Sample Sea of Silt threat for Athas list UI."
+  },
+  {
+    "id": "monster_athas_gith",
+    "name": "Gith (Athas sample)",
+    "cr": "3",
+    "type": "humanoid",
+    "size": "Medium",
+    "source": "fixture",
+    "allowedSettings": ["ds"],
+    "tags": ["athas", "humanoid"],
+    "summary": "Sample humanoid foe fixture."
+  }
+]

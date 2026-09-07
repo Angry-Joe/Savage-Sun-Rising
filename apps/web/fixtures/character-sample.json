@@ -1,0 +1,42 @@
+{
+  "id": "char_sample_defiler",
+  "name": "Sample Defiler",
+  "playerName": "Fixture",
+  "level": 3,
+  "allowedCampaignSettings": [
+    "ds"
+  ],
+  "allowedRulesets": [
+    "2e",
+    "5e"
+  ],
+  "campaignSettings": {
+    "ds": {
+      "race": "Human",
+      "class": "Defiler",
+      "notes": "fixture only"
+    }
+  },
+  "rulesets": {
+    "2e": {
+      "thrall": false
+    },
+    "5e": {
+      "subclass": "placeholder"
+    }
+  },
+  "powers": [
+    {
+      "id": "spell_sample_sunstroke",
+      "kind": "spell",
+      "name": "Sunstroke (sample)"
+    },
+    {
+      "id": "psionic_sample_mind_thrust",
+      "kind": "psionic",
+      "name": "Mind Thrust (sample)",
+      "combatMode": "Att"
+    }
+  ],
+  "notes": "Tiny character fixture for schema validation — not play content."
+}
