@@ -1,19 +1,19 @@
 import Link from "next/link";
 import { filterSpellPowers, loadSpellPowers } from "@/lib/fixtures";
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+type SearchParams = Record<string, string | string[] | undefined>;
 
 function first(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
   return v;
 }
 
-export default async function SpellsPage({
+export default function SpellsPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const sp = await searchParams;
+  const sp = searchParams;
   const verifiedRaw = first(sp.verified);
   const filters = {
     verified:
