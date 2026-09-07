@@ -2,10 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMonster } from "@/lib/fixtures";
 
-type Params = Promise<{ id: string }>;
+type Params = { id: string };
 
-export default async function MonsterDetailPage({ params }: { params: Params }) {
-  const { id } = await params;
+export default function MonsterDetailPage({ params }: { params: Params }) {
+  const { id } = params;
   const m = getMonster(decodeURIComponent(id));
   if (!m) notFound();
 
