@@ -13,7 +13,7 @@ Stack constraints for new work: **no** AWS Cognito/DynamoDB, **no** MudBlazor, *
 ```text
 docker compose up -d
 cd apps/web
-copy .env.example .env
+cp .env.example .env  # macOS/Linux (PowerShell: copy .env.example .env)
 # install Node dependencies, then:
 #   prisma generate + prisma db push
 #   next dev
