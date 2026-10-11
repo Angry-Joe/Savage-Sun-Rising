@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import AuthButton from "@/components/AuthButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,6 +21,8 @@ export default function RootLayout({
             </Link>
             <Link href="/spells">Spells &amp; Powers</Link>
             <Link href="/monsters">Monsters (Athas)</Link>
+            <Link href="/characters">My Characters</Link>
+            <AuthButton />
           </nav>
         </header>
         <main>{children}</main>
