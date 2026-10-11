@@ -1,11 +1,8 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-
+﻿
 namespace DarkSun.Domain.Entities;
 
-[DynamoDBTable("DarkSunSpells")]
 public class DarkSunSpell
 {
-    [DynamoDBHashKey]
     public string Id { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string? SrdIndex { get; set; }

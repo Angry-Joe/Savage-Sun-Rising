@@ -1,8 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
-    <File Path="docker-compose.yml" />
-    <File Path="Run-Docker.ps1" />
   </Folder>
   <Project Path="DarkSun.Application/DarkSun.Application.csproj" />
   <Project Path="DarkSun.Domain/DarkSun.Domain.csproj" />

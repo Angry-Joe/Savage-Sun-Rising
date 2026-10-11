@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+    <!-- DEPRECATED legacy Blazor prototype - see DEPRECATED.md. Kept for reference only. -->
     <ItemGroup>
         <ProjectReference Include="..\DarkSun.Application\DarkSun.Application.csproj" />
         <ProjectReference Include="..\DarkSun.Domain\DarkSun.Domain.csproj" />
@@ -7,18 +8,10 @@
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
-        <PackageReference Include="MediaBrowser.Common" Version="4.9.1.90" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.9" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-        <PackageReference Include="MsgReader" Version="6.1.0" />
         <PackageReference Include="MudBlazor" Version="9.4.0" />
-        <PackageReference Include="MudBlazor.Extensions" Version="9.3.0" />
-        <PackageReference Include="OpenMcdf" Version="3.1.4" />
-        <PackageReference Include="SharpCompress" Version="0.48.0" />
-        <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
     </ItemGroup>
 
     <ItemGroup>
@@ -36,41 +29,26 @@
         </EmbeddedResource>
     </ItemGroup>
 
-    <!-- ====================== SOLUTION ROOT FILES (Docker, etc.) ====================== -->
+    <!-- Legacy Dockerfile lives in the solution root -->
     <ItemGroup>
-        <!-- Dockerfile and related files from solution root -->
         <None Include="..\Dockerfile">
             <Link>Dockerfile</Link>
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </None>
-
         <None Include="..\.dockerignore">
             <Link>.dockerignore</Link>
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </None>
-
-        <None Include=".\docker-compose.yml">
-            <Link>docker-compose.yml</Link>
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </None>
-
-        <None Include=".\docker-compose.override.yml">
-            <Link>docker-compose.override.yml</Link>
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
-    <!-- ============================================================================== -->
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <!-- Secrets come from `dotnet user-secrets` or environment variables only; never commit them. -->
         <UserSecretsId>ccb7ea55-863c-4f5d-8dd8-13e152caffbb</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-
-        <!-- Docker files are in solution root -->
         <DockerfilePath>..\Dockerfile</DockerfilePath>
-        <DockerComposeFilePath>..\docker-compose.yml</DockerComposeFilePath>
     </PropertyGroup>
 
 </Project>

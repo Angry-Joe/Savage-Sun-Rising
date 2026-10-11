@@ -8,12 +8,12 @@ function first(v: string | string[] | undefined): string | undefined {
   return v;
 }
 
-export default function SpellsPage({
+export default async function SpellsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const sp = searchParams;
+  const sp = await searchParams;
   const verifiedRaw = first(sp.verified);
   const filters = {
     verified:

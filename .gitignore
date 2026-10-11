@@ -1,67 +1,68 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# =============================================================================
+# Savage Sun Rising - combined .NET (legacy DarkSun.*) + Node/Next.js (apps/web)
+# Secrets never go in git: use environment variables, .env (ignored) or
+# `dotnet user-secrets`. See SECURITY.md.
+# =============================================================================
 
+# --- Editors / OS ---
 .vs/
 .vscode/
 .idea/
-**/appsettings.Development.json
-/bin
-bin/
-publish/
-**/bin/
-**/obj/
-**/bin/
-**/obj/
-.dockerignore
-*.log
-Debug/
-Release/
-.github/copilot-instructions.md
-[Bb]in/
-[Oo]bj/
+*.swp
+.DS_Store
+Thumbs.db
 
-# Secrets
-appsettings*.json
-*.user
-.secrets/
+# --- Secrets & local environment ---
+.env
+.env.*
+!.env.example
 **/.env
-.aws/
-C:/Users/JDL/.aws/credentials
-launchsettings.json
-# Environment-specific configs
-appsettings.json
-appsettings.*.json
-
-!appsettings.json.example
-!appsettings.Development.json.example
-
-# Secrets
+**/.env.*
+!**/.env.example
+secrets/
+.secrets/
 secrets.json
 **/.user-secrets/
 .aws/
 *.pem
 *.pfx
-DarkSun.Web/Properties/launchSettings.json
-DarkSun.Web/DataProtection-Keys/*.xml
-/DarkSun.Web/DataProtection-Keys/*.xml
+*.p12
+*.key
+# Local-only ASP.NET config (tracked appsettings.json / appsettings.Development.json hold no secrets)
+appsettings.*.local.json
+appsettings.Local.json
+appsettings.Production.json
+appsettings.Staging.json
+# launchSettings.json has held credentials in the past - keep it local
+**/Properties/launchSettings.json
+# ASP.NET Core Data Protection key ring (cookie/antiforgery encryption keys)
+**/DataProtection-Keys/
 
+# --- .NET build output ---
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.user
+*.suo
+*.log
+TestResults/
 
-# --- Product app (apps/web / packages) ---
+# --- Node / Next.js / Prisma ---
 node_modules/
 .next/
 out/
 dist/
+build/
 coverage/
-*.tsbuildinfo
-apps/web/.env
-apps/web/.env.local
-apps/web/.env.*.local
-packages/**/node_modules/
 .turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Working files that must never be committed
+# --- Working files that must never be committed ---
 _to_delete/
-secrets/
-.env
-.env.local
+.github/copilot-instructions.md
