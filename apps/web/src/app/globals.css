@@ -150,3 +150,10 @@ main {
   font-size: 0.8rem;
   color: var(--parchment-dim);
 }
+
+.site-header form.auth {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}

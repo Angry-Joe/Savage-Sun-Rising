@@ -150,6 +150,8 @@ Re-run the importer after every corpus edit. It truncates `spell_powers` and
 
 ## Authentik OIDC
 
+Implemented in `apps/web` with Auth.js (next-auth v5): setup steps, env vars and the Google/Microsoft-as-Authentik-sources recipe are in [AUTH.md](AUTH.md).
+
 Authentik already runs here, so the app becomes an OIDC client rather than growing its
 own password handling.
 
@@ -172,7 +174,7 @@ required once the provider is live and existing rows are backfilled.
 - [ ] Install Postgres on bnkr-bunsen01, create the role and database, apply
       `listen_addresses` + `pg_hba.conf`.
 - [ ] Run `prisma db push` and the corpus import against it.
-- [ ] Create the Authentik provider/application.
+- [ ] Create the Authentik provider/application (steps in `docs/AUTH.md`).
 - [ ] Decide how `ssr-web` is served in production (systemd unit running
       `next start`, behind the existing cloudflared).
 - [ ] Delete `spell_new_1788231150919` / `spell_new_1788240952303` upstream in

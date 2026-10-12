@@ -10,7 +10,7 @@ From repo root:
 2. cd apps/web
 3. Copy .env.example to .env
 4. Install Node dependencies
-5. Generate Prisma client and push schema
+5. Generate Prisma client and push schema; fill the AUTH_* variables for sign-in (../../docs/AUTH.md)
 6. Start Next.js in development mode
 
 Open http://localhost:3000
@@ -22,6 +22,7 @@ Open http://localhost:3000
 - prisma/ — Postgres models with JSONB sheets/overlays
 - src/app/spells — list + detail with filters
 - src/app/monsters — Athas list + detail
+- src/auth.ts, src/middleware.ts, src/app/api/auth — Auth.js + Authentik sign-in (see ../../docs/AUTH.md); /characters requires sign-in
 
 ## Full corpora (local import later)
 
