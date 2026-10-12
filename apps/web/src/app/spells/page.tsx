@@ -1,116 +1,80 @@
 import Link from "next/link";
-import { filterSpellPowers, loadSpellPowers } from "@/lib/fixtures";
+import { ClassBadges, RulesetBadges, SettingBadges } from "@/components/content-badges";
+import DbError from "@/components/db-error";
+import FilterBar from "@/components/filter-bar";
+import Pager from "@/components/pager";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { listSpells, pageOf, safe, spellFiltersFrom, type SearchParams } from "@/lib/content";
 
-type SearchParams = Record<string, string | string[] | undefined>;
+export const dynamic = "force-dynamic";
+export const metadata = { title: "Spells" };
 
-function first(v: string | string[] | undefined): string | undefined {
-  if (Array.isArray(v)) return v[0];
-  return v;
-}
-
-export default async function SpellsPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
+export default async function SpellsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const sp = await searchParams;
-  const verifiedRaw = first(sp.verified);
-  const filters = {
-    verified:
-      verifiedRaw === "true" ? true : verifiedRaw === "false" ? false : undefined,
-    setting: first(sp.setting),
-    ruleset: first(sp.ruleset),
-    combatMode: first(sp.combatMode),
-    q: first(sp.q),
-  };
-
-  const items = filterSpellPowers(loadSpellPowers(), filters);
+  const f = spellFiltersFrom(sp);
+  const page = pageOf(sp);
+  const res = await safe(() => listSpells(f, page));
 
   return (
     <div>
-      <h1 style={{ color: "var(--ochre)" }}>Spells &amp; Powers</h1>
-      <p className="meta">
-        Read-only list from tiny fixtures. Filter by verified, setting,
-        ruleset, combatMode.
-      </p>
-
-      <form className="filters" method="get">
-        <label>
-          Search
-          <input name="q" defaultValue={filters.q ?? ""} placeholder="name…" />
-        </label>
-        <label>
-          Verified
-          <select name="verified" defaultValue={verifiedRaw ?? ""}>
-            <option value="">Any</option>
-            <option value="true">Verified</option>
-            <option value="false">Unverified</option>
-          </select>
-        </label>
-        <label>
-          Setting
-          <select name="setting" defaultValue={filters.setting ?? ""}>
-            <option value="">Any</option>
-            <option value="ds">ds</option>
-            <option value="2e">2e</option>
-            <option value="2e-rev">2e-rev</option>
-            <option value="5e">5e</option>
-          </select>
-        </label>
-        <label>
-          Ruleset
-          <select name="ruleset" defaultValue={filters.ruleset ?? ""}>
-            <option value="">Any</option>
-            <option value="ds">ds</option>
-            <option value="2e">2e</option>
-            <option value="2e-rev">2e-rev</option>
-            <option value="5e">5e</option>
-          </select>
-        </label>
-        <label>
-          Combat mode
-          <select name="combatMode" defaultValue={filters.combatMode ?? ""}>
-            <option value="">Any</option>
-            <option value="N/A">N/A</option>
-            <option value="Att">Att</option>
-            <option value="Def">Def</option>
-          </select>
-        </label>
-        <label style={{ justifyContent: "flex-end" }}>
-          &nbsp;
-          <button type="submit">Apply</button>
-        </label>
-      </form>
-
-      <p className="meta">{items.length} result(s)</p>
-
-      {items.map((item) => (
-        <article key={item.id} className="card">
-          <h3>
-            <Link href={`/spells/${encodeURIComponent(item.id)}`}>
-              {item.name}
-            </Link>
-          </h3>
-          <div>
-            <span className="badge">{item.kind}</span>
-            <span className={`badge ${item.verified ? "ok" : "warn"}`}>
-              {item.verified ? "verified" : "unverified"}
-            </span>
-            <span className="badge">{item.combatMode}</span>
-            {item.allowedCampaignSettings.map((c) => (
-              <span key={c} className="badge">
-                set:{c}
-              </span>
-            ))}
-            {item.allowedRulesets.map((c) => (
-              <span key={`r-${c}`} className="badge">
-                rules:{c}
-              </span>
-            ))}
+      <h1 className="mb-2">Spells</h1>
+      <p className="mb-6 text-muted-foreground">Wizard and Priest magic. ✦ marks a Dark Sun overlay.</p>
+      <FilterBar
+        action="/spells"
+        fields={[
+          { kind: "text", name: "q", label: "Name", value: f.q, placeholder: "e.g. fireball" },
+          {
+            kind: "select", name: "class", label: "Class", value: f.cls,
+            options: [{ value: "Wizard", label: "Wizard" }, { value: "Priest", label: "Priest" }],
+          },
+          {
+            kind: "select", name: "level", label: "Level", value: f.level?.toString(),
+            options: Array.from({ length: 10 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })),
+          },
+          {
+            kind: "select", name: "ruleset", label: "Ruleset", value: f.ruleset,
+            options: [{ value: "2e", label: "2e" }, { value: "2e-rev", label: "2e-rev" }, { value: "5e", label: "5e" }],
+          },
+          { kind: "select", name: "ds", label: "Setting", value: f.ds ? "1" : undefined, options: [{ value: "1", label: "Dark Sun only" }] },
+          { kind: "select", name: "verified", label: "Verified", value: f.verified ? "1" : undefined, options: [{ value: "1", label: "Verified only" }] },
+        ]}
+      />
+      {!res.ok ? (
+        <DbError message={res.error} />
+      ) : (
+        <>
+          <Pager base="/spells" sp={sp} page={page} total={res.data.total} />
+          <div className="rounded-xl border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead className="w-20">Level</TableHead>
+                  <TableHead>School</TableHead>
+                  <TableHead>Class</TableHead>
+                  <TableHead>Rules / setting</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {res.data.rows.map((r) => (
+                  <TableRow key={r.id}>
+                    <TableCell className="whitespace-normal font-medium">
+                      <Link href={`/spells/${encodeURIComponent(r.id)}`} className="text-parchment hover:text-ochre">
+                        {r.name || r.id}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{r.level ?? "-"}</TableCell>
+                    <TableCell className="whitespace-normal">{r.school ?? "-"}</TableCell>
+                    <TableCell><div className="flex gap-1"><ClassBadges row={r} /></div></TableCell>
+                    <TableCell><div className="flex flex-wrap gap-1"><RulesetBadges row={r} /><SettingBadges row={r} /></div></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-          <p className="meta">{item.summary}</p>
-        </article>
-      ))}
+          <Pager base="/spells" sp={sp} page={page} total={res.data.total} />
+        </>
+      )}
     </div>
   );
 }

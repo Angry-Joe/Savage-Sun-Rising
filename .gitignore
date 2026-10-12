@@ -1,7 +1,7 @@
 # =============================================================================
-# Savage Sun Rising - combined .NET (legacy DarkSun.*) + Node/Next.js (apps/web)
-# Secrets never go in git: use environment variables, .env (ignored) or
-# `dotnet user-secrets`. See SECURITY.md.
+# Savage Sun Rising - Node/Next.js (apps/web)
+# Secrets never go in git: use environment variables or .env (ignored).
+# See SECURITY.md.
 # =============================================================================
 
 # --- Editors / OS ---
@@ -28,26 +28,7 @@ secrets.json
 *.pfx
 *.p12
 *.key
-# Local-only ASP.NET config (tracked appsettings.json / appsettings.Development.json hold no secrets)
-appsettings.*.local.json
-appsettings.Local.json
-appsettings.Production.json
-appsettings.Staging.json
-# launchSettings.json has held credentials in the past - keep it local
-**/Properties/launchSettings.json
-# ASP.NET Core Data Protection key ring (cookie/antiforgery encryption keys)
-**/DataProtection-Keys/
-
-# --- .NET build output ---
-[Bb]in/
-[Oo]bj/
-[Dd]ebug/
-[Rr]elease/
-publish/
-*.user
-*.suo
 *.log
-TestResults/
 
 # --- Node / Next.js / Prisma ---
 node_modules/
@@ -64,5 +45,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # --- Working files that must never be committed ---
+# Leftover local build output from the removed .NET app (in git history only)
+/DarkSun.*/
 _to_delete/
 .github/copilot-instructions.md

@@ -1,159 +1,107 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Savage Sun Rising - "Athas" dark theme.
+ * One theme only (dark). Desaturated, earthy palette: burnt orange, ochre,
+ * deep red, sickly green on near-black. Base font is 18px (112.5%) and every
+ * text/background pair below is >= WCAG AA (most are AAA) for readability.
+ */
+
+@theme inline {
+  --font-sans: "Segoe UI", "Noto Sans", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Athas accents usable as utilities: text-ochre, bg-blood, border-sick ... */
+  --color-ochre: var(--ochre);
+  --color-ember: var(--ember);
+  --color-blood: var(--blood);
+  --color-sick: var(--sick);
+  --color-parchment: var(--parchment);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
 :root {
-  --bg: #1a0f0a;
-  --bg-elevated: #2a1810;
-  --parchment: #e8d5b0;
-  --parchment-dim: #c4a882;
-  --ochre: #c4782a;
-  --blood: #8b1a1a;
-  --blood-bright: #b82828;
-  --ink: #1a0f0a;
-  --muted: #9a7b5a;
-  --border: #5c3a22;
-  --link: #e8a040;
+  color-scheme: dark;
+
+  /* raw palette */
+  --ink: #120e0b;        /* near-black, warm */
+  --soot: #1c1612;       /* card */
+  --ash: #2a211a;        /* raised / hover */
+  --ember: #d0703a;      /* burnt orange */
+  --ochre: #d4a94e;      /* ochre */
+  --blood: #8e2f22;      /* deep red */
+  --sick: #a3b05a;       /* sickly green */
+  --parchment: #efe3cb;  /* text */
+
+  --background: var(--ink);
+  --foreground: var(--parchment);
+  --card: var(--soot);
+  --card-foreground: var(--parchment);
+  --popover: var(--soot);
+  --popover-foreground: var(--parchment);
+  --primary: var(--ember);
+  --primary-foreground: #160f0a;
+  --secondary: #3a2a20;
+  --secondary-foreground: var(--parchment);
+  --muted: #241c16;
+  --muted-foreground: #c4b293;
+  --accent: var(--ash);
+  --accent-foreground: var(--ochre);
+  --destructive: #c4533c;
+  --border: #45372b;
+  --input: #5a4838;
+  --ring: var(--ochre);
+  --radius: 0.5rem;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--parchment);
-  font-family: Georgia, "Times New Roman", serif;
-  min-height: 100%;
-}
-
-a {
-  color: var(--link);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-  color: #f0c070;
-}
-
-main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-.site-header {
-  background: linear-gradient(180deg, var(--blood) 0%, var(--bg-elevated) 100%);
-  border-bottom: 2px solid var(--ochre);
-  padding: 1rem 1.5rem;
-}
-
-.site-header nav {
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  align-items: center;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.site-header .brand {
-  font-weight: bold;
-  font-size: 1.25rem;
-  color: var(--parchment);
-  margin-right: auto;
-}
-
-.card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 0.75rem;
-}
-
-.card h2,
-.card h3 {
-  margin-top: 0;
-  color: var(--ochre);
-}
-
-.badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-family: system-ui, sans-serif;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  margin-right: 0.35rem;
-  background: var(--blood);
-  color: var(--parchment);
-}
-
-.badge.ok {
-  background: #3a5a20;
-}
-
-.badge.warn {
-  background: #6a4a10;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding: 1rem;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-family: system-ui, sans-serif;
-}
-
-.filters label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.filters select,
-.filters input {
-  background: var(--bg);
-  color: var(--parchment);
-  border: 1px solid var(--border);
-  padding: 0.35rem 0.5rem;
-  border-radius: 4px;
-  min-width: 8rem;
-}
-
-.welcome {
-  border-left: 4px solid var(--ochre);
-  padding-left: 1rem;
-  margin: 2rem 0;
-}
-
-.meta {
-  font-family: system-ui, sans-serif;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.detail-block {
-  background: #241610;
-  border: 1px solid var(--border);
-  padding: 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
-  white-space: pre-wrap;
-  font-family: ui-monospace, monospace;
-  font-size: 0.8rem;
-  color: var(--parchment-dim);
-}
-
-.site-header form.auth {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0;
+@layer base {
+  html {
+    font-size: 112.5%; /* 18px base - Joe needs large, readable text */
+    @apply font-sans;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+    @apply text-ochre tracking-wide;
+    line-height: 1.25;
+  }
+  h1 { @apply text-3xl font-semibold; }
+  h2 { @apply text-2xl font-semibold; }
+  h3 { @apply text-xl font-semibold; }
+  a { @apply underline-offset-4; }
+  code { @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-ochre; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-ring; }
 }

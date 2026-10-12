@@ -1,0 +1,22 @@
+# Dev-only helper. Nothing here starts by default: production uses the bunker
+# MariaDB (docs/DATABASE.md), not containers.
+#   docker compose --profile localdb up -d
+#   DATABASE_URL="mysql://ssr:ssr-local@127.0.0.1:3306/savage_sun_rising"
+services:
+  mariadb:
+    profiles: ["localdb"]
+    image: mariadb:11.8
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: savage_sun_rising
+      MARIADB_USER: ssr
+      MARIADB_PASSWORD: ssr-local # local throwaway only
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - ssr-localdb:/var/lib/mysql
+volumes:
+  ssr-localdb:

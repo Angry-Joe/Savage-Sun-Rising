@@ -1,52 +1,15 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getSpellPower } from "@/lib/fixtures";
+import { notFound, redirect } from "next/navigation";
+import DbError from "@/components/db-error";
+import SpellPowerDetail from "@/components/spell-power-detail";
+import { getSpellPower, safe } from "@/lib/content";
 
-type Params = { id: string };
+export const dynamic = "force-dynamic";
 
-export default async function SpellDetailPage({
-  params,
-}: {
-  params: Promise<Params>;
-}) {
+export default async function SpellDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const item = getSpellPower(decodeURIComponent(id));
-  if (!item) notFound();
-
-  return (
-    <div>
-      <p className="meta">
-        <Link href="/spells">← Spells &amp; Powers</Link>
-      </p>
-      <h1 style={{ color: "var(--ochre)" }}>{item.name}</h1>
-      <div>
-        <span className="badge">{item.kind}</span>
-        <span className={`badge ${item.verified ? "ok" : "warn"}`}>
-          {item.verified ? "verified" : "unverified"}
-        </span>
-        <span className="badge">combatMode: {item.combatMode}</span>
-        {item.level !== undefined && (
-          <span className="badge">level {item.level}</span>
-        )}
-      </div>
-      <p>{item.summary}</p>
-      <p className="meta">
-        id: <code>{item.id}</code>
-      </p>
-      <div className="detail-block">
-        {JSON.stringify(
-          {
-            allowedCampaignSettings: item.allowedCampaignSettings,
-            allowedRulesets: item.allowedRulesets,
-            campaignSettings: item.campaignSettings,
-            rulesets: item.rulesets,
-            school: item.school,
-            discipline: item.discipline,
-          },
-          null,
-          2
-        )}
-      </div>
-    </div>
-  );
+  const res = await safe(() => getSpellPower(decodeURIComponent(id)));
+  if (!res.ok) return <DbError message={res.error} />;
+  if (!res.data) notFound();
+  if (res.data.kind === "psionic") redirect(`/powers/${encodeURIComponent(res.data.id)}`);
+  return <SpellPowerDetail row={res.data} />;
 }
