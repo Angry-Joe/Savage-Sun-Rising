@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Amazon.DynamoDBv2.DataModel;
 using DarkSun.Application.Interfaces;
 using DarkSun.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;

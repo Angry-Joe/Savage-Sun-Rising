@@ -177,5 +177,6 @@ required once the provider is live and existing rows are backfilled.
       `next start`, behind the existing cloudflared).
 - [ ] Delete `spell_new_1788231150919` / `spell_new_1788240952303` upstream in
       Depp-Magic.
-- [ ] Legacy `Dockerfile` and `Run-Docker.ps1` at the repo root belong to the
-      deprecated Blazor app — left in place, remove with the rest of `DarkSun.*`.
+- [ ] Legacy `Dockerfile` at the repo root belongs to the deprecated Blazor app — left
+      in place, remove with the rest of `DarkSun.*`. `Run-Docker.ps1` and the ghcr.io
+      `deploy.yml` workflow were removed in the repo-hygiene cleanup.

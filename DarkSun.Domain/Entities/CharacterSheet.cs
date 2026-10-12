@@ -2,13 +2,10 @@
 // TODO: Manage UserId properly, possibly through authentication context or user session management, instead of hardcoding it.
 // TODO: Consider adding methods for updating timestamps (CreatedAt, UpdatedAt) automatically when the entity is modified.
 //using System.Collections.Generic;
-using Amazon.DynamoDBv2.DataModel;
 namespace DarkSun.Domain.Entities;
 
-[DynamoDBTable("CharacterSheets")]
 public class CharacterSheet
 {
-    [DynamoDBHashKey]
     public string CharId { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; } = string.Empty; // FK to Users table
     public string CampaignId { get; set; } = "default";

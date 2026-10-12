@@ -4,8 +4,12 @@ import { getSpellPower } from "@/lib/fixtures";
 
 type Params = { id: string };
 
-export default function SpellDetailPage({ params }: { params: Params }) {
-  const { id } = params;
+export default async function SpellDetailPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { id } = await params;
   const item = getSpellPower(decodeURIComponent(id));
   if (!item) notFound();
 

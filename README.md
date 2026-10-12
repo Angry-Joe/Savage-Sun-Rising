@@ -6,6 +6,8 @@
 
 Stack constraints for new work: **no** AWS Cognito/DynamoDB, **no** MudBlazor, **no** Blazor dependency for the product app.
 
+**Secrets:** never committed. They come from environment variables / `apps/web/.env` (gitignored) or `dotnet user-secrets` for the legacy app - see [SECURITY.md](SECURITY.md).
+
 ---
 
 ## How to run (product app)

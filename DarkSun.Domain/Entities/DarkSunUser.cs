@@ -1,11 +1,8 @@
-using Amazon.DynamoDBv2.DataModel;
 
 namespace DarkSun.Domain.Entities;
 
-[DynamoDBTable("Users")]
 public class DarkSunUser
 {
-    [DynamoDBHashKey]
     public string UserId { get; set; } = Guid.NewGuid().ToString();
 
     // Authentication

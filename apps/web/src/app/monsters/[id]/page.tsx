@@ -4,8 +4,12 @@ import { getMonster } from "@/lib/fixtures";
 
 type Params = { id: string };
 
-export default function MonsterDetailPage({ params }: { params: Params }) {
-  const { id } = params;
+export default async function MonsterDetailPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { id } = await params;
   const m = getMonster(decodeURIComponent(id));
   if (!m) notFound();
 
