@@ -1,184 +1,97 @@
 # Savage Sun Rising — target architecture
 
-Decided 2026-09-07. Production is **self-hosted on Proxmox (VLAN 326)**; Azure is a
-separate, parallel deployment built only when the Master's project needs it.
-Authentication is **Authentik as an OIDC provider**. **No containers** — Postgres runs
-as a system service on the VM.
+Production is **self-hosted in the home lab ("the bunker", Proxmox VLAN 326)**.
+The database is **MariaDB** running as a system service in the bunker; the app is
+Next.js (`apps/web`); authentication is **Authentik as an OIDC provider**.
+**No containers in production** (`compose.yaml` holds a dev-only `localdb` profile).
+
+Database setup, grants and the import commands: [DATABASE.md](DATABASE.md).
+Auth setup: [AUTH.md](AUTH.md).
 
 ---
 
 ## The one rule that shapes everything
 
-**Cloudflare Tunnel carries HTTP/HTTPS. It does not carry the Postgres wire protocol.**
+**Cloudflare Tunnel carries HTTP/HTTPS. It does not carry the MySQL/MariaDB wire
+protocol.**
 
-"Reachable like Authentik" is the right goal for the *web app* and the wrong goal for
-the *database*. Authentik is published because `cloudflared` fronts HTTP to it. The
-database is never published to the internet, in any environment.
-
-What replaces container network isolation is `listen_addresses` + `pg_hba.conf` +
-the host firewall. Those are the real controls; Docker was only ever wrapping them.
+The web app is published through `cloudflared`, like Authentik. The database is never
+published to the internet, in any environment. The controls are MariaDB's
+`bind-address`, host-scoped `GRANT`s (`'ssr'@'<app host>'`) and the host/pfSense
+firewall.
 
 | Component | Dev | Production |
 |---|---|---|
 | Next.js app | `next dev` on TESLA-GRID | `next start` behind systemd, published via `cloudflared` |
-| Postgres | listening on the VLAN 326 address | listening on **localhost only** |
-| Auth | none | Authentik OIDC |
+| MariaDB | bunker host, port 3306 open to TESLA-GRID only | bound to localhost (or the app host only) |
+| Auth | Authentik OIDC (`/characters` requires sign-in) | Authentik OIDC |
 
 ---
 
 ## Environments
 
-### 1. Dev — Visual Studio on TESLA-GRID
+### 1. Dev — TESLA-GRID
 
 ```
-TESLA-GRID (10.10.0.215)  ──pfSense LAN rule──►  192.168.78.100:5432
+TESLA-GRID (10.10.0.215)  ──pfSense LAN rule──►  bunker-host:3306 (MariaDB)
         │                                              │
         └── next dev / prisma / import-corpora.mjs ────┘
 ```
 
-`postgresql.conf`
+- MariaDB `bind-address` includes the bunker host's VLAN 326 address.
+- The `ssr` account is granted for `'ssr'@'10.10.0.215'` only, not `%`.
+- The pfSense **LAN** rule `10.10.0.215 → 192.168.78.0/24 TCP 3306` makes the path
+  work (rules evaluate on the interface traffic *enters*). ICMP to 326 fails by
+  design — test with `Test-NetConnection bunker-host -Port 3306`, not `ping`.
 
-```conf
-listen_addresses = 'localhost,192.168.78.100'
-```
-
-`pg_hba.conf` — one line, scoped to the workstation, not the whole subnet:
-
-```conf
-# TYPE  DATABASE             USER  ADDRESS           METHOD
-host    savage_sun_rising    ssr   10.10.0.215/32    scram-sha-256
-```
-
-Reload with `sudo systemctl reload postgresql`. `pg_hba.conf` is evaluated
-top-to-bottom, first match wins — put this above any broader `reject`.
-
-The pfSense **LAN** rule `10.10.0.215 → 192.168.78.0/24 TCP` is what makes the path
-work. Rules evaluate on the interface traffic *enters*; a rule on the BNKR tab governs
-traffic leaving 326 and can never match inbound. ICMP needs its own rule — ping to 326
-fails by design, so test with `Test-NetConnection`, not `ping`.
-
-Auth is bypassed in dev. `characters.ownerId` is nullable for exactly this reason.
-
-### 2. Production — bnkr-bunsen01, VLAN 326
+### 2. Production — bunker
 
 ```
 internet ──► Cloudflare ──► cloudflared ──► ssr-web (systemd, 127.0.0.1:3000)
                                                 │
-                                                ├──► postgres (127.0.0.1:5432)
+                                                ├──► mariadb (127.0.0.1:3306)
                                                 └──OIDC──► authentik
 ```
 
-Tighten Postgres back down:
-
-```conf
-listen_addresses = 'localhost'
-```
-
-The app connects over loopback (or the Unix socket, which is faster and needs no
-password):
-
-```
-DATABASE_URL="postgresql://ssr@localhost/savage_sun_rising?host=/var/run/postgresql&schema=public"
-```
-
-Nothing outside the host can open a socket to the database — the same posture
-Authentik's own database has.
-
-### 3. Azure — Master's project only
-
-The portability claim, stated precisely: **only `DATABASE_URL` and the TLS mode
-change.** No schema change, no importer change.
-
-```
-Azure App Service / Container Apps ──► Azure Database for PostgreSQL Flexible Server
-                                        (private endpoint, sslmode=require)
-```
-
-```
-postgresql://ssr:PASS@ssr-pg.postgres.database.azure.com:5432/savage_sun_rising?sslmode=require
-```
-
-Flexible Server is the same engine, so `jsonb`, GIN indexes and `String[]` columns
-behave identically. That equivalence is the demonstrable result for the write-up —
-build it as a second target, not a migration.
-
----
-
-## Installing Postgres on bnkr-bunsen01
-
-Host port 5432 is free: Authentik's database is inside its container stack and is not
-published.
-
-```bash
-sudo apt install -y postgresql postgresql-contrib
-sudo -u postgres psql <<'SQL'
-CREATE ROLE ssr LOGIN PASSWORD 'CHANGEME';
-CREATE DATABASE savage_sun_rising OWNER ssr;
-\c savage_sun_rising
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-SQL
-```
-
-Config lives in `/etc/postgresql/<version>/main/`. Apply the `listen_addresses` and
-`pg_hba.conf` entries above, then `sudo systemctl reload postgresql`.
-
-`pg_trgm` is worth having for fuzzy spell/creature name search. `jsonb` and GIN are
-core — nothing to install.
-
-Backups are now your job rather than a volume snapshot:
-
-```bash
-pg_dump -Fc savage_sun_rising > savage_sun_rising_$(date +%F).dump
-```
+Tighten MariaDB to `bind-address = 127.0.0.1` when the app runs on the same host, and
+grant `'ssr'@'localhost'`. If the app runs on a different bunker VM, bind to the VLAN
+address and grant only that VM's address.
 
 ---
 
 ## Data flow
 
-The JSON corpora are the source of truth; the database is a rebuildable artifact.
+The JSON corpora are the source of truth; the content tables are a rebuildable
+artifact. Both corpora repos are **read-only** from this project.
 
 ```
-Depp-Magic/Reference/spell-powers-v3.6.2.json ─┐
-SavageSun/monsters.json ───────────────────────┴─► import-corpora.mjs ─► Postgres
+Depp-Magic/Reference/spell-powers-official-v3.6*.json ─┐
+complete-compendium/static/tools/monster_index.json ───┴─► import-corpora.mjs ─► MariaDB
 ```
 
-Re-run the importer after every corpus edit. It truncates `spell_powers` and
-`monsters` and rebuilds them, and never touches `characters`. In production, run it
-**on the host** — not from a workstation across the network.
+The importer is an idempotent upsert: re-running it updates rows in place, prunes
+rows that disappeared from the corpus, records provenance in `corpora`, and never
+touches `characters`. In production run it **on the bunker host**.
 
 ---
 
 ## Authentik OIDC
 
-Implemented in `apps/web` with Auth.js (next-auth v5): setup steps, env vars and the Google/Microsoft-as-Authentik-sources recipe are in [AUTH.md](AUTH.md).
-
-Authentik already runs here, so the app becomes an OIDC client rather than growing its
-own password handling.
-
-In Authentik: create an **OAuth2/OpenID Provider** and an **Application**, redirect URI
-`${PUBLIC_URL}/api/auth/callback/authentik`.
-
-Two URLs, and mixing them up is the usual failure:
-
-- **Issuer / token exchange** — server-to-server, reachable from the app host.
-- **Authorize / redirect** — what the *browser* is sent to, so it must be the public
-  hostname.
-
-The OIDC `sub` claim becomes `characters.ownerId`. It is `String?` today; make it
-required once the provider is live and existing rows are backfilled.
+Implemented in `apps/web` with Auth.js (next-auth v5); see [AUTH.md](AUTH.md).
+Redirect URI `${PUBLIC_URL}/api/auth/callback/authentik`. The OIDC `sub` claim
+becomes `characters.ownerId`.
 
 ---
 
 ## Open items
 
-- [ ] Install Postgres on bnkr-bunsen01, create the role and database, apply
-      `listen_addresses` + `pg_hba.conf`.
-- [ ] Run `prisma db push` and the corpus import against it.
+- [ ] Create the MariaDB database and `ssr` account in the bunker
+      ([DATABASE.md](DATABASE.md)); `prisma db push`; `npm run db:import`.
 - [ ] Create the Authentik provider/application (steps in `docs/AUTH.md`).
 - [ ] Decide how `ssr-web` is served in production (systemd unit running
       `next start`, behind the existing cloudflared).
-- [ ] Delete `spell_new_1788231150919` / `spell_new_1788240952303` upstream in
-      Depp-Magic.
-- [ ] Legacy `Dockerfile` at the repo root belongs to the deprecated Blazor app — left
-      in place, remove with the rest of `DarkSun.*`. `Run-Docker.ps1` and the ghcr.io
-      `deploy.yml` workflow were removed in the repo-hygiene cleanup.
+- [ ] Fix quality-flagged rows upstream in Depp-Magic (`spell_new_1788231150919`,
+      `spell_new_1788240952303`, `psionic_new_1791364624557`, …; `npm run db:verify`
+      lists them).
+- [ ] Character creation (template: Depp-Magic `Reference/rules/template_character.json`).
+- [ ] 5e ruleset data (the UI already shows a `5e` tab/badge when present).

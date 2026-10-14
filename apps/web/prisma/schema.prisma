@@ -1,13 +1,18 @@
-// Prisma schema for Savage Sun Rising product app.
-// Content corpus: Depp-Magic spell-powers schema v3.6.x.
-// Overlays and full records live in JSONB — no AWS Cognito/DynamoDB.
+// Prisma schema for the Savage Sun Rising product app.
+// Database: MariaDB 10.11+/11.x via Prisma's `mysql` provider (MariaDB is a
+// supported MySQL-compatible target). See docs/DATABASE.md.
+//
+// Content corpora (Depp-Magic spells/psionics v3.6.x, complete-compendium
+// monsters) are rebuildable artifacts imported by scripts/import-corpora.mjs.
+// Full source records live in `data` (JSON); filterable fields are promoted to
+// plain columns because MariaDB has no array columns and no JSON GIN indexes.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,29 +21,30 @@ model Character {
   /// Authentik OIDC subject claim (`sub`) of the owning user.
   /// Nullable so local/dev rows predate auth; enforce NOT NULL once the
   /// Authentik provider is live and existing rows are backfilled.
-  ownerId   String?
-  name      String
+  ownerId   String?  @db.VarChar(191)
+  name      String   @db.VarChar(255)
   /// Full character document (allowedCampaignSettings, overlay bags, powers, etc.)
   sheet     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([ownerId])
   @@index([ownerId, updatedAt])
-  @@index([sheet(ops: JsonbPathOps)], type: Gin)
   @@map("characters")
 }
 
-/// Provenance for each corpus import — which file, which schema version, how
+/// Provenance for each corpus import - which file, which schema version, how
 /// many rows. One row per import run; the newest row describes the live data.
 model Corpus {
   id            String   @id @default(cuid())
   /// "spells" | "monsters"
-  kind          String
-  sourceFile    String
-  schemaVersion String?
-  dateUpdated   String?
+  kind          String   @db.VarChar(32)
+  sourceFile    String   @db.VarChar(512)
+  schemaVersion String?  @db.VarChar(32)
+  dateUpdated   String?  @db.VarChar(32)
   rowCount      Int
+  inserted      Int      @default(0)
+  updated       Int      @default(0)
+  pruned        Int      @default(0)
   /// Vocabularies shipped with the corpus (rulesets, campaignSettings) + counts
   meta          Json
   importedAt    DateTime @default(now())
@@ -48,62 +54,83 @@ model Corpus {
 }
 
 /// One row per spell or psionic power, Depp-Magic v3.6 shape.
-/// v3.6.2 ids are unique across both arrays — no composite key needed.
+/// v3.6.x ids are unique across both arrays.
 model SpellPower {
   /// Depp-Magic id, e.g. "spell_wakefulness_2e" / "psionic_probe_2e"
-  id                      String   @id
-  name                    String
+  id                      String   @id @db.VarChar(191)
+  name                    String   @db.VarChar(255)
   /// "spell" | "psionic"
-  kind                    String
+  kind                    String   @db.VarChar(16)
   /// arcane | divine | psionic
-  tradition               String?
+  tradition               String?  @db.VarChar(16)
   level                   Int?
   /// Spells only
-  school                  String?
-  classes                 String[] @default([])
+  school                  String?  @db.VarChar(128)
   /// Psionics only
-  discipline              String?
-  tier                    String?
-  /// N/A | Att | Def
-  combatMode              String?
-  /// Curation axes from the v3.6 vocabulary: 2e | 2e-rev | 5e, xx | ds | fr
-  allowedRulesets         String[] @default([])
-  allowedCampaignSettings String[] @default([])
+  discipline              String?  @db.VarChar(64)
+  tier                    String?  @db.VarChar(32)
+  /// N/A | Att | Def (psionics)
+  combatMode              String?  @db.VarChar(8)
+  /// Source arrays kept as JSON for display/export
+  classes                 Json
+  allowedRulesets         Json
+  allowedCampaignSettings Json
+  /// Promoted flags for indexed filtering (derived from the arrays above)
+  isWizard                Boolean  @default(false)
+  isPriest                Boolean  @default(false)
+  rs2e                    Boolean  @default(false)
+  rs2eRev                 Boolean  @default(false)
+  rs5e                    Boolean  @default(false)
+  /// allowedCampaignSettings contains "ds"
+  csDs                    Boolean  @default(false)
+  /// campaignSettings.ds overlay bag present
+  dsOverlay               Boolean  @default(false)
   verified                Boolean  @default(false)
   /// Importer data-quality flags. Empty array = clean row.
-  suspect                 String[] @default([])
+  suspect                 Json
+  summary                 String?  @db.Text
   /// Full v3.6 record, including the `rulesets` and `campaignSettings` overlay bags
   data                    Json
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
-  @@index([kind])
+  @@index([kind, name])
   @@index([kind, level])
-  @@index([tradition])
+  @@index([kind, isWizard, level])
+  @@index([kind, isPriest, level])
   @@index([school])
   @@index([discipline, tier])
+  @@index([combatMode])
   @@index([verified])
-  @@index([allowedRulesets], type: Gin)
-  @@index([allowedCampaignSettings], type: Gin)
-  @@index([classes], type: Gin)
-  @@index([data(ops: JsonbPathOps)], type: Gin)
   @@map("spell_powers")
 }
 
+/// One row per monster_index entry from complete-compendium.
 model Monster {
-  /// Slug of the creature/page name.
-  id           String   @id
-  name         String
-  /// Source corpus this row was loaded from (e.g. "mc12").
-  corpus       String
-  multiVariant Boolean  @default(false)
-  /// monster_index-shaped row as JSONB
-  data         Json
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  /// Stable slug of the compendium `key` (suffixed -2, -3 on collisions)
+  id          String   @id @db.VarChar(191)
+  /// Row id in monster_index.json
+  sourceId    Int
+  name        String   @db.VarChar(255)
+  /// Setting name, e.g. "Dark Sun"
+  setting     String?  @db.VarChar(128)
+  /// Setting acronym, e.g. "ds"
+  settingCode String?  @db.VarChar(16)
+  /// allowedSettings contains "ds"
+  isAthas     Boolean  @default(false)
+  psionic     Boolean  @default(false)
+  hitDice     Float?
+  armorClass  Int?
+  xp          Int?
+  size        String?  @db.VarChar(64)
+  corpus      String   @db.VarChar(64)
+  /// Full monster_index row (statblock `sb`, derived `d`, sources)
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([corpus])
-  @@index([multiVariant])
-  @@index([data(ops: JsonbPathOps)], type: Gin)
+  @@index([isAthas, name])
+  @@index([name])
+  @@index([settingCode])
   @@map("monsters")
 }

@@ -1,51 +1,49 @@
-// Quick post-import sanity check. Safe to re-run; read-only.
+// Quick post-import sanity check against MariaDB. Safe to re-run; read-only.
+//   npm run db:verify
 import { PrismaClient } from '@prisma/client'
 const p = new PrismaClient()
 
-const [total, spells, psionics, verified, flagged] = await Promise.all([
+const [total, spells, psionics, verified, wizard, priest, ds, rev2e] = await Promise.all([
   p.spellPower.count(),
   p.spellPower.count({ where: { kind: 'spell' } }),
   p.spellPower.count({ where: { kind: 'psionic' } }),
   p.spellPower.count({ where: { verified: true } }),
-  p.spellPower.count({ where: { NOT: { suspect: { isEmpty: true } } } }),
+  p.spellPower.count({ where: { isWizard: true } }),
+  p.spellPower.count({ where: { isPriest: true } }),
+  p.spellPower.count({ where: { csDs: true } }),
+  p.spellPower.count({ where: { rs2eRev: true } }),
 ])
 console.log(`spell_powers  ${total}  (${spells} spells / ${psionics} psionics)`)
 console.log(`verified      ${verified}`)
-console.log(`flagged       ${flagged}\n`)
+console.log(`Wizard ${wizard} / Priest ${priest} / ds ${ds} / 2e-rev ${rev2e}`)
 
-console.log('-- curation axis (String[] GIN) --')
-for (const code of ['ds', 'xx', 'fr']) {
-  const n = await p.spellPower.count({ where: { allowedCampaignSettings: { has: code } } })
-  console.log(`  allowedCampaignSettings has '${code}': ${n}`)
-}
-
-console.log('\n-- promoted columns --')
 const byDiscipline = await p.spellPower.groupBy({
-  by: ['discipline'], _count: true,
-  where: { kind: 'psionic' }, orderBy: { _count: { discipline: 'desc' } },
+  by: ['discipline'], _count: { _all: true }, where: { kind: 'psionic' },
 })
-console.log('  psionics by discipline: ' + byDiscipline.map(d => `${d.discipline}=${d._count}`).join(', '))
+console.log('psionics by discipline: ' + byDiscipline.map((d) => `${d.discipline}=${d._count._all}`).join(', '))
 
-const lvl5 = await p.spellPower.count({ where: { kind: 'spell', level: 5, tradition: 'arcane' } })
-console.log(`  arcane level-5 spells: ${lvl5}`)
+const byMode = await p.spellPower.groupBy({
+  by: ['combatMode'], _count: { _all: true }, where: { kind: 'psionic' },
+})
+console.log('psionics by combatMode: ' + byMode.map((d) => `${d.combatMode}=${d._count._all}`).join(', '))
 
-console.log('\n-- JSONB containment (GIN jsonb_path_ops) --')
-const rev = await p.$queryRaw`SELECT count(*)::int AS n FROM spell_powers WHERE data @> '{"reversible": true}'`
-console.log(`  reversible spells: ${rev[0].n}`)
-const overlay = await p.$queryRaw`SELECT count(*)::int AS n FROM spell_powers WHERE data -> 'campaignSettings' ? 'ds'`
-console.log(`  rows with a Dark Sun overlay bag: ${overlay[0].n}`)
+// JSON functions work on MariaDB's JSON (LONGTEXT + json_valid) columns.
+// Note: MariaDB's JSON_VALUE returns booleans as '1'/'0' (MySQL: 'true'/'false').
+const [rev] = await p.$queryRaw`SELECT COUNT(*) AS n FROM spell_powers WHERE JSON_VALUE(data, '$.reversible') IN ('1', 'true')`
+console.log(`reversible spells: ${Number(rev.n)}`)
+const [flagged] = await p.$queryRaw`SELECT COUNT(*) AS n FROM spell_powers WHERE JSON_LENGTH(suspect) > 0`
+console.log(`quality-flagged rows: ${Number(flagged.n)}`)
 
-console.log('\n-- provenance --')
-const corpora = await p.corpus.findMany({ orderBy: { importedAt: 'desc' } })
+const [monsters, athas] = await Promise.all([
+  p.monster.count(),
+  p.monster.count({ where: { isAthas: true } }),
+])
+console.log(`monsters      ${monsters}  (${athas} Athas)`)
+
+console.log('\n-- provenance (latest first) --')
+const corpora = await p.corpus.findMany({ orderBy: { importedAt: 'desc' }, take: 4 })
 for (const c of corpora) {
-  console.log(`  ${c.kind}: ${c.rowCount} rows, schema ${c.schemaVersion ?? 'n/a'} (${c.dateUpdated ?? 'n/a'})`)
+  console.log(`  ${c.importedAt.toISOString()} ${c.kind}: ${c.rowCount} rows (+${c.inserted}/~${c.updated}/-${c.pruned}), schema ${c.schemaVersion ?? 'n/a'}`)
 }
-
-console.log('\n-- the 2 flagged rows --')
-const bad = await p.spellPower.findMany({
-  where: { NOT: { suspect: { isEmpty: true } } },
-  select: { id: true, suspect: true },
-})
-for (const b of bad) console.log(`  ${b.id}  [${b.suspect.join(', ')}]`)
 
 await p.$disconnect()

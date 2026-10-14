@@ -1,60 +1,54 @@
 # Savage Sun Rising
 
-**Product app:** `apps/web` — Next.js (App Router) + TypeScript + Postgres/Prisma.
-**Legacy Blazor** master's prototype (`DarkSun.*`) is **deprecated / not used**. See `LEGACY_BLAZOR.md` and `DarkSun.Web/DEPRECATED.md`.
-**Depp-Magic** is the content foundry (spell/power overlays, conversion tooling).
+A Dark Sun (Athas) TTRPG reference and character site.
 
-Stack constraints for new work: **no** AWS Cognito/DynamoDB, **no** MudBlazor, **no** Blazor dependency for the product app.
+**App:** `apps/web` — Next.js (App Router) + TypeScript + Prisma on **MariaDB**,
+Tailwind v4 + shadcn/ui, sign-in via **Authentik** (Auth.js).
+**Content:** [Depp-Magic](https://github.com/Angry-Joe/Depp-Magic) (spells/psionics,
+3.6 overlay vocabulary) and complete-compendium (monster index), imported read-only.
 
-**Secrets:** never committed. They come from environment variables / `apps/web/.env` (gitignored) or `dotnet user-secrets` for the legacy app - see [SECURITY.md](SECURITY.md).
+**Secrets:** never committed. Environment variables / `apps/web/.env` (gitignored) —
+see [SECURITY.md](SECURITY.md).
 
 ---
 
-## How to run (product app)
+## Run
 
 ```text
 cd apps/web
-cp .env.example .env  # macOS/Linux (PowerShell: copy .env.example .env)
-# install Node dependencies, then:
-#   prisma generate + prisma db push
-#   next dev
+copy .env.example .env      # set DATABASE_URL + AUTH_* (docs/DATABASE.md, docs/AUTH.md)
+npm ci
+npx prisma db push
+npm run db:import           # spells/psionics + monsters from the corpora repos
+npm run dev                 # http://localhost:3000
 ```
 
-Open http://localhost:3000
+- **Spells** — Wizard/Priest, level, school, ruleset (2e / 2e-rev / 5e), Dark Sun
+  overlay, verified; detail tabs per ruleset overlay + the `ds` overlay.
+- **Psionic Powers** — discipline, tier, combat mode (N/A | Att | Def),
+  prerequisites, PSP costs.
+- **Monsters** — Athas by default, all settings on request; statblock detail.
+- **My Characters** — requires Authentik sign-in; keyed by the OIDC `sub`.
 
-- Spells & Powers: list + detail; filters for verified, setting, ruleset, combatMode (N/A | Att | Def)
-- Monsters: Athas list + detail (sample `monster_index`-shaped rows)
-
-Postgres runs as a system service on the database VM (no containers) — see `docs/ARCHITECTURE.md` for `listen_addresses`, `pg_hba.conf` and the dev/prod/Azure topology. Character sheets / overlays use JSONB via Prisma.
-
-### Full corpora (local import later)
-
-Do **not** commit full copyrighted 70k-line dumps. Tiny fixtures live under `apps/web/fixtures/`.
-
-For full local import later, point tooling at:
-
-- Depp-Magic: `Reference/spell-powers-official-v3.6.2.json`
-- complete-compendium: `static/tools/monster_index.json`
+Docs: [ARCHITECTURE](docs/ARCHITECTURE.md) · [DATABASE](docs/DATABASE.md) ·
+[AUTH](docs/AUTH.md)
 
 ### Schema
 
-Shared Depp-Magic 3.6 overlay vocabulary lives in `packages/schema` and `apps/web/src/schema`:
+Shared Depp-Magic 3.6 overlay vocabulary lives in `packages/schema` and
+`apps/web/src/schema`: `allowedCampaignSettings` / `allowedRulesets`,
+`campaignSettings` / `rulesets` overlay bags, codes `ds`, `2e`, `2e-rev`, `5e`,
+Depp-Magic ids (`spell_*`, `psionic_*`), and `combatMode` for psionics.
 
-- `allowedCampaignSettings` / `allowedRulesets`
-- `campaignSettings` and `rulesets` overlay bags
-- codes: `ds`, `2e`, `2e-rev`, `5e`
-- spells/powers by Depp-Magic ids (`spell_*`, `psionic_*`)
-- `combatMode` for psionics: `N/A` | `Att` | `Def`
+Full corpora are **not** committed; the importer reads them from sibling checkouts.
 
 ---
 
-## Project origins (context)
+## Project origins
 
-A Dark Sun (Athas) themed TTRPG character creation and management site. This project began as a Master's degree effort that required heavy use of Microsoft Azure services (including DynamoDB). That cloud dependency is retired in favor of a self-hosted Next.js + PostgreSQL product under `apps/web`.
-
-### Related repositories
-
-- [Depp-Magic](https://github.com/Angry-Joe/Depp-Magic) — content foundry / PDF converter for 2e material and overlay vocabulary.
+This began as a Master's degree project built as a Blazor/.NET app on cloud
+services. That prototype has been removed from the tree; it remains in git history
+(last commit containing it: `1ed825e`).
 
 ### License
 

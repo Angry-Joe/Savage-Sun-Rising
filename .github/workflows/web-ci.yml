@@ -1,6 +1,7 @@
 name: apps/web CI
 
-# Build + typecheck the Next.js product app. No secrets, no deploy, no image push.
+# Build + typecheck the Next.js app and check the Prisma schema applies to
+# MariaDB. No secrets, no deploy, no image push.
 on:
   push:
     branches: [main]
@@ -17,8 +18,22 @@ jobs:
     defaults:
       run:
         working-directory: apps/web
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_RANDOM_ROOT_PASSWORD: "1"
+          MARIADB_DATABASE: savage_sun_rising
+          MARIADB_USER: ssr
+          MARIADB_PASSWORD: ci-only
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # Throwaway CI service container, not a real credential.
+      DATABASE_URL: mysql://ssr:ci-only@127.0.0.1:3306/savage_sun_rising
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,4 +44,8 @@ jobs:
       - run: npm ci
       - run: npx prisma generate
       - run: npm run typecheck
+      - name: Prisma schema applies to MariaDB
+        run: npx prisma db push --skip-generate
+      - name: Importer and verifier load (no corpora in CI)
+        run: node --check scripts/import-corpora.mjs && node --check scripts/verify-import.mjs
       - run: npm run build

@@ -33,7 +33,7 @@ export const PowerRefSchema = z.object({
 export type PowerRef = z.infer<typeof PowerRefSchema>;
 
 /**
- * Character document — product shape for sheets stored as JSONB.
+ * Character document — product shape for sheets stored as JSON.
  * Overlay bags hold setting/ruleset-specific deltas without forking the base sheet.
  */
 export const CharacterSchema = z.object({
